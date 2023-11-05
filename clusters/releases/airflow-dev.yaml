@@ -4,7 +4,7 @@ metadata:
   name: airflow
   namespace: dev
 spec:
-  interval: 5s
+  interval: 30s
   releaseName: airflow-dev
   chart:
     spec:
@@ -40,6 +40,6 @@ spec:
         enabled: true
         repo: https://github.com/andreichiro/k8s-airflow-dags.git
         branch: main
-        maxFailures: 10
+        maxFailures: 5
         subPath: ""
-        wait: 10
+        wait: 60
