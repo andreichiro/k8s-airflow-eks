@@ -58,13 +58,13 @@ managedNodeGroups:
   - name: lakehouse-on-k8s
     instanceType: r5.2xlarge
     minSize: 0
-    desiredCapacity: 5
+    desiredCapacity: 4
     maxSize: 10
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
     volumeSize: 500
     updateConfig:
-      maxUnavailable: 3 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
+      maxUnavailable: 1 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
     ssh:
       allow: true
       publicKeyName: andreichiro
