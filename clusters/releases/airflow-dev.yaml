@@ -1,0 +1,34 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: airflow
+  namespace: dev
+spec:
+  interval: 5s
+  releaseName: airflow-dev
+  chart:
+    spec:
+      chart: airflow
+      version: "1.11.0"
+      sourceRef:
+        kind: HelmRepository
+        name: apache-airflow
+        namespace: flux-system
+  values:
+    defaultAirflowTag: "2.7.1"
+    airflowVersion: "2.7.1"
+    env:
+      - name: "AIRFLOW__CORE__LOAD_EXAMPLES"
+        value: "False"
+      - name: "AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE"
+        value: "dev"
+      - name: "AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_REPOSITORY"
+        value: "apache/airflow"
+      - name: "AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_TAG"
+        value: "slim-2.5.1-python3.8"
+    executor: "KubernetesExecutor"
+    createUserJob:
+      useHelmHooks: false
+    migrateDatabaseJob:
+      useHelmHooks: false
+    
