@@ -5,6 +5,7 @@ metadata:
   namespace: dev
 spec:
   interval: 30s
+  
   releaseName: airflow-dev
   chart:
     spec:
