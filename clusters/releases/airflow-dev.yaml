@@ -31,4 +31,13 @@ spec:
       useHelmHooks: false
     migrateDatabaseJob:
       useHelmHooks: false
-    
+    dags:
+      persistence:
+        enabled: false
+      gitSync:
+        enabled: true
+        repo: https://github.com/andreichiro/k8s-airflow-dags.git
+        branch: master
+        maxFailures: 0
+        subPath: ""
+        wait: 1
