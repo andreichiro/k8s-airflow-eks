@@ -37,7 +37,7 @@ spec:
       gitSync:
         enabled: true
         repo: https://github.com/andreichiro/k8s-airflow-dags.git
-        branch: master
-        maxFailures: 0
+        branch: main
+        maxFailures: 1
         subPath: ""
         wait: 1
