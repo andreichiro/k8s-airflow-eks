@@ -18,6 +18,15 @@ karpenter:
   createServiceAccount: true # default is false
   withSpotInterruptionQueue: true # adds all required policies and rules for supporting Spot Interruption Queue, default is false
 
+#vpc:
+#  cidr: 10.10.0.0/16
+#  hostnameType: resource-name
+#  # disable public access to endpoint and only allow private access
+#  clusterEndpoints:
+#    publicAccess: true
+#    privateAccess: true
+#  nat:
+#    gateway: single #   
 vpc:
   id: "vpc-067fbd2559b47f9e5"  # (optional, must match VPC ID used for each subnet below)
   cidr: "10.0.0.0/16"       # (optional, must match CIDR used by the given VPC)
