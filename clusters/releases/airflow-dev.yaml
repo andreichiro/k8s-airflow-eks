@@ -38,6 +38,6 @@ spec:
         enabled: true
         repo: https://github.com/andreichiro/k8s-airflow-dags.git
         branch: main
-        maxFailures: 1
+        maxFailures: 10
         subPath: ""
-        wait: 1
+        wait: 5
