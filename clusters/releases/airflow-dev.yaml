@@ -42,4 +42,4 @@ spec:
         branch: main
         maxFailures: 10
         subPath: ""
-        wait: 60
+        wait: 10
