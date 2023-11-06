@@ -2367,7 +2367,7 @@ dags:
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: git@github.com:andreichiro/k8s-airflow-eks.git
+    repo: https://github.com/andreichiro/k8s-airflow-dags.git
     branch: main
     GITSYNC_USERNAME: andreichiro
     GITSYNC_PASSWORD: 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
