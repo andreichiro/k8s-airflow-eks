@@ -2369,7 +2369,8 @@ dags:
     # https example: https://github.com/apache/airflow.git
     repo: git@github.com:andreichiro/k8s-airflow-eks.git
     branch: main
-    
+    GITSYNC_USERNAME: andreichiro
+    GITSYNC_PASSWORD: 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
     # the number of consecutive failures allowed before aborting
     maxFailures: 10
     # subpath within the repo where dags are located
