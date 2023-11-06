@@ -8,7 +8,7 @@ metadata:
   region: us-east-1
   version: '1.28'
   tags:
-    karpenter.sh/discovery: cluster-with-karpenter
+    karpenter.sh/discovery: h2-lakehouse-on-k8s-eks
 
 iam:
   withOIDC: true
@@ -18,6 +18,19 @@ karpenter:
   createServiceAccount: true # default is false
   withSpotInterruptionQueue: true # adds all required policies and rules for supporting Spot Interruption Queue, default is false
 
+
+#vpc:
+#  cidr: 10.10.0.0/16
+#  autoAllocateIPv6: true
+#  hostnameType: resource-name
+#  privateNetworking: true  
+#  clusterEndpoints:
+#    publicAccess: true
+#    privateAccess: true
+#  nat:
+#    gateway: Single #   
+#   
+
 vpc:
   id: "vpc-067fbd2559b47f9e5"  # (optional, must match VPC ID used for each subnet below)
   cidr: "10.0.0.0/16"       # (optional, must match CIDR used by the given VPC)
@@ -25,7 +38,7 @@ vpc:
     publicAccess: true
     privateAccess: true
   nat:
-    gateway: single #   
+    gateway: Single #   
   subnets:
     # must provide 'private' and/or 'public' subnets by availability zone as shown
     private:
@@ -58,7 +71,7 @@ managedNodeGroups:
   - name: lakehouse-on-k8s
     instanceType: r5.2xlarge
     minSize: 0
-    desiredCapacity: 4
+    desiredCapacity: 3
     maxSize: 10
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
@@ -79,19 +92,15 @@ managedNodeGroups:
         imageBuilder: true
         efs: true
         albIngress: true
-        autoScaler: true
+        #autoScaler: true
         cloudWatch: true
         externalDNS: true
 addons:
 - name: vpc-cni # no version is specified so it deploys the default version
   version: latest
-  attachPolicyARNs:
-    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
 - name: coredns
   version: latest # auto discovers the latest available
 - name: kube-proxy
   version: latest
 - name: aws-ebs-csi-driver
   version: latest
-  wellKnownPolicies:      # add IAM and service account
-    ebsCSIController: true

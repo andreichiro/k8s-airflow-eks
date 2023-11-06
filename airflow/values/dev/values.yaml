@@ -1103,23 +1103,23 @@ webserver:
   #      - "foo.remote"
   allowPodLogReading: true
   livenessProbe:
-    initialDelaySeconds: 15
-    timeoutSeconds: 5
-    failureThreshold: 5
-    periodSeconds: 10
+    initialDelaySeconds: 300
+    timeoutSeconds: 30
+    failureThreshold: 30
+    periodSeconds: 30
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 15
-    timeoutSeconds: 5
-    failureThreshold: 5
-    periodSeconds: 10
+    initialDelaySeconds: 300
+    timeoutSeconds: 30
+    failureThreshold: 30
+    periodSeconds: 30
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 20
-    failureThreshold: 6
-    periodSeconds: 10
+    timeoutSeconds: 300
+    failureThreshold: 30
+    periodSeconds: 30
     scheme: HTTP
 
   # Number of webservers
