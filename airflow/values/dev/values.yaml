@@ -508,9 +508,9 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 300
     timeoutSeconds: 20
-    failureThreshold: 5
+    failureThreshold: 3
     periodSeconds: 60
     command: ~
 
@@ -743,7 +743,7 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 300
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -1117,7 +1117,7 @@ webserver:
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 300
+    timeoutSeconds: 60
     failureThreshold: 30
     periodSeconds: 30
     scheme: HTTP
@@ -2361,21 +2361,28 @@ dags:
     existingClaim:
     ## optional subpath for dag volume mount
     subPath: ~
+
   gitSync:
     enabled: true
-
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/andreichiro/k8s-airflow-dags.git
+    repo: git@github.com:andreichiro/k8s-airflow-dags.git
     branch: main
-    GITSYNC_USERNAME: andreichiro
-    GITSYNC_PASSWORD: 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
+    sshKeySecret: airflow-git-keys
     # the number of consecutive failures allowed before aborting
     maxFailures: 10
+    
+    #     gitSshKey: <base64_encoded_data>
+    # and specify the name of the secret below
+    # sshKeySecret: airflow-ssh-secret
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: "dags/"
+    subPath: ""
+    # and specify the name of the secret below
+    #
+    credentialsSecret: git-credentials
+   
     #subPath: "tests/dags"
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
@@ -2415,7 +2422,7 @@ dags:
     # interval between git sync attempts in seconds
     # high values are more likely to cause DAGs to become out of sync between different components
     # low values cause more traffic to the remote git repository
-    wait: 30
+    wait: 180
     containerName: git-sync
     uid: 65533
 
