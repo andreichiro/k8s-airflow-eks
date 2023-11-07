@@ -990,7 +990,7 @@ createUserJob:
   topologySpreadConstraints: []
   # In case you need to disable the helm hooks that create the jobs after install.
   # Disable this if you are using ArgoCD for example
-  useHelmHooks: true
+  useHelmHooks: false
   applyCustomEnv: true
 
   env: []
@@ -2347,10 +2347,10 @@ podTemplate: ~
 # Git sync
 dags:
   persistence:
+    enabled: false
     # Annotations for dags PVC
     annotations: {}
     # Enable persistent volume for storing dags
-    enabled: false
     # Volume size for dags
     size: 100Gi
     # If using a custom storageClass, pass name here
@@ -2367,7 +2367,7 @@ dags:
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: git@github.com:andreichiro/k8s-airflow-dags.git
+    repo: https://github.com/marclamberti/airflow-dags.git
     branch: main
     sshKeySecret: airflow-git-keys
     # the number of consecutive failures allowed before aborting
