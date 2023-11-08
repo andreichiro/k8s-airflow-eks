@@ -2403,7 +2403,7 @@ dags:
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/andreichiro/k8s-airflow-dags.git
+    repo: https://github.com/andreichiro/k8s-airflow-eks.git
     branch: main
     rev: HEAD
     depth: 1
