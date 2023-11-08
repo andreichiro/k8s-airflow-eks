@@ -3,14 +3,22 @@ kind: Application
 metadata:
   name: apache-airflow
   namespace: airflow
-
 spec:
   project: default
   source:
     repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
-    path: airflow/values/
+    path: airflow/
+    helm:
+      valueFiles:
+        - values/dev/values.yaml
+
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
 
