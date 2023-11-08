@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
-    path: airflow/values/dev
+    path: airflow/
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
