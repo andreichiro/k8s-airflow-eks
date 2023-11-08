@@ -261,7 +261,7 @@ rbac:
 
 # Airflow executor
 # One of: LocalExecutor, LocalKubernetesExecutor, CeleryExecutor, KubernetesExecutor, CeleryKubernetesExecutor
-executor: "CeleryKubernetesExecutor"
+executor: "KubernetesExecutor"
 
 # If this is true and using LocalExecutor/KubernetesExecutor/CeleryKubernetesExecutor, the scheduler's
 # service account will have access to communicate with the api-server and launch pods.
@@ -934,6 +934,8 @@ createUserJob:
   # Command to use when running the create user job (templated).
   command: ~
   # Args to use when running the create user job (templated).
+  useHelmHooks: false  
+  applyCustomEnv: false
   args:
     - "bash"
     - "-c"
@@ -1033,6 +1035,8 @@ migrateDatabaseJob:
   jobAnnotations:
     "argocd.argoproj.io/hook": Sync
   enabled: true
+  useHelmHooks: false
+
   # Limit the lifetime of the job object after it finished execution.
   ttlSecondsAfterFinished: 300
   # Command to use when running the migrate database job (templated).
@@ -2399,11 +2403,10 @@ dags:
     subPath: ~
   gitSync:
     enabled: true
-
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/andreichiro/k8s-airflow-eks.git
+    repo: git@github.com:andreichiro/k8s-airflow-eks.git
     branch: main
     rev: HEAD
     depth: 1
@@ -2412,6 +2415,17 @@ dags:
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
     subPath: "dags/"
+    sshKeySecret: airflow-git-ssh-secret
+extraSecrets:
+  airflow-ssh-secret:
+    data: |
+      gitSshKey: '-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACDjswEsSotQWoR5/1roMHNTQuSJWD6GOnVyv0ZIjGjv3AAAAJgaqwwrGqsM
+KwAAAAtzc2gtZWQyNTUxOQAAACDjswEsSotQWoR5/1roMHNTQuSJWD6GOnVyv0ZIjGjv3A
+AAAEAz+rVvXz3EbtxUqaKbQ2iqszKbk5cbc/ZZRW40ZDOyEeOzASxKi1BahHn/Wugwc1NC
+5IlYPoY6dXK/RkiMaO/cAAAAFWFuZHJlaWNoaXJvQGdtYWlsLmNvbQ==
+-----END OPENSSH PRIVATE KEY-----'
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
     #   ---
@@ -2488,6 +2502,7 @@ dags:
     #  requests:
     #   cpu: 100m
     #   memory: 128Mi
+
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
