@@ -3,13 +3,13 @@ kind: Application
 metadata:
   name: apache-airflow
   namespace: argocd
-  
+
 spec:
   project: default
   source:
-    repoURL: https://github.com/apache/airflow.git
+    repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
-    path: chart/
+    path: airflow/values/dev
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
