@@ -9,7 +9,6 @@ spec:
     repoURL: https://github.com/andreichiro/k8s-airflow-eks
     targetRevision: HEAD
     path: airflow/base/
-    branch: main
 
   destination:
     server: https://kubernetes.default.svc
