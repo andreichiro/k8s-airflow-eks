@@ -64,6 +64,14 @@ dags:
     existingClaim: null
     size: 1Gi
     storageClassName: null
+
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+  
 data:
   metadataConnection:
     db: postgres
