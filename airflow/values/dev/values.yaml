@@ -508,7 +508,7 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 300
     timeoutSeconds: 30
     failureThreshold: 5
     periodSeconds: 60
@@ -768,7 +768,7 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 3006
+    initialDelaySeconds: 300
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -779,7 +779,7 @@ scheduler:
   startupProbe:
     failureThreshold: 6
     periodSeconds: 10
-    timeoutSeconds: 0
+    timeoutSeconds: 5
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
@@ -2414,7 +2414,7 @@ dags:
     maxFailures: 0
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: "dags/"
+    subPath: "airflow/dags/"
     sshKeySecret: airflow-git-ssh-secret
 extraSecrets:
   airflow-ssh-secret:
