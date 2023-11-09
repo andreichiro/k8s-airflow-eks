@@ -8,8 +8,7 @@ spec:
   source:
     repoURL: https://github.com/apache/airflow
     targetRevision: HEAD
-    path: chart/
-
+    
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
