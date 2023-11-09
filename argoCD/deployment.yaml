@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
+    repoURL: https://github.com/apache/airflow
     targetRevision: HEAD
-    path: airflow/base
+    path: chart/
     helm:
       valueFiles:
         - values.yaml
