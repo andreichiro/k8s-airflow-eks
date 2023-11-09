@@ -9,7 +9,6 @@ spec:
     repoURL: git@github.com:andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
     path: airflow/base
-    name: k8s-airflow-eks
     helm:
       valueFiles:
         - values.yaml
