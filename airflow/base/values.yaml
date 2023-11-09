@@ -71,7 +71,7 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
-
+  
 data:
   metadataConnection:
     db: postgres
@@ -86,6 +86,7 @@ defaultAirflowTag: 2.7.3
 env: []
 executor: CeleryKubernetesExecutor
 extraConfigMaps: {}
+fernetKeySecretName: fernet
 fullnameOverride: ''
 gid: 0
 images:

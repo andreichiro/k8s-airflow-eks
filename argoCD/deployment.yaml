@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/apache/airflow
+    repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
-    path: chart/
+    path: airflow/base/
 
   destination:
     server: https://kubernetes.default.svc
