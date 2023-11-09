@@ -1,4 +1,3 @@
-
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -187,7 +186,7 @@ ingress:
   # Configs for the Ingress of the flower Service
   flower:
     # Enable web ingress resource
-    enabled: false
+    enabled: true
 
     # Annotations for the flower Ingress
     annotations: {}
@@ -509,7 +508,7 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -553,7 +552,7 @@ workers:
 
   # Allow KEDA autoscaling.
   keda:
-    enabled: false
+    enabled: true
     namespaceLabels: {}
 
     # How often KEDA polls the airflow DB to report new scale requests to the HPA
@@ -744,7 +743,7 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -1006,7 +1005,7 @@ createUserJob:
 
 # Airflow database migration job settings
 migrateDatabaseJob:
-  enabled: true
+  enabled: false
   # Limit the lifetime of the job object after it finished execution.
   ttlSecondsAfterFinished: 300
   # Command to use when running the migrate database job (templated).
@@ -1104,14 +1103,14 @@ webserver:
   #      - "foo.remote"
   allowPodLogReading: true
   livenessProbe:
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     timeoutSeconds: 5
     failureThreshold: 5
     periodSeconds: 10
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     timeoutSeconds: 5
     failureThreshold: 5
     periodSeconds: 10
@@ -1326,7 +1325,7 @@ triggerer:
   # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the
   # triggerer and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -1469,7 +1468,7 @@ triggerer:
 
   # Allow KEDA autoscaling.
   keda:
-    enabled: false
+    enabled: true
     namespaceLabels: {}
 
     # How often KEDA polls the airflow DB to report new scale requests to the HPA
@@ -1503,7 +1502,7 @@ triggerer:
 
 # Airflow Dag Processor Config
 dagProcessor:
-  enabled: false
+  enabled: true
   # Number of airflow dag processors in the deployment
   replicas: 1
   # Max number of old replicasets to retain
@@ -1523,7 +1522,7 @@ dagProcessor:
   # If the dag processor stops heartbeating for 5 minutes (5*60s) kill the
   # dag processor and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -2345,149 +2344,119 @@ podTemplate: ~
 #       - name: base
 #         ...
 
+# Git sync
 dags:
+  persistence:
+    # Annotations for dags PVC
+    annotations: {}
+    # Enable persistent volume for storing dags
+    enabled: false
+    # Volume size for dags
+    size: 1Gi
+    # If using a custom storageClass, pass name here
+    storageClassName:
+    # access mode of the persistent volume
+    accessMode: ReadWriteOnce
+    ## the name of an existing PVC to use
+    existingClaim:
+    ## optional subpath for dag volume mount
+    subPath: ~
   gitSync:
     enabled: true
+
+    # git repo clone url
+    # ssh example: git@github.com:apache/airflow.git
+    # https example: https://github.com/apache/airflow.git
+    repo: https://github.com/andreichiro/k8s-airflow-eks.git
     branch: main
-    containerName: git-sync
-    depth: 1
-    env: []
-    extraVolumeMounts: []
-    maxFailures: 0
-    repo: https://github.com/andreichiro/k8s-airflow-dags.git
-    resources: {}
     rev: HEAD
-    securityContext: {}
-    subPath: ""
-    sshKeySecret: git-sync-ssh-key
-    #knownHosts: "TODO: use proper knownhost hash here"
+    depth: 1
+    # the number of consecutive failures allowed before aborting
+    maxFailures: 0
+    # subpath within the repo where dags are located
+    # should be "" if dags are at repo root
+    subPath: "dags/"
+    # if your repo needs a user name password
+    # you can load them to a k8s secret like the one below
+    #   ---
+    #   apiVersion: v1
+    #   kind: Secret
+    #   metadata:
+    #     name: git-credentials
+    #   data:
+    #     GIT_SYNC_USERNAME: <base64_encoded_git_username>
+    #     GIT_SYNC_PASSWORD: <base64_encoded_git_password>
+    # and specify the name of the secret below
+    #
+    # credentialsSecret: git-credentials
+    #
+    #
+    # If you are using an ssh clone url, you can load
+    # the ssh private key to a k8s secret like the one below
+    #   ---
+    #   apiVersion: v1
+    #   kind: Secret
+    #   metadata:
+    #     name: airflow-ssh-secret
+    #   data:
+    #     # key needs to be gitSshKey
+    #     gitSshKey: <base64_encoded_data>
+    # and specify the name of the secret below
+    # sshKeySecret: airflow-ssh-secret
+    #
+    # If you are using an ssh private key, you can additionally
+    # specify the content of your known_hosts file, example:
+    #
+    # knownHosts: |
+    #    <host1>,<ip1> <key1>
+    #    <host2>,<ip2> <key2>
+
+    # interval between git sync attempts in seconds
+    # high values are more likely to cause DAGs to become out of sync between different components
+    # low values cause more traffic to the remote git repository
+    wait: 5
+    containerName: git-sync
     uid: 65533
-    wait: 30
-  persistence:
-    accessMode: ReadWriteOnce
-    enabled: false
-    existingClaim: null
-    size: 1Gi
-    storageClassName: null
 
-createUserJob:
-  useHelmHooks: false
-  applyCustomEnv: false
-migrateDatabaseJob:
-  useHelmHooks: false
-  applyCustomEnv: false
-  
-data:
-  metadataConnection:
-    db: postgres
-    host: airflow-postgresql.airflow
-    pass: postgres
-    port: 5432
-    protocol: postgresql
-    sslmode: disable
-    user: airflow
+    # When not set, the values defined in the global securityContext will be used
+    securityContext: {}
+    #  runAsUser: 65533
+    #  runAsGroup: 0
 
-defaultAirflowRepository: apache/airflow
-defaultAirflowTag: 2.7.3
-env: []
-executor: CeleryKubernetesExecutor
-allowPodLaunching: true
+    securityContexts:
+      container: {}
 
-extraConfigMaps: {}
-fernetKeySecretName: fernet
-fullnameOverride: ''
-gid: 0
-images:
-  airflow:
-    pullPolicy: Always
-    repository: null
-    tag: null
-  flower:
-    pullPolicy: IfNotPresent
-    repository: null
-    tag: null
-  gitSync:
-    pullPolicy: IfNotPresent
-    repository: k8s.gcr.io/git-sync/git-sync
-    tag: v3.4.0
-  migrationsWaitTimeout: 60
-  pod_template:
-    pullPolicy: IfNotPresent
-    repository: null
-    tag: null
-  redis:
-    pullPolicy: IfNotPresent
-    repository: redis
-    tag: 6-buster
-  statsd:
-    pullPolicy: IfNotPresent
-    repository: apache/airflow
-    tag: airflow-statsd-exporter-2021.04.28-v0.17.0
-  useDefaultImageForMigration: false
-ingress:
-  enabled: true
-  flower:
-    annotations: {}
-  #  host: 'airflow-flower.mobagel.com'
-  #  hosts: ['airflow-flower.mobagel.com']
-    ingressClassName: ''
-    path: /
-    pathType: Prefix
-  web:
-    path: /
-    pathType: Prefix
-    annotations: {}
-  #  host: 'airflow.mobagel.com'
-  #  hosts: ['airflow.mobagel.com']
-    ingressClassName: ''
-    precedingPaths: []
-    succeedingPaths: []
+    # container level lifecycle hooks
+    containerLifecycleHooks: {}
+
+    # Mount additional volumes into git-sync. It can be templated like in the following example:
+    #   extraVolumeMounts:
+    #     - name: my-templated-extra-volume
+    #       mountPath: "{{ .Values.my_custom_path }}"
+    #       readOnly: true
+    extraVolumeMounts: []
+    env: []
+    # Supported env vars for gitsync can be found at https://github.com/kubernetes/git-sync
+    # - name: ""
+    #   value: ""
+
+    resources: {}
+    #  limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #  requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
 logs:
   persistence:
+    # Enable persistent volume for storing logs
     enabled: false
-    existingClaim: null
-    size: 30Gi
-    storageClassName: null
-ports:
-  airflowUI: 8080
-  flowerUI: 5555
-  redisDB: 6379
-  statsdIngest: 9125
-  statsdScrape: 9102
-  workerLogs: 8793
-postgresql:
-  enabled: true
-  postgresqlPassword: postgres
-  postgresqlUsername: airflow
-redis:
-  enabled: true
-  password: redis
-registry:
-  connection: {}
-  secretName: null
-uid: 50000
-webserver:
-  defaultUser:
-    email: admin@example.com
-    enabled: true
-    firstName: admin
-    lastName: user
-    password: admin
-    role: Admin
-    username: admin
-webserverSecretKeySecretName:	~
-workers:
-  keda:
-    cooldownPeriod: 30
-    enabled: false
-    maxReplicaCount: 10
-    minReplicaCount: 0
-    namespaceLabels: {}
-    pollingInterval: 5
-  persistence:
-    enabled: true
-    fixPermissions: false
-    size: 10Gi
-    storageClassName: null
-  replicas: 1
-
+    # Volume size for logs
+    size: 100Gi
+    # Annotations for the logs PVC
+    annotations: {}
+    # If using a custom storageClass, pass name here
+    storageClassName:
+    ## the name of an existing PVC to use
+    existingClaim:
