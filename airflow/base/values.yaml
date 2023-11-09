@@ -42,14 +42,14 @@ config:
     rbac: 'True'
 dags:
   gitSync:
+    enabled: true
     branch: main
     containerName: git-sync
     depth: 1
-    enabled: true
     env: []
     extraVolumeMounts: []
     maxFailures: 0
-    repo: git@github.com:andreichiro/k8s-airflow-dags.git
+    repo: https://github.com/andreichiro/k8s-airflow-dags.git
     resources: {}
     rev: HEAD
     securityContext: {}
@@ -81,6 +81,7 @@ data:
     protocol: postgresql
     sslmode: disable
     user: airflow
+
 defaultAirflowRepository: apache/airflow
 defaultAirflowTag: 2.7.3
 env: []
