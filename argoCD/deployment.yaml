@@ -8,10 +8,7 @@ spec:
   source:
     repoURL: https://github.com/andreichiro/k8s-airflow-eks
     targetRevision: HEAD
-    path: /airflow/base/
-    helm:
-      valueFiles:
-        - values.yaml
+    path: airflow/base/
 
   destination:
     server: https://kubernetes.default.svc
