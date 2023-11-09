@@ -218,7 +218,7 @@ annotations:
     - title: Code View
       url: https://airflow.apache.org/docs/apache-airflow/2.7.1/_images/code.png
 apiVersion: v2
-appVersion: 2.7.3
+appVersion: 2.7.1
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
