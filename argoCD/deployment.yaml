@@ -6,12 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
+    repoURL: https://github.com/apache/airflow
     targetRevision: HEAD
-    path: airflow/base
-    helm:
-      valueFiles:
-        - values.yaml
+    path: chart/
 
   destination:
     server: https://kubernetes.default.svc
@@ -21,4 +18,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Force=true
+      - Replace=true
 
