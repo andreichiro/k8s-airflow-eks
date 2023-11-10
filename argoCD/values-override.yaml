@@ -1,3 +1,7 @@
+# Vault Helm Chart Value Overrides
+global:
+  enabled: true
+
 airflowVersion: 2.7.3
 config:
   api:
