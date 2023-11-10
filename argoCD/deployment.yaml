@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
-    path: airflow/base
+    path: airflow/chart
 #    helm:
 #      valueFiles:
 #        - values.yaml
