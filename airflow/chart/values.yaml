@@ -941,7 +941,6 @@ scheduler:
 
 # Airflow create user job settings
 createUserJob:
-  createUserJob:
   useHelmHooks: false
   applyCustomEnv: false  
   # Limit the lifetime of the job object after it finished execution.
