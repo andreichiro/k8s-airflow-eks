@@ -65,7 +65,7 @@ containerLifecycleHooks: {}
 airflowHome: /opt/airflow
 
 # Default airflow repository -- overridden by all the specific images below
-defaultAirflowRepository: apache/airflow
+#defaultAirflowRepository: apache/airflow
 
 # Default airflow tag to deploy
 defaultAirflowTag: "2.7.3"
@@ -904,6 +904,8 @@ scheduler:
 
 # Airflow create user job settings
 createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
   # Limit the lifetime of the job object after it finished execution.
   ttlSecondsAfterFinished: 300
   # Command to use when running the create user job (templated).
@@ -1005,8 +1007,9 @@ createUserJob:
 
 # Airflow database migration job settings
 migrateDatabaseJob:
-  enabled: false
-  # Limit the lifetime of the job object after it finished execution.
+  useHelmHooks: false
+  applyCustomEnv: false
+  enabled: true  # Limit the lifetime of the job object after it finished execution.
   ttlSecondsAfterFinished: 300
   # Command to use when running the migrate database job (templated).
   command: ~
