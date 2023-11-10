@@ -291,7 +291,7 @@ secret: []
 # might want to provide some of those variables with _CMD or _SECRET variable, and you should
 # in this case disable setting of those variables by setting the relevant configuration to false.
 enableBuiltInSecretEnvVars:
-  AIRFLOW__CORE__FERNET_KEY: true
+  AIRFLOW__CORE__FERNET_KEY: false
   # For Airflow <2.3, backward compatibility; moved to [database] in 2.3
   AIRFLOW__CORE__SQL_ALCHEMY_CONN: true
   AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: true
