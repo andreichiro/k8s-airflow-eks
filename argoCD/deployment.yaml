@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:andreichiro/k8s-airflow-eks.git
+    repoURL: https://github.com/apache/airflow
     targetRevision: HEAD
-    path: airflow/base
+    path: chart/
     helm:
       valueFiles:
         - values.yaml
@@ -23,6 +23,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - Force=true
+      - Force=false
       - Replace=true
 
