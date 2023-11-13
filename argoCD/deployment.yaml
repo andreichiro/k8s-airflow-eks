@@ -9,9 +9,9 @@ spec:
     repoURL: https://github.com/andreichiro/k8s-airflow-eks.git
     targetRevision: HEAD
     path: airflow/chart
-  #  helm:
-  #    valueFiles:
-  #      - values.yaml
+    helm:
+      valueFiles:
+        - values.yaml
 
   destination:
     server: https://kubernetes.default.svc
