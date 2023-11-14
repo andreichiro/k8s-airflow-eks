@@ -2515,7 +2515,3 @@ logs:
     ## the name of an existing PVC to use
     existingClaim:
 
-secret:
-  - envName: "airflow-redis-password"
-    secretName: "airflow-redis-password"
-    secretKey: "123456"
