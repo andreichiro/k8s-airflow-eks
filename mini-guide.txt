@@ -1,0 +1,23 @@
+efs id:
+fs-074b0526db14cdee8
+
+cluster name:
+aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
+aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
+
+eksclt create cluster -f config/cluster.yaml
+
+helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=1 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=2 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
+
+base64 -> RWJuckcxbE1PaHVhdnkwcQ==
+1CbNKC1VxyMe1XhG
+
+aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
+
+kubectl apply -f argoCD\deployment.yaml                                                                                      
+
+kubectl port-forward svc/release_name-web 8080:8080 -n airflow
+airflow-webserver-67c7c59d77-5kl46
+
+
+kubectl port-forward svc/airflow-webserver-67c7c59d77-5kl46 8080:8080 -n airflow
