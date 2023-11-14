@@ -22,5 +22,14 @@ choco install jq -y
 choco install curl -y
 
 cast.AI
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+GitBash
+
+
+André@AIK MINGW64 ~
+CASTAI_API_TOKEN=e968dd2b82662bb128b81d32f4e53ac8d38f4d8866bea3229a7307b802fb9b7b CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 CLUSTER_NAME=h2-lakehouse-on-k8s-eks INSTALL_KVISOR=true REGION=us-east-1 USER_ARN=arn:aws:iam::809060229965:user/cast-crossrole-4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
+CASTAI_API_TOKEN=1340a4b94fc0430279594a09a73f24f779f7785b071fe670eae18a5fd4871758 CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/egressd/install.sh')"
+
 
 kubectl port-forward svc/airflow-webserver 8080:8080 -n airflow

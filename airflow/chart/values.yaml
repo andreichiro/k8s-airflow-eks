@@ -37,7 +37,7 @@ nameOverride: ""
 #
 # Note:fernet-key,redis-password and broker-url secrets don't use this logic yet,
 # as this may break existing installations due to how they get installed via pre-install hook.
-useStandardNaming: false
+useStandardNaming: True
 
 # Max number of old replicasets to retain. Can be overridden by each deployment's revisionHistoryLimit
 revisionHistoryLimit: ~
