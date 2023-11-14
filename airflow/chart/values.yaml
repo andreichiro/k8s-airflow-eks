@@ -104,8 +104,8 @@ images:
     tag: ~
     pullPolicy: IfNotPresent
   statsd:
-    repository: apache/airflow
-    tag: v0.25.0
+    repository: quay.io/prometheus/statsd-exporter
+    tag: v0.23.3
     pullPolicy: IfNotPresent
   redis:
     repository: redis
