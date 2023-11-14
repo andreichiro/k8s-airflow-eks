@@ -395,7 +395,7 @@ data:
   # For Airflow >= 2.4.0 it is possible to not specify the secret again,
   # as Airflow will use sql_alchemy_conn with a db+ scheme prefix by default.
   resultBackendSecretName: ~
-  brokerUrlSecretName: ~
+  brokerUrlSecretName: broker-secret
   #brokerUrlSecretName: broker-secret
 
   # Otherwise pass connection values in
@@ -419,7 +419,7 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  brokerUrl: redis://redis-user:password@redis-host:6379/0
+  #brokerUrl: redis://redis-user:password@redis-host:6379/0
 
 
 # Fernet key settings
@@ -1681,7 +1681,7 @@ dagProcessor:
 flower:
   # Enable flower.
   # If True, and using CeleryExecutor/CeleryKubernetesExecutor, will deploy flower app.
-  enabled: false
+  enabled: true
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
