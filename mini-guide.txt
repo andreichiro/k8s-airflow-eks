@@ -7,17 +7,20 @@ aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 
 eksclt create cluster -f config/cluster.yaml
 
-helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=1 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=2 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
+helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=1 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=1 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=1 --set applicationSet.replicaCount=1 --set server.service.type=LoadBalancer --create-namespace
 
-base64 -> RWJuckcxbE1PaHVhdnkwcQ==
-1CbNKC1VxyMe1XhG
-
+base64 -> RU9RVTB0MjBlN21KeFhBWg====
+EOQU0t20e7mJxXAZ
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 
 kubectl apply -f argoCD\deployment.yaml                                                                                      
 
-kubectl port-forward svc/release_name-web 8080:8080 -n airflow
-airflow-webserver-67c7c59d77-5kl46
+Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers @{"Authorization"="Token df7258192d818dc9a92403d6ff0d47f3fad1786fb500763fb0907c506149adbe"} | Select-Object -ExpandProperty Content | kubectl apply -f -
 
+choco install jq -y
 
-kubectl port-forward svc/airflow-webserver-67c7c59d77-5kl46 8080:8080 -n airflow
+choco install curl -y
+
+cast.AI
+
+kubectl port-forward svc/airflow-webserver 8080:8080 -n airflow
