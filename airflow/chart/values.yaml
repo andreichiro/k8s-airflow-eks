@@ -377,7 +377,6 @@ extraEnvFrom: ~
 
 # Airflow database & redis config
 data:
-  brokerUrl: redis://redis-user:password@redis-host:6379/0
   # If secret names are provided, use those secrets
   # These secrets must be created manually, eg:
   #
@@ -396,7 +395,7 @@ data:
   # For Airflow >= 2.4.0 it is possible to not specify the secret again,
   # as Airflow will use sql_alchemy_conn with a db+ scheme prefix by default.
   resultBackendSecretName: ~
-  brokerUrlSecretName: broker-secret  
+  brokerUrlSecretName: ~
 
   # Otherwise pass connection values in
   metadataConnection:
@@ -419,7 +418,8 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  brokerUrl: ~
+  brokerUrl: redis://redis-user:password@redis-host:6379/0
+
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
