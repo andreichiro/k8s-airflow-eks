@@ -2079,7 +2079,7 @@ pgbouncer:
 redis:
   enabled: true
   terminationGracePeriodSeconds: 600
-
+  existingSecret: "airflow-redis-password"
   # Create ServiceAccount
   serviceAccount:
     # default value is true
@@ -2165,7 +2165,7 @@ registry:
 # Elasticsearch logging configuration
 elasticsearch:
   # Enable elasticsearch task logging
-  enabled: false
+  enabled: true
   # A secret containing the connection
   secretName: ~
   # Or an object representing the connection
