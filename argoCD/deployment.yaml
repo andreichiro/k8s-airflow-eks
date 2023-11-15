@@ -25,4 +25,20 @@ spec:
       - CreateNamespace=true
       - Force=true
       - Replace=true
-
+---    
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow
+  namespace: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: airflow
+  template:
+    metadata:
+      labels:
+        name: airflow
+    spec:
+      serviceAccountName: airflow
