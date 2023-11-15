@@ -2099,7 +2099,7 @@ redis:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 1Gi
+    size: 20Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Annotations to add to redis volumes
