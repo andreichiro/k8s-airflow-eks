@@ -34,6 +34,10 @@ kubectl create secret generic airflow-redis-secret --from-literal=password='dado
 kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis:6379/0' -n airflow
 kubectl create secret generic broker-secret --from-literal=connection='cmVkaXM6Ly86ZGFkb3MxMjM0NTZAYWlyZmxvdy1yZWRpczo2Mzc5LzA=' -n airflow
 
+kubectl create secret generic broker-secret --from-literal=connection='redis://:<dados123456>@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
+kubectl create secret generic broker-secret --from-literal=connection='cmVkaXM6Ly86PGRhZG9zMTIzNDU2PkBhaXJmbG93LXJlZGlzLmFpcmZsb3cuc3ZjLmNsdXN0ZXIubG9jYWw6NjM3OS8w' -n airflow
+
+
 redis:
   existingSecret: "airflow-redis-password"
 

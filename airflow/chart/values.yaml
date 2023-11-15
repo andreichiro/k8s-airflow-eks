@@ -419,8 +419,7 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  #brokerUrl: redis://redis-user:password@redis-host:6379/0
-
+  brokerUrl: redis://:<dados123456>@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
@@ -652,7 +651,7 @@ workers:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into worker.
   # Note: If used with KubernetesExecutor, you are responsible for signaling sidecars to exit when the main
@@ -860,7 +859,7 @@ scheduler:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into scheduler.
   extraContainers: []
@@ -1426,7 +1425,7 @@ triggerer:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into triggerer.
   extraContainers: []
@@ -1609,7 +1608,7 @@ dagProcessor:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into dag processor.
   extraContainers: []
@@ -2127,7 +2126,7 @@ redis:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Select certain nodes for redis pods.
   nodeSelector: {}
