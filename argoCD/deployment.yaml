@@ -12,6 +12,7 @@ spec:
     helm:
       valueFiles:
         - values.yaml
+        - airflow.yaml
 
   destination:
     server: https://kubernetes.default.svc
