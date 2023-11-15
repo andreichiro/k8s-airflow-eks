@@ -419,7 +419,8 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  brokerUrl: redis://:<dados123456>@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
+#  brokerUrl: redis://redis-user:password@redis-host:6379/0
+
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
