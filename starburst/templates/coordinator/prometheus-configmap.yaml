@@ -1,0 +1,36 @@
+{{- if .Values.prometheus.enabled }}
+# ------------------------------------------------------------------------------
+# Coordinator Prometheus
+# ------------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starburst-coordinator-p8s
+  labels:
+    name: starburst-coordinator-p8s
+data:
+  prometheus.yaml: |
+    {{- if or .Values.worker.kedaScaler.enabled .Values.prometheus.whitelistObjectNames }}
+    whitelistObjectNames:
+    {{- if .Values.worker.kedaScaler.enabled }}
+      - "trino.execution:name=QueryManager,*"
+      - "trino.memory:name=ClusterMemoryManager,*"
+      - "trino.failuredetector:name=HeartbeatFailureDetector,*"
+    {{- else if .Values.prometheus.whitelistObjectNames }}
+    {{- toYaml .Values.prometheus.whitelistObjectNames | nindent 6 }}
+    {{- end }}
+    {{- end }}
+    rules:
+    {{- if .Values.worker.kedaScaler.enabled }}
+      - pattern: 'trino.execution<name=QueryManager><>(SubmittedQueries\.TotalCount|CompletedQueries\.TotalCount|RunningQueries|QueuedQueries)'
+        name: $1
+        type: GAUGE
+      - pattern: 'trino.memory<name=ClusterMemoryManager><>(ClusterTotalMemoryReservation|ClusterMemoryBytes)'
+        name: $1
+        type: GAUGE
+      - pattern: 'trino.failuredetector<name=HeartbeatFailureDetector><>(ActiveCount)'
+        name: $1
+        type: GAUGE
+    {{- end }}
+    {{- ( tpl (toYaml .Values.prometheus.rules) . ) | nindent 6 }}
+{{- end }}

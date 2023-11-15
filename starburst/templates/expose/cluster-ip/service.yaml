@@ -1,0 +1,28 @@
+{{- if eq .Values.expose.type "clusterIp" }}
+{{- $clusterIp := .Values.expose.clusterIp }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "starburst.service.name" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+spec:
+  type: ClusterIP
+  ports:
+    {{- if $clusterIp.ports.http }}
+    - name: http
+      port: {{ $clusterIp.ports.http.port }}
+      targetPort: {{ .Values.internal.ports.http.port }}
+      protocol: TCP
+    {{- end }}
+    {{- if $clusterIp.ports.https }}
+    - name: https
+      port: {{ $clusterIp.ports.https.port }}
+      targetPort: {{ .Values.internal.ports.https.port }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+{{- end }}

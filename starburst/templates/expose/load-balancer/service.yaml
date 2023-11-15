@@ -1,0 +1,44 @@
+{{- if eq .Values.expose.type "loadBalancer" }}
+{{- $loadBalancer := .Values.expose.loadBalancer }}
+
+# ------------------------------------------------------------------------------
+# Coordinator Service using LoadBalancer
+# ------------------------------------------------------------------------------
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "starburst.service.name" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+  {{- if $loadBalancer.annotations }}
+  {{- with $loadBalancer.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  {{- with $loadBalancer.sourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if $loadBalancer.IP }}
+  loadBalancerIP: {{ $loadBalancer.IP }}
+  {{- end }}
+  ports:
+    {{- if $loadBalancer.ports.http }}
+    - name: http
+      port: {{ $loadBalancer.ports.http.port }}
+      targetPort: {{ .Values.internal.ports.http.port }}
+    {{- end }}
+    {{- if $loadBalancer.ports.https }}
+    - name: https
+      port: {{ $loadBalancer.ports.https.port }}
+      targetPort: {{ .Values.internal.ports.https.port }}
+    {{- end }}
+  selector:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+{{- end }}

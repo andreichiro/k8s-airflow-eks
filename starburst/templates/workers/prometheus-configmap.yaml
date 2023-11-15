@@ -1,0 +1,18 @@
+{{- if .Values.prometheus.enabled }}
+# ------------------------------------------------------------------------------
+# Workers Prometheus
+# ------------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starburst-worker-p8s
+  labels:
+    name: starburst-worker-p8s
+data:
+  prometheus.yaml: |
+    {{- if .Values.prometheus.whitelistObjectNames }}
+    whitelistObjectNames:
+    {{- toYaml .Values.prometheus.whitelistObjectNames | nindent 6 }}
+    {{- end }}
+    rules: {{- ( tpl (toYaml .Values.prometheus.rules) . ) | nindent 6 }}
+{{- end }}

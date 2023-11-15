@@ -1,0 +1,44 @@
+{{- if eq .Values.expose.type "nodePort" }}
+{{- $nodePort := .Values.expose.nodePort }}
+
+# ------------------------------------------------------------------------------
+# Coordinator Service using NodePort
+#
+# nodePort: port by which to access the service
+# port: port exposed internally in the cluster
+# targetPort: port that containers are listening on
+#
+# By default the targetPort is set to the same value as the port
+# ------------------------------------------------------------------------------
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "starburst.service.name" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+    {{- if $nodePort.extraLabels }}
+    {{- toYaml $nodePort.extraLabels | nindent 4 }}
+    {{- end }}
+spec:
+  type: NodePort
+  ports:
+    {{- if $nodePort.ports.http }}
+    - name: http
+      protocol: TCP
+      port: {{ $nodePort.ports.http.port }}
+      nodePort: {{ $nodePort.ports.http.nodePort }}
+      targetPort: {{ .Values.internal.ports.http.port }}
+    {{- end }}
+    {{- if $nodePort.ports.https }}
+    - name: https
+      protocol: TCP
+      port: {{ $nodePort.ports.https.port }}
+      nodePort: {{ $nodePort.ports.https.nodePort }}
+      targetPort: {{ .Values.internal.ports.https.port }}
+    {{- end }}
+  selector:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+{{- end }}

@@ -1,0 +1,686 @@
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Platform
+# ------------------------------------------------------------------------------
+# External secrets references in Starburst Enterprise properties.
+#
+#   Some Starburst Enterprise properties require pointing to external files or
+#   environment variables, such as CA certificates or passwords.
+#   You can use special notation to reference K8S secrets containing
+#   files or text values.
+#
+#   - For files -> secretRef:<secret_name>:<secret_key>
+#
+#     Example:
+#
+#     Standard Starburst Enterprise configuration in password-authenticator.properties:
+#       ldap.ssl.truststore.path=etc/ca.crt
+#
+#     Equivalent Helm secretRef configuration:
+#       coordinator:
+#         etcFiles:
+#           properties:
+#             password-authenticator.properties: |
+#               ldap.ssl.truststore.path=secretRef:example_secret_name:ca.crt
+#
+#     This mounts key "ca.crt" from K8S secret named "example_secret_name"
+#     in container's file system as file ca.crt. Starburst Enterprise's property value in
+#     generated configuration file is replaced by full path to ca.crt file:
+#       ldap.ssl.truststore.path=/mnt/secretRef/example_secret_name/ca.crt
+#
+#   - For environment variables -> secretEnv:<secret_name>[:<secret_key>]
+#
+#     Example:
+#     Standard Starburst Enterprise configuration in config.properties:
+#       internal-communication.shared-secret=KAGS&EFTADSFGSFE
+#
+#     Equivalent Helm secretEnv configuration:
+#       coordinator:
+#         etcFiles:
+#           properties:
+#             config.properties: |
+#               internal-communication.shared-secret=secretEnv:shared-secret:secret_key
+#
+#     This mounts K8S secret named "shared-secret" in container and exposes value
+#     of key "secret-key" as environment variable named "secret-key". Starburst Enterprise's
+#     property value in generated configuration file is replaced by Starburst Enterprise environment
+#     variables resolution syntax:
+#       internal-communication.shared-secret=${ENV:secret_key}
+#
+#     For secretEnv secretKey is optional. If you don't provide it, it's assumed that
+#     key name is equal to secret name. Example K8S secret should look like:
+#       apiVersion: v1
+#       kind: Secret
+#       metadata:
+#         name: <secret_name>
+#       type: Opaque
+#       data:
+#         <secret_name>: <secret_value_b64_enc>
+#
+#     When shorter notation is used secretEnv:<secret_name> it's assumed that vault secret
+#     contains single value as it's secret body. In such case secret key is generated
+#     basing on secret name. It's uppercase with all '-','.' replaced with '_'.
+#
+#   Notes:
+#     - Template validates if provided secret names, key names and environment variables
+#       names are correct.
+#     - Every usage of secretRef or secretEnv in values.yaml adds volume for the
+#       referenced secret, even if it's not used due to template logic. For example,
+#       if you use secretRef in ldap.ssl.truststore.path property, referenced secret
+#       is mounted even if ldap authentication is disabled.
+#
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# Image
+# ------------------------------------------------------------------------------
+
+image:
+  repository: "709825985650.dkr.ecr.us-east-1.amazonaws.com/starburst/starburst-enterprise-paygo"
+  tag: "423-e.6.aws.108"
+  pullPolicy: "IfNotPresent"
+initImage:
+  repository: "709825985650.dkr.ecr.us-east-1.amazonaws.com/starburst/starburst-enterprise-init-paygo"
+  tag: "1.5.6.aws.108"
+  pullPolicy: "IfNotPresent"
+## registryCredentials set access to container images
+registryCredentials:
+  enabled: false
+  # Replace this with Docker Registry that you use
+  registry:
+  username:
+  password:
+# Instead of setting registryCredentials you can pass list of secrets, in format:
+# imagePullSecrets:
+#  - name: secret1
+#  - name: secret2
+# Select one method of selecting registryCredentials otherwise you'll receive an error
+imagePullSecrets:
+# ------------------------------------------------------------------------------
+# Internal communication
+# ------------------------------------------------------------------------------
+
+# Shared secret for internal communication. Set it to long and unique value.
+# If not set, node.environment value is used from node.properties file.
+sharedSecret:
+# Environment id; used for generating internal communication token if sharedSecret
+#  is not provided. If empty, default value is generated based on Helm release name.
+environment:
+# Enable TLS for internal communication and autogenerate trusted certificates
+# Note it works only on SEP >= 360-e and requires 'sharedSecret' and 'environment' to be set
+internalTls: false
+# ------------------------------------------------------------------------------
+# Coordinator service
+# Modelled after https://github.com/goharbor/harbor-helm/blob/55598b1f1ccba2bc1c12e94a2622840cae148eb8/values.yaml#L1
+# ------------------------------------------------------------------------------
+expose:
+  # one of: nodePort, clusterIp, loadBalancer, ingress
+  type: "clusterIp"
+  clusterIp:
+    name: "starburst"
+    ports:
+      http:
+        port: 8080
+        # https:
+        #   port: 8443
+  nodePort:
+    name: "starburst"
+    ports:
+      http:
+        port: 8080
+        nodePort: 30080
+    # https:
+    #   port: 8443
+    #   nodePort: 30443
+    extraLabels: {}
+  loadBalancer:
+    name: "starburst"
+    IP: ""
+    ports:
+      http:
+        port: 8080
+    # https:
+    #   port: 8443
+    annotations: {}
+    sourceRanges: []
+  ingress:
+    ingressName: "coordinator-ingress"
+    serviceName: "starburst"
+    servicePort: 8080
+    ingressClassName:
+    tls:
+      enabled: true
+      secretName:
+    host:
+    path: "/"
+    # pathType is one of ImplementationSpecific, Prefix, or Exact.
+    pathType: "ImplementationSpecific"
+    annotations: {}
+internal:
+  ports:
+    http:
+      port: 8080
+    https:
+      port: 8443
+# ------------------------------------------------------------------------------
+# Coordinator
+# ------------------------------------------------------------------------------
+coordinator:
+  etcFiles:
+    jvm.config: |
+      -server
+      -XX:G1HeapRegionSize=32M
+      -XX:+ExplicitGCInvokesConcurrent
+      -XX:+HeapDumpOnOutOfMemoryError
+      -XX:-OmitStackTraceInFastThrow
+      -XX:ReservedCodeCacheSize=512M
+      -XX:PerMethodRecompilationCutoff=10000
+      -XX:PerBytecodeRecompilationCutoff=10000
+      -Djdk.attach.allowAttachSelf=true
+      -Djdk.nio.maxCachedBufferSize=2000000
+      -XX:+UnlockDiagnosticVMOptions
+      -XX:+UseAESCTRIntrinsics
+      -Dfile.encoding=UTF-8
+      --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+      --add-opens=java.base/java.nio=ALL-UNNAMED
+      --add-opens=java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+      -XX:-UseBiasedLocking
+      -XX:+UseG1GC
+      -agentpath:/usr/lib/starburst/bin/libjvmkill.so
+    # Properties section allows to define any Starburst Enterprise properties files below
+    # as an yaml inline string:
+    # properties:
+    #   config.properties: <<defaults provided>>
+    #   node.properties: <<defaults provided>>
+    #   log.properties: <<defaults provided>>
+    #   password-authenticator.properties: <<optional>>
+    #   <<any_other_optional_properties_files>>
+    #
+    properties:
+      config.properties: "coordinator=true\nnode-scheduler.include-coordinator=false\nhttp-server.http.port=8080\ndiscovery.uri=http://localhost:8080 \nusage-metrics.gathering.initial-delay=1m\nusage-metrics.gathering.interval=10m\nusage-metrics.cluster-usage-resource.enabled=true"
+      node.properties: |
+        node.environment={{ include "starburst.environment" . }}
+        node.data-dir=/data/starburst
+        plugin.dir=/usr/lib/starburst/plugin
+        node.server-log-file=/var/log/starburst/server.log
+        node.launcher-log-file=/var/log/starburst/launcher.log
+      log.properties: |
+        # Enable verbose logging from Starburst Enterprise
+        #io.trino=DEBUG
+        #com.starburstdata.presto=DEBUG
+      # Below configuration provides FILE based authentication using htpasswd style
+      # user database. This database may be provided:
+      # - with K8s secret - using secretRef
+      # - with Helm .Values.userDatabase - if you decide to enable 'userDatabase'
+      # in this values.yaml file and provide a static list of users then
+      # the password-authenticator.properties will be populated automatically
+      # e.g. for FILE with secretRef
+      # password-authenticator.properties: |
+      #   password-authenticator.name=file
+      #   file.password-file=secretRef:htpasswd-db:password.db
+      # e.g for LDAP
+      # password-authenticator.properties: |
+      #   password-authenticator.name=ldap
+      #   ldap.url=ldaps://ldap-server:636
+      #   ldap.user-bind-pattern=uid=${USER},OU=America,DC=corp,DC=example,DC=com
+      #   ldap.ssl.truststore.path=secretRef:ldap-ca:ca.crt
+    # Other files that needs to be placed in Starburst Enterprise etc directory
+    # e.g.
+    # other:
+    #   resource-groups.json: |
+    #     {
+    #       <<json_here>
+    #     }
+    #   kafka/tpch.customer.json: |
+    #     {
+    #       <<json_here>
+    #     }
+    #
+    other: {}
+  resources:
+    memory: "60Gi"
+    cpu: 16
+  # size of container memory headroom, needs to be less than resource allocation limit for memory
+  nodeMemoryHeadroom: "2Gi"
+  # Percentage of container memory reduced with headroom assigned to Java heap, must be less than 100
+  heapSizePercentage: 90
+  # Headroom of Java heap memory not tracked by Starburst Enterprise during query execution, must be less than 100
+  heapHeadroomPercentage: 30
+  additionalProperties: ""
+  # Allows to propagate environment variables from different sources like accordingly to K8S schema
+  # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envfromsource-v1-core
+  # e.g.
+  # envFrom:
+  #   - secretRef:
+  #       name: <<secret_name>>
+  envFrom: []
+  deploymentAnnotations: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  # Priority class for coordinator pod
+  # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+  priorityClassName:
+  # Add security context to the container level
+  securityContext: {}
+  # Attach additional sidecar containers to the coordinator pod
+  sidecars: []
+  # Add extra init containers
+  initContainers: []
+  # Expose extra ports
+  additionalExposedPorts: {}
+# ------------------------------------------------------------------------------
+# Workers
+# ------------------------------------------------------------------------------
+worker:
+  etcFiles:
+    jvm.config: |
+      -server
+      -XX:G1HeapRegionSize=32M
+      -XX:+ExplicitGCInvokesConcurrent
+      -XX:+HeapDumpOnOutOfMemoryError
+      -XX:-OmitStackTraceInFastThrow
+      -XX:ReservedCodeCacheSize=512M
+      -XX:PerMethodRecompilationCutoff=10000
+      -XX:PerBytecodeRecompilationCutoff=10000
+      -Djdk.attach.allowAttachSelf=true
+      -Djdk.nio.maxCachedBufferSize=2000000
+      -XX:+UnlockDiagnosticVMOptions
+      -XX:+UseAESCTRIntrinsics
+      -Dfile.encoding=UTF-8
+      --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+      --add-opens=java.base/java.nio=ALL-UNNAMED
+      --add-opens=java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+      -XX:-UseBiasedLocking
+      -XX:+UseG1GC
+      -agentpath:/usr/lib/starburst/bin/libjvmkill.so
+    # Properties section allows to define any Starburst Enterprise properties files below
+    # as an yaml inline string:
+    # properties:
+    #   config.properties: <<required>>
+    #   node.properties: <<required>>
+    #   log.properties: <<required>>
+    #   <<any_other_optional_properties_files>>
+    #
+    properties:
+      config.properties: |
+        coordinator=false
+        http-server.http.port=8080
+        discovery.uri=http://coordinator:8080
+      node.properties: |
+        node.environment={{ include "starburst.environment" . }}
+        node.data-dir=/data/starburst
+        plugin.dir=/usr/lib/starburst/plugin
+        node.server-log-file=/var/log/starburst/server.log
+        node.launcher-log-file=/var/log/starburst/launcher.log
+      log.properties: |
+        # Enable verbose logging from Starburst Enterprise
+        #io.trino=DEBUG
+        #com.starburstdata.presto=DEBUG
+    # Other files that needs to be places in Starburst Enterprise etc directory
+    # e.g.
+    # other:
+    #   resource-groups.json: |
+    #     {
+    #       <<json_here>
+    #     }
+    #   kafka/tpch.customer.json: |
+    #     {
+    #       <<json_here>
+    #     }
+    #
+    other: {}
+  # number of workers
+  replicas: 2
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+  kedaScaler:
+    enabled: false
+    port: 8021
+    image:
+      repository: "709825985650.dkr.ecr.us-east-1.amazonaws.com/starburst/keda-trino-scaler-paygo"
+      tag: "0.1.15.aws.108"
+      pullPolicy: "IfNotPresent"
+    # For details see https://keda.sh/docs/2.6/concepts/scaling-deployments/#scaledobject-spec
+    scaledObjectSpec:
+      scaleTargetRef:
+        name: worker
+      pollingInterval: 30
+      cooldownPeriod: 300
+      idleReplicaCount: 0
+      minReplicaCount: 1
+      maxReplicaCount: 100
+      triggers:
+        - metadata:
+            scaleMethod: "query_queue"
+            # number of concurrent queries handled by a single worker
+            numberOfQueriesPerWorker: "10"
+            # reduce the number of workers to idleReplicaCount when the query queue is empty
+            scaleInToIdleReplicaCountIfNoQueuedQueriesLeft: "true"
+          type: external
+      advanced: {}
+  deploymentTerminationGracePeriodSeconds: 300 # 5 minutes
+  starburstWorkerShutdownGracePeriodSeconds: 120 # 2 minutes
+  resources:
+    memory: "100Gi"
+    cpu: 16
+  # size of container memory headroom, needs to be less that resource allocation limit for memory
+  nodeMemoryHeadroom: "2Gi"
+  # Percentage of container memory reduced with headroom assigned to Java heap, must be less than 100
+  heapSizePercentage: 90
+  # Headroom of Java heap memory not tracked by Starburst Enterprise during query execution, must be less than 100
+  heapHeadroomPercentage: 30
+  additionalProperties: ""
+  # Allows to propagate environment variables from different sources like accordingly to K8S schema
+  # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envfromsource-v1-core
+  # e.g.
+  # envFrom:
+  #   - secretRef:
+  #       name: <<secret_name>>
+  envFrom: []
+  deploymentAnnotations: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  # Priority class for worker pods
+  # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+  priorityClassName:
+  # Add security context to the container level
+  securityContext: {}
+  # Attach additional sidecar containers to worker pods
+  sidecars: []
+  # Add extra init containers
+  initContainers: []
+  # Expose extra ports
+  additionalExposedPorts: {}
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Init Container
+# ------------------------------------------------------------------------------
+starburstEnterpriseInit:
+  # Add security context at the container level
+  securityContext: {}
+# ------------------------------------------------------------------------------
+# Common Coordinator/Worker Settings
+# ------------------------------------------------------------------------------
+
+# External Secrets
+#
+# It allows to automatically mount external secrets (for example from AWS Secrets Manager)
+# which are referenced by secretRef or secretEnv notation.
+#
+# Configuration:
+#
+#  externalSecrets:
+#    enabled: true # disabled by default
+#    type: goDaddy # type of External Secret Provider, currently only goDaddy is supported
+#    secretPrefix: <<secret_name_prefix>> # prefix of all secrets that needs to be mapped to external secret
+#    goDaddy:
+#      # section for GoDaddy External Secrets specific configuration
+#      backendType: <<string>> - ref to. https://github.com/godaddy/kubernetes-external-secrets
+#      ...
+#
+# Chart scans for all secretRef or secretEnv references in values.yaml which starts with
+# configured secretPrefix. For each secret found, it generates ExternalSecret K8s manifest.
+# Note that:
+# - Selected External Secrets provider needs to be deployed and configured separately.
+# - Names of secrets in external storage must match names of K8S secrets we reference to.
+# - For each external secret single K8s secret will be created.
+#
+# Example:
+# - Create AWS Secrets Manager secret:
+#    aws secretsmanager create-secret --name external/starburst-http-server-port --secret-string 8888
+#
+# - Reference it from config.properties:
+#    coordinator:
+#      etcFiles:
+#        config.properties: |
+#          http-server.http.port=secretEnv:external/starburst-http-server-port
+#
+# - Configure External Secrets:
+#    externalSecrets:
+#      enabled: true
+#      type: goDaddy
+#      secretPrefix: external/
+#      goDaddy:
+#        backendType: secretsManager
+#
+# Effect:
+# - External Secret Manifest is created
+#   !!! Note that names are adjusted to match naming requirements:
+#      - Secret name illegal charts are switched to '.'
+#      - Env. variable is upper case nad illegal chars are switched to '_'
+#    apiVersion: kubernetes-client.io/v1
+#    kind: ExternalSecret
+#    metadata:
+#      name: external.starburst-http-server-port
+#    spec:
+#      backendType: secretsManager
+#      data:
+#        - key: external/starburst-http-server-port
+#          name: EXTERNAL_STARBURST_HTTP_SERVER_PORT
+#
+# - External Secrets provider fetches secret from AWS and creates K8s Secret:
+#    apiVersion: v1
+#    kind: Secret
+#    metadata:
+#      name: external.starburst-http-server-port
+#    type: Opaque
+#    data:
+#      EXTERNAL_STARBURST_HTTP_SERVER_PORT: 8888
+#
+# - Above secret is bind to container as EXTERNAL_STARBURST_HTTP_SERVER_PORT environment
+#   variable.
+#
+# - Starburst Enterprise config.properties is resolved to:
+#   http-server.http.port=${ENV:EXTERNAL_STARBURST_HTTP_SERVER_PORT}
+#
+externalSecrets:
+  enabled: false
+  type: goDaddy
+  secretPrefix: external0
+  goDaddy:
+    backendType: secretsManager
+# User database
+# htpasswd database generator
+# Creates 'password.db' file under /etc/starburst and configures the Starburst Enterprise
+# file-based authentication (i.e. automatically adds all needed properties to
+# 'password-authenticator.properties' file) if enabled.
+userDatabase:
+  enabled: false
+  users: []
+  # If user database is enabled then at least one user should be provided.
+  # Properties validation requires that password is provided for each user.
+  # users:
+  #   - username: admin
+  #     password:
+# Set the security context for a Pod
+securityContext: {}
+# ------------------------------------------------------------------------------
+# initFile - optional startup script, called with single parameter "coordinator"
+# or "worker" if not set default container command is called
+# - initFile - yaml inline string with init script content started as /bin/bash <<init_file>>
+# - extraArguments - additional arguments passed to initFile script after ${1}
+#                    which corresponds to coordinator or worker
+#
+# The init script content must end with a command to launch Starburst Enterprise.
+# For Starburst Enterprise versions < 345-e use the launcher "exec /usr/lib/starburst/bin/launcher run"
+# For Starburst Enterprise versions > 345-e to enable graceful shutdown of Starburst Enterprise workers use
+# "exec /usr/lib/starburst/bin/run-starburst"
+#
+# e.g.
+# initFile: |
+#   #!/bin/bash
+#   echo "Custom init for $1 $2"
+#   exec /usr/lib/starburst/bin/run-starburst
+# extraArguments:
+#   - TEST_ARG
+#
+# Will output for Coordinator:
+# Custom init for coordinator TEST_ARG
+# <<starburst_logs>>
+# And for Worker:
+# Custom init for worker TEST_ARG
+# <<starburst_logs>>
+# ------------------------------------------------------------------------------
+initFile: ""
+extraArguments: []
+# Below secret will be mounted in /extra-secret/ within containers
+extraSecret:
+  # Replace this with secret name that should be used from namespace you are deploying to
+  name:
+  # Optionally 'file' may be provided which will be deployed as secret with given 'name' in used namespace.
+  file:
+# If necessary overwrite the default probe defined in the Deployment definition
+startupProbe:
+# If necessary overwrite the default probe defined in the Deployment definition
+readinessProbe:
+# If necessary overwrite the default probe defined in the Deployment definition
+livenessProbe:
+# ------------------------------------------------------------------------------
+# Starburst Warp Speed
+# ------------------------------------------------------------------------------
+warpSpeed:
+  enabled: false
+  # Physical drives configuration requires Warp Speed init container (within a Worker pod) to be privileged.
+  # It's a short living container which ends its lifecycle once configuration is done.
+  # By enabling autoConfigure you accept this condition. Otherwise, devices have to be configured
+  # prior to SEP pods being started, for example during node machine bootstrap process
+  # (such as prebootstartCommands script in EKS deployments).
+  # Note. this functionality is available for AKS, EKS and GKE only.
+  autoConfigure: false
+  # Additional percentage of container memory reduced from heap size assigned to Java, must be less than 100
+  additionalHeapSizePercentage: 15
+  fileSystem:
+    # The path for the mount point used to mount the local SSDs, might differ between cloud vendors
+    # AWS, Azure - Defined by the user
+    # GCP - Needs to be set to  `/mnt/stateful_partition/kube-ephemeral-ssd`
+    localStorageMountPath: /opt/data
+  image:
+    # Image that prepares filesystem for Warp Speed.
+    # Note that due to system limitations this has to be done by init container running in privileged mode
+    repository: "harbor.starburstdata.net/starburstdata/starburst-warpspeed-init"
+    # AWS, GCP - Use default tag
+    # Azure - add `-azure` suffix, ex. 1.0.10-azure
+    tag: "1.0.11"
+    pullPolicy: "IfNotPresent"
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Query memory usage control
+# - maxConcurrentQueries - Maximum queries executed in parallel on single node
+# ------------------------------------------------------------------------------
+query:
+  maxConcurrentQueries: 3
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Disk Spilling
+# Spilling uses internal Node storage(HDD). Mounted within Pod and Container.
+# ------------------------------------------------------------------------------
+spilling:
+  enabled: false
+  volume:
+    emptyDir: {}
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Caching
+# !!! Warning !!!
+# Currently caching only works with Hive Connector. Future releases will change it.
+# - Enabling caching here will enable it for all Hive connectors.
+# - To enable caching only for specific connector, configure it via catalogs
+#   and additionalVolumes. In such case this feature needs to be disabled.
+# ------------------------------------------------------------------------------
+cache:
+  enabled: false
+  diskUsagePercentage: 80
+  ttl: "7d"
+  volume:
+    emptyDir: {}
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Catalogs.
+# Provided as Map
+#  - key - catalog name
+#  - value - catalog properties as string
+# ------------------------------------------------------------------------------
+catalogs:
+  tpch: |-
+    connector.name=tpch
+    tpch.splits-per-node=4
+# ------------------------------------------------------------------------------
+# Starburst Enterprise Additional Volumes mount. General purpose.
+# Provided as array
+#  - path: <<container mount path>>
+#    subPath: <<optional key in ConfigMap or Secret>>
+#    volume: {}
+#
+#  Volume definition
+#  https://kubernetes.io/docs/concepts/storage/volumes/#types-of-volumes
+#  without name parameter.
+#
+# If you specify 'path' only, a directory named 'path' is created. When mounting ConfigMap
+# or Secret, files are created in this directory for each key.
+#
+# If you specify 'subPath', specific key named 'subPath' from ConfigMap or Secret is mounted as
+# a file with name provided by 'path'.
+#
+# E.g. for K8S emptyDir volume
+# additionalVolumes:
+#   - path: /mnt/InContainer
+#     volume:
+#       emptyDir: {}
+#
+# ------------------------------------------------------------------------------
+additionalVolumes: []
+# ------------------------------------------------------------------------------
+# Starburst Usage Metrics
+# ------------------------------------------------------------------------------
+usageMetrics:
+  enabled: false
+  usageClient:
+    initialDelay: "1m"
+    interval: "1m"
+# ------------------------------------------------------------------------------
+# Prometheus JMX exporter
+# ------------------------------------------------------------------------------
+prometheus:
+  enabled: true
+  agent:
+    version: "0.20.0"
+    port: 8081
+    config: "/etc/starburst/telemetry/prometheus.yaml"
+  rules:
+    - pattern: trino.execution<name=QueryManager><>(running_queries|queued_queries)
+      name: $1
+      attrNameSnakeCase: true
+      type: GAUGE
+    - pattern: 'trino.execution<name=QueryManager><>FailedQueries\.TotalCount'
+      name: 'failed_queries'
+      type: COUNTER
+# ------------------------------------------------------------------------------
+# Starburst Platform License Secret
+# Name of a Kubernetes Secret that contains a Starburst Platform license file.
+# The license file within the secret should be named "starburstdata.license"
+# ------------------------------------------------------------------------------
+#starburstPlatformLicense: "starburst"
+
+# ------------------------------------------------------------------------------
+# Helm Labels
+# ------------------------------------------------------------------------------
+
+# Labels to apply to all resources
+commonLabels: {}
+#  environment: dev
+#  myLabel: labelValue
+
+## Service account for Coordinator/Worker pod
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccountName: starburst-enterprise-sa
+
+# ------------------------------------------------------------------------------
+# AWS Marketplace - do not overwrite
+# ------------------------------------------------------------------------------
+awsSepLicenseVerifier:
+  enabled: true
+  tag: 423.6.0.aws.108

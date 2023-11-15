@@ -1,0 +1,30 @@
+{{- if or .Values.internalTls (contains "internal-communication.https.required=true" (index .Values.coordinator.etcFiles.properties "config.properties")) }}
+{{- include "starburst.service.environment.validate" . }}
+# ------------------------------------------------------------------------------
+# Coordinator Headless Service
+#
+# Used only for internal communication. Required for SAN entries in TLS certs.
+# ------------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "starburst.environment" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+    headless: "true"
+spec:
+  clusterIP: None
+  type: ClusterIP
+  publishNotReadyAddresses: true
+  ports:
+    - name: http
+      port: {{ .Values.internal.ports.http.port }}
+      protocol: TCP
+    - name: https
+      port: {{ .Values.internal.ports.https.port }}
+      protocol: TCP
+  selector:
+    {{- include "app.labels" . | nindent 4 }}
+    role: coordinator
+{{- end }}

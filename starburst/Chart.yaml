@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: "1.0"
+dependencies:
+- name: starburst-charts-common
+  repository: file://../../starburst-charts-common/helm
+  version: 423.6.0
+description: A Helm chart for Starburst Enterprise
+name: starburst-enterprise
+version: 423.6.0-aws.108

@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------------------
+# Worker Headless Service
+#
+# Used only for internal communication. Required for SAN wildcard entries in TLS certs.
+# ------------------------------------------------------------------------------
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: worker
+    headless: "true"
+spec:
+  clusterIP: None
+  type: ClusterIP
+  publishNotReadyAddresses: true
+  ports:
+    - name: http
+      port: {{ .Values.internal.ports.http.port }}
+      protocol: TCP
+    - name: https
+      port: {{ .Values.internal.ports.https.port }}
+      protocol: TCP
+    {{- range $key, $value := .Values.worker.additionalExposedPorts }}
+    - port: {{ $value.port }}
+      name: {{ $value.name }}
+      protocol: {{ $value.protocol }}
+    {{- end }}
+  selector:
+    {{- include "app.labels" . | nindent 4 }}
+    role: worker
