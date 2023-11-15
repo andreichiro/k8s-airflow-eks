@@ -80,7 +80,7 @@ airflowVersion: "2.7.3"
 images:
   airflow:
     repository: apache/airflow
-    tag: 2.7.3-python3.12
+    tag: 2.7.3
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
