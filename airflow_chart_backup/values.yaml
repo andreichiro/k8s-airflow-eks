@@ -1,12 +1,64 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+---
+# Default values for airflow.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Provide a name to substitute for the full names of resources
+fullnameOverride: ""
+
+# Provide a name to substitute for the name of the chart
+nameOverride: ""
+
+# Use standard naming for all resources using airflow.fullname template
+# Consider removing this later and default it to true
+# to make this chart follow standard naming conventions using the fullname template.
+# For now this is an opt-in switch for backwards compatibility to leverage the standard naming convention
+# and being able to use fully fullnameOverride and nameOverride in all resources
+# For new installations - it is recommended to set it to True to follow standard naming conventions
+# For existing installations, this will rename and redeploy your resources with the new names. Be aware that
+# this will recreate your deployment/statefulsets along with their persistent volume claims and data storage
+# migration may be needed to keep your old data
+#
 # Note:fernet-key,redis-password and broker-url secrets don't use this logic yet,
 # as this may break existing installations due to how they get installed via pre-install hook.
 useStandardNaming: True
 
+# Max number of old replicasets to retain. Can be overridden by each deployment's revisionHistoryLimit
+revisionHistoryLimit: ~
 
 # User and group of airflow user
 uid: 50000
 gid: 0
 
+# Default security context for airflow (deprecated, use `securityContexts` instead)
+securityContext: {}
+#  runAsUser: 50000
+#  fsGroup: 0
+#  runAsGroup: 0
+
+# Detailed default security context for airflow deployments
+securityContexts:
+  pod: {}
+  containers: {}
+
+# Default container lifecycle hooks for every service except for redis, statsd and pgbouncer.
+containerLifecycleHooks: {}
 
 # Airflow home directory
 # Used for mount paths
@@ -72,6 +124,16 @@ images:
     tag: v3.6.9
     pullPolicy: IfNotPresent
 
+# Select certain nodes for airflow pods.
+nodeSelector: {}
+affinity: {}
+tolerations: []
+topologySpreadConstraints: []
+schedulerName: ~
+
+# Add common labels to all objects and pods defined in this chart.
+labels: {}
+
 # Ingress configuration
 ingress:
   # Enable all ingress resources (deprecated - use ingress.web.enabled and ingress.flower.enabled)
@@ -80,7 +142,7 @@ ingress:
   # Configs for the Ingress of the web Service
   web:
     # Enable web ingress resource
-    enabled: true
+    enabled: false
 
     # Annotations for the web Ingress
     annotations: {}
@@ -105,6 +167,71 @@ ingress:
     #     # the name of a pre-created Secret containing a TLS private key and certificate
     #     secretName: ""
 
+    # The Ingress Class for the web Ingress (used only with Kubernetes v1.19 and above)
+    ingressClassName: ""
+
+    # configs for web Ingress TLS (Deprecated - renamed to `ingress.web.hosts[*].tls`)
+    tls:
+      # Enable TLS termination for the web Ingress
+      enabled: false
+      # the name of a pre-created Secret containing a TLS private key and certificate
+      secretName: ""
+
+    # HTTP paths to add to the web Ingress before the default path
+    precedingPaths: []
+
+    # Http paths to add to the web Ingress after the default path
+    succeedingPaths: []
+
+  # Configs for the Ingress of the flower Service
+  flower:
+    # Enable web ingress resource
+    enabled: false
+
+    # Annotations for the flower Ingress
+    annotations: {}
+
+    # The path for the flower Ingress
+    path: "/"
+
+    # The pathType for the above path (used only with Kubernetes v1.19 and above)
+    pathType: "ImplementationSpecific"
+
+    # The hostname for the flower Ingress (Deprecated - renamed to `ingress.flower.hosts`)
+    host: ""
+
+    # The hostnames or hosts configuration for the flower Ingress
+    hosts: []
+    #   # The hostname for the flower Ingress (can be templated)
+    # - name: ""
+    #   tls:
+    #     # Enable TLS termination for the flower Ingress
+    #     enabled: false
+    #     # the name of a pre-created Secret containing a TLS private key and certificate
+    #     secretName: ""
+
+    # The Ingress Class for the flower Ingress (used only with Kubernetes v1.19 and above)
+    ingressClassName: ""
+
+    # configs for flower Ingress TLS (Deprecated - renamed to `ingress.flower.hosts[*].tls`)
+    tls:
+      # Enable TLS termination for the flower Ingress
+      enabled: false
+      # the name of a pre-created Secret containing a TLS private key and certificate
+      secretName: ""
+
+# Network policy configuration
+networkPolicies:
+  # Enabled network policies
+  enabled: false
+
+# Extra annotations to apply to all
+# Airflow pods
+airflowPodAnnotations: {}
+
+# Extra annotations to apply to
+# main Airflow configmap
+airflowConfigAnnotations: {}
 
 # `airflow_local_settings` file as a string (can be templated).
 airflowLocalSettings: |-
@@ -142,6 +269,22 @@ executor: "CeleryKubernetesExecutor"
 # will be able to launch pods.
 allowPodLaunching: true
 
+# Environment variables for all airflow containers
+env: []
+# - name: ""
+#   value: ""
+
+# Volumes for all airflow containers
+volumes: []
+
+# VolumeMounts for all airflow containers
+volumeMounts: []
+
+# Secrets for all airflow containers
+secret: []
+# - envName: ""
+#   secretName: ""
+#   secretKey: ""
 
 # Enables selected built-in secrets that are set via environment variables by default.
 # Those secrets are provided by the Helm Chart secrets by default but in some cases you
@@ -157,8 +300,80 @@ enableBuiltInSecretEnvVars:
   AIRFLOW__CELERY__CELERY_RESULT_BACKEND: true
   AIRFLOW__CELERY__RESULT_BACKEND: true
   AIRFLOW__CELERY__BROKER_URL: true
-  AIRFLOW__ELASTICSEARCH__HOST: false
-  AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: false
+  AIRFLOW__ELASTICSEARCH__HOST: true
+  AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: true
+
+# Priority Classes that will be installed by charts.
+# Ideally, there should be an entry for dagProcessor, flower,
+#   pgbouncer, scheduler, statsd, triggerer, webserver, worker.
+# The format for priorityClasses is an array with each element having:
+#   * name is the name of the priorityClass. Ensure the same name is given to the respective section as well
+#   * preemptionPolicy for the priorityClass
+#   * value is the preemption value for the priorityClass
+priorityClasses: []
+#  - name: class1 (if this is for dagProcessor, ensure overriding .Values.dagProcessor.priorityClass too)
+#    preemptionPolicy: PreemptLowerPriority
+#    value: 10000
+#  - name: class2
+#    preemptionPolicy: Never
+#    value: 100000
+
+# Extra secrets that will be managed by the chart
+# (You can use them with extraEnv or extraEnvFrom or some of the extraVolumes values).
+# The format for secret data is "key/value" where
+#    * key (can be templated) is the name of the secret that will be created
+#    * value: an object with the standard 'data' or 'stringData' key (or both).
+#          The value associated with those keys must be a string (can be templated)
+extraSecrets: {}
+# eg:
+# extraSecrets:
+#   '{{ .Release.Name }}-airflow-connections':
+#     type: 'Opaque'
+#     labels:
+#       my.custom.label/v1: my_custom_label_value_1
+#     data: |
+#       AIRFLOW_CONN_GCP: 'base64_encoded_gcp_conn_string'
+#       AIRFLOW_CONN_AWS: 'base64_encoded_aws_conn_string'
+#     stringData: |
+#       AIRFLOW_CONN_OTHER: 'other_conn'
+#   '{{ .Release.Name }}-other-secret-name-suffix':
+#     data: |
+#        ...
+
+# Extra ConfigMaps that will be managed by the chart
+# (You can use them with extraEnv or extraEnvFrom or some of the extraVolumes values).
+# The format for configmap data is "key/value" where
+#    * key (can be templated) is the name of the configmap that will be created
+#    * value: an object with the standard 'data' key.
+#          The value associated with this keys must be a string (can be templated)
+extraConfigMaps: {}
+# eg:
+# extraConfigMaps:
+#   '{{ .Release.Name }}-airflow-variables':
+#     labels:
+#       my.custom.label/v2: my_custom_label_value_2
+#     data: |
+#       AIRFLOW_VAR_HELLO_MESSAGE: "Hi!"
+#       AIRFLOW_VAR_KUBERNETES_NAMESPACE: "{{ .Release.Namespace }}"
+
+# Extra env 'items' that will be added to the definition of airflow containers
+# a string is expected (can be templated).
+# TODO: difference from `env`? This is a templated string. Probably should template `env` and remove this.
+extraEnv: ~
+# eg:
+# extraEnv: |
+#   - name: AIRFLOW__CORE__LOAD_EXAMPLES
+#     value: 'True'
+
+# Extra envFrom 'items' that will be added to the definition of airflow containers
+# A string is expected (can be templated).
+extraEnvFrom: ~
+# eg:
+# extraEnvFrom: |
+#   - secretRef:
+#       name: '{{ .Release.Name }}-airflow-connections'
+#   - configMapRef:
+#       name: '{{ .Release.Name }}-airflow-variables'
 
 # Airflow database & redis config
 data:
@@ -335,6 +550,67 @@ workers:
     # Annotations to add to worker kubernetes service account.
     annotations: {}
 
+  # Allow KEDA autoscaling.
+  keda:
+    enabled: false
+    namespaceLabels: {}
+
+    # How often KEDA polls the airflow DB to report new scale requests to the HPA
+    pollingInterval: 5
+
+    # How many seconds KEDA will wait before scaling to zero.
+    # Note that HPA has a separate cooldown period for scale-downs
+    cooldownPeriod: 30
+
+    # Minimum number of workers created by keda
+    minReplicaCount: 0
+
+    # Maximum number of workers created by keda
+    maxReplicaCount: 10
+
+    # Specify HPA related options
+    advanced: {}
+    # horizontalPodAutoscalerConfig:
+    #   behavior:
+    #     scaleDown:
+    #       stabilizationWindowSeconds: 300
+    #       policies:
+    #         - type: Percent
+    #           value: 100
+    #           periodSeconds: 15
+
+    # Query to use for KEDA autoscaling. Must return a single integer.
+    query: >-
+      SELECT ceil(COUNT(*)::decimal / {{ .Values.config.celery.worker_concurrency }})
+      FROM task_instance
+      WHERE (state='running' OR state='queued')
+      {{- if eq .Values.executor "CeleryKubernetesExecutor" }}
+      AND queue != '{{ .Values.config.celery_kubernetes_executor.kubernetes_queue }}'
+      {{- end }}
+
+    # Weather to use PGBouncer to connect to the database or not when it is enabled
+    # This configuration will be ignored if PGBouncer is not enabled
+    usePgbouncer: true
+
+  persistence:
+    # Enable persistent volumes
+    enabled: true
+    # Volume size for worker StatefulSet
+    size: 100Gi
+    # If using a custom storageClass, pass name ref to all statefulSets here
+    storageClassName:
+    # Execute init container to chown log directory.
+    # This is currently only needed in kind, due to usage
+    # of local-path provisioner.
+    fixPermissions: false
+    # Annotations to add to worker volumes
+    annotations: {}
+    # Detailed default security context for persistence for container level
+    securityContexts:
+      container: {}
+    # container level lifecycle hooks
+    containerLifecycleHooks: {}
+
   kerberosSidecar:
     # Enable kerberos sidecar
     enabled: false
@@ -363,6 +639,13 @@ workers:
     #   memory: 128Mi
 
 
+  resources: {}
+  #  limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #  requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
   # Grace period for tasks to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 600
@@ -371,6 +654,27 @@ workers:
   # when it wants to scale a node down.
   safeToEvict: true
 
+  # Launch additional containers into worker.
+  # Note: If used with KubernetesExecutor, you are responsible for signaling sidecars to exit when the main
+  # container finishes so Airflow can continue the worker shutdown process!
+  extraContainers: []
+  # Add additional init containers into workers.
+  extraInitContainers: []
+
+  # Mount additional volumes into worker. It can be templated like in the following example:
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
+  extraVolumes: []
+  extraVolumeMounts: []
 
   # Select certain nodes for airflow worker pods.
   nodeSelector: {}
@@ -1171,7 +1475,7 @@ triggerer:
 
   logGroomerSidecar:
     # Whether to deploy the Airflow triggerer log groomer sidecar.
-    enabled: false
+    enabled: true
     # Command to use when running the Airflow triggerer log groomer sidecar (templated).
     command: ~
     # Args to use when running the Airflow triggerer log groomer sidecar (templated).
@@ -1203,6 +1507,38 @@ triggerer:
   env: []
 
   # Allow KEDA autoscaling.
+  keda:
+    enabled: false
+    namespaceLabels: {}
+
+    # How often KEDA polls the airflow DB to report new scale requests to the HPA
+    pollingInterval: 5
+
+    # How many seconds KEDA will wait before scaling to zero.
+    # Note that HPA has a separate cooldown period for scale-downs
+    cooldownPeriod: 30
+
+    # Minimum number of triggerers created by keda
+    minReplicaCount: 0
+
+    # Maximum number of triggerers created by keda
+    maxReplicaCount: 10
+
+    # Specify HPA related options
+    advanced: {}
+    # horizontalPodAutoscalerConfig:
+    #   behavior:
+    #     scaleDown:
+    #       stabilizationWindowSeconds: 300
+    #       policies:
+    #         - type: Percent
+    #           value: 100
+    #           periodSeconds: 15
+
+    # Query to use for KEDA autoscaling. Must return a single integer.
+    query: >-
+      SELECT ceil(COUNT(*)::decimal / {{ .Values.config.triggerer.default_capacity }})
+      FROM trigger
 
 # Airflow Dag Processor Config
 dagProcessor:
@@ -1319,7 +1655,7 @@ dagProcessor:
 
   logGroomerSidecar:
     # Whether to deploy the Airflow dag processor log groomer sidecar.
-    enabled: false
+    enabled: true
     # Command to use when running the Airflow dag processor log groomer sidecar (templated).
     command: ~
     # Args to use when running the Airflow dag processor log groomer sidecar (templated).
@@ -1345,7 +1681,7 @@ dagProcessor:
 flower:
   # Enable flower.
   # If True, and using CeleryExecutor/CeleryKubernetesExecutor, will deploy flower app.
-  enabled: false
+  enabled: true
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1470,7 +1806,7 @@ statsd:
   # Add custom annotations to the statsd configmap
   configMapAnnotations: {}
 
-  enabled: false
+  enabled: true
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1743,7 +2079,7 @@ pgbouncer:
 
 # Configuration for the redis provisioned by the chart
 redis:
-  enabled: false
+  enabled: true
   terminationGracePeriodSeconds: 600
   # Create ServiceAccount
   serviceAccount:
@@ -2063,7 +2399,7 @@ dags:
     # Enable persistent volume for storing dags
     enabled: false
     # Volume size for dags
-    size: 50Gi
+    size: 1Gi
     # If using a custom storageClass, pass name here
     storageClassName:
     # access mode of the persistent volume
@@ -2172,7 +2508,7 @@ logs:
 
   persistence:
     # Enable persistent volume for storing logs
-    enabled: true
+    enabled: false
     # Volume size for logs
     size: 100Gi
     # Annotations for the logs PVC
