@@ -30,12 +30,9 @@ CASTAI_API_TOKEN=e968dd2b82662bb128b81d32f4e53ac8d38f4d8866bea3229a7307b802fb9b7
 CASTAI_API_TOKEN=1340a4b94fc0430279594a09a73f24f779f7785b071fe670eae18a5fd4871758 CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/egressd/install.sh')"
 
 kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow               
+kubectl create secret generic airflow-redis-secret --from-literal=password='Mzc5LzA=' -n airflow               
 
-kubectl create secret generic broker-secret --from-literal=connection='redis://redis:dados123456@airflow-redis:6379/0' -n airflow
-kubectl create secret generic broker-secret --from-literal=connection='cmVkaXM6Ly86ZGFkb3MxMjM0NTZAYWlyZmxvdy1yZWRpczo2Mzc5LzA=' -n airflow
-
-kubectl create secret generic broker-secret --from-literal=connection='redis://:<dados123456>@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
-kubectl create secret generic broker-secret --from-literal=connection='cmVkaXM6Ly86PGRhZG9zMTIzNDU2PkBhaXJmbG93LXJlZGlzLmFpcmZsb3cuc3ZjLmNsdXN0ZXIubG9jYWw6NjM3OS8w' -n airflow
+kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
 
 
 redis:

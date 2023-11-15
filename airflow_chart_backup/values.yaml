@@ -79,8 +79,8 @@ airflowVersion: "2.7.3"
 # Images
 images:
   airflow:
-    repository: ~
-    tag: ~
+    repository: apache/airflow
+    tag: 2.7.3
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
@@ -142,7 +142,7 @@ ingress:
   # Configs for the Ingress of the web Service
   web:
     # Enable web ingress resource
-    enabled: false
+    enabled: true
 
     # Annotations for the web Ingress
     annotations: {}
@@ -395,8 +395,8 @@ data:
   # For Airflow >= 2.4.0 it is possible to not specify the secret again,
   # as Airflow will use sql_alchemy_conn with a db+ scheme prefix by default.
   resultBackendSecretName: ~
-  brokerUrlSecretName: broker-secret
   #brokerUrlSecretName: broker-secret
+  brokerUrlSecretName: broker-secret
 
   # Otherwise pass connection values in
   metadataConnection:
@@ -419,7 +419,7 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  brokerUrl: redis://redis-user:password@redis-host:6379/0
+  #brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
 
 
 # Fernet key settings
@@ -652,7 +652,7 @@ workers:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into worker.
   # Note: If used with KubernetesExecutor, you are responsible for signaling sidecars to exit when the main
@@ -713,7 +713,7 @@ workers:
 
   logGroomerSidecar:
     # Whether to deploy the Airflow worker log groomer sidecar.
-    enabled: true
+    enabled: false
     # Command to use when running the Airflow worker log groomer sidecar (templated).
     command: ~
     # Args to use when running the Airflow worker log groomer sidecar (templated).
@@ -860,7 +860,7 @@ scheduler:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into scheduler.
   extraContainers: []
@@ -909,7 +909,7 @@ scheduler:
 
   logGroomerSidecar:
     # Whether to deploy the Airflow scheduler log groomer sidecar.
-    enabled: true
+    enabled: false
     # Command to use when running the Airflow scheduler log groomer sidecar (templated).
     command: ~
     # Args to use when running the Airflow scheduler log groomer sidecar (templated).
@@ -1426,7 +1426,7 @@ triggerer:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into triggerer.
   extraContainers: []
@@ -1475,7 +1475,7 @@ triggerer:
 
   logGroomerSidecar:
     # Whether to deploy the Airflow triggerer log groomer sidecar.
-    enabled: true
+    enabled: false
     # Command to use when running the Airflow triggerer log groomer sidecar (templated).
     command: ~
     # Args to use when running the Airflow triggerer log groomer sidecar (templated).
@@ -1609,7 +1609,7 @@ dagProcessor:
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Launch additional containers into dag processor.
   extraContainers: []
@@ -1681,7 +1681,7 @@ dagProcessor:
 flower:
   # Enable flower.
   # If True, and using CeleryExecutor/CeleryKubernetesExecutor, will deploy flower app.
-  enabled: true
+  enabled: false
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2099,7 +2099,7 @@ redis:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 1Gi
+    size: 20Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Annotations to add to redis volumes
@@ -2120,14 +2120,13 @@ redis:
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
-
   # Else, if password is set, create secret with it,
   # Otherwise a new password will be generated on install
   # Note: password can only be set during install, not upgrade.
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
-  safeToEvict: true
+  safeToEvict: false
 
   # Select certain nodes for redis pods.
   nodeSelector: {}
@@ -2510,11 +2509,10 @@ logs:
     # Enable persistent volume for storing logs
     enabled: false
     # Volume size for logs
-    size: 100Gi
+    size: 30Gi
     # Annotations for the logs PVC
     annotations: {}
     # If using a custom storageClass, pass name here
     storageClassName:
     ## the name of an existing PVC to use
     existingClaim:
-
