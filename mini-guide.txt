@@ -31,7 +31,7 @@ CASTAI_API_TOKEN=1340a4b94fc0430279594a09a73f24f779f7785b071fe670eae18a5fd487175
 
 kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow               
 
-kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis:6379/0' -n airflow
+kubectl create secret generic broker-secret --from-literal=connection='redis://redis:dados123456@airflow-redis:6379/0' -n airflow
 kubectl create secret generic broker-secret --from-literal=connection='cmVkaXM6Ly86ZGFkb3MxMjM0NTZAYWlyZmxvdy1yZWRpczo2Mzc5LzA=' -n airflow
 
 kubectl create secret generic broker-secret --from-literal=connection='redis://:<dados123456>@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
