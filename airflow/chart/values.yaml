@@ -396,7 +396,7 @@ data:
   # as Airflow will use sql_alchemy_conn with a db+ scheme prefix by default.
   resultBackendSecretName: ~
   #brokerUrlSecretName: broker-secret
-  #brokerUrlSecretName: broker-secret
+  brokerUrlSecretName: broker-secret
 
   # Otherwise pass connection values in
   metadataConnection:
@@ -419,7 +419,7 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  brokerUrl: redis://redis@airflow-redis.airflow.svc.cluster.local:6379/0
+  brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
 
 
 # Fernet key settings
@@ -2119,8 +2119,7 @@ redis:
   #   memory: 128Mi
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
-  #passwordSecretName: airflow-redis-secret
-
+  passwordSecretName: airflow-redis-secret
   # Else, if password is set, create secret with it,
   # Otherwise a new password will be generated on install
   # Note: password can only be set during install, not upgrade.
