@@ -223,7 +223,7 @@ ingress:
 # Network policy configuration
 networkPolicies:
   # Enabled network policies
-  enabled: true
+  enabled: false
 
 # Extra annotations to apply to all
 # Airflow pods
