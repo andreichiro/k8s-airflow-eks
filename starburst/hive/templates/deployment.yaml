@@ -1,0 +1,281 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hive
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: hive
+  {{- if .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 6 }}
+      role: hive
+  template:
+    metadata:
+      labels:
+        {{- include "app.labels" . | nindent 8 }}
+        role: hive
+      annotations:
+        {{- include "hive.config-checksums" . | nindent 8 }}
+      {{- if .Values.podAnnotations }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      {{- end }}
+      {{- include "app.imagePullSecretName" . | nindent 6 }}
+      containers:
+        - name: hive
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.initFile }}
+          command: [ "/initFile" ]
+          args:
+            - "/opt/bin/start-hive-metastore.sh"
+            {{- range .Values.extraArguments }}
+            - "{{ . }}"
+            {{- end}}
+          {{- end }}
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 9083
+          {{- with .Values.envFrom }}
+          envFrom:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            # current docker container start script requires all this env variables even if not used
+            {{- if eq .Values.database.type "internal" }}
+            - name: HIVE_METASTORE_JDBC_URL
+              value: "{{ include "hive.database.internal.scheme" . }}://localhost:{{ .Values.database.internal.port }}/{{ .Values.database.internal.databaseName }}"
+            - name: HIVE_METASTORE_DRIVER
+              value: {{ .Values.database.internal.driver | quote }}
+            - name: HIVE_METASTORE_USER
+              value: {{ .Values.database.internal.databaseUser | quote }}
+            - name: HIVE_METASTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: databasePassword
+                  name: hive-database-password
+            {{- end }}
+            {{- if eq .Values.database.type "external" }}
+            - name: HIVE_METASTORE_JDBC_URL
+              value: {{ .Values.database.external.jdbcUrl | quote }}
+            - name: HIVE_METASTORE_DRIVER
+              value: {{ .Values.database.external.driver | quote }}
+            - name: HIVE_METASTORE_USER
+              value: {{ .Values.database.external.user | quote }}
+            {{- if not .Values.database.external.setPasswordsViaEnvFrom }}
+            - name: HIVE_METASTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: databasePassword
+                  name: hive-database-password
+            {{- end }}
+            {{- end }}
+            - name: HIVE_METASTORE_WAREHOUSE_DIR
+              value: {{ .Values.hiveMetastoreWarehouseDir | quote }}
+            - name: HIVE_METASTORE_STORAGE_AUTHORIZATION
+              value: {{ .Values.hiveMetastoreStorageAuthorization | quote }}
+            - name: REGION
+              value: {{ .Values.objectStorage.awsS3.region | quote }}
+            - name: S3_ENDPOINT
+              value: {{ .Values.objectStorage.awsS3.endpoint | quote }}
+            - name: S3_ACCESS_KEY
+              value: {{ .Values.objectStorage.awsS3.accessKey | quote }}
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: awsS3.secretKey
+                  name: hive-object-storage-secret
+            - name: S3_PATH_STYLE_ACCESS
+              value: {{ .Values.objectStorage.awsS3.pathStyleAccess | quote }}
+            - name: GOOGLE_CLOUD_KEY_FILE_PATH
+              value: /gcs-keyfile/key.json
+            {{- if eq .Values.objectStorage.azure.abfs.authType "accessKey" }}
+            - name: AZURE_ABFS_OAUTH
+              value: ""
+            - name: AZURE_ABFS_OAUTH_TOKEN_PROVIDER
+              value: ""
+            {{end}}
+            {{- if eq .Values.objectStorage.azure.abfs.authType "oauth" }}
+            - name: AZURE_ABFS_OAUTH
+              value: "OAuth"
+            - name: AZURE_ABFS_OAUTH_TOKEN_PROVIDER
+              value: "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+            {{end}}
+            - name: AZURE_ABFS_STORAGE_ACCOUNT
+              value: {{ .Values.objectStorage.azure.abfs.accessKey.storageAccount | quote }}
+            - name: AZURE_ABFS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: azure.abfs.accessKey.accessKey
+                  name: hive-object-storage-secret
+            - name: AZURE_ABFS_OAUTH_CLIENT_ID
+              value: {{ .Values.objectStorage.azure.abfs.oauth.clientId | quote }}
+            - name: AZURE_ABFS_OAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: azure.abfs.oauth.secret
+                  name: hive-object-storage-secret
+            - name: AZURE_ABFS_OAUTH_ENDPOINT
+              value: {{ .Values.objectStorage.azure.abfs.oauth.endpoint | quote }}
+            - name: AZURE_WASB_STORAGE_ACCOUNT
+              value: {{ .Values.objectStorage.azure.wasb.storageAccount | quote }}
+            - name: AZURE_WASB_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: azure.wasb.accessKey
+                  name: hive-object-storage-secret
+            - name: AZURE_ADL_CLIENT_ID
+              value: {{ .Values.objectStorage.adl.oauth2.clientId | quote }}
+            - name: AZURE_ADL_CREDENTIAL
+              valueFrom:
+                secretKeyRef:
+                  key: adl.oauth2.credential
+                  name: hive-object-storage-secret
+            - name: AZURE_ADL_REFRESH_URL
+              value: {{ .Values.objectStorage.adl.oauth2.refreshUrl | quote }}
+            {{- if .Values.hdfs.hadoopUserName }}
+            - name: HADOOP_USER_NAME
+              value: {{ .Values.hdfs.hadoopUserName | quote }}
+            {{- end }}
+            {{- if .Values.resources.limits.memory }}
+            - name: HIVE_METASTORE_HEAPSIZE_IN_KB
+              value: {{ include "hive.heap" . | quote }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: 9083
+            periodSeconds: 10
+            initialDelaySeconds: 120
+          volumeMounts:
+            {{- if .Values.initFile }}
+            - name: init-file
+              mountPath: /initFile
+              subPath: initFile
+              readOnly: true
+            {{- end }}
+            {{- if .Values.objectStorage.gs.cloudKeyFileSecret }}
+            - name: gcs-keyfile-volume
+              mountPath: /gcs-keyfile
+            {{- end }}
+            {{- include "app.volumeMounts" . | nindent 12 }}
+          terminationMessagePolicy: FallbackToLogsOnError
+        {{- if eq .Values.database.type "internal" }}
+        - name: hive-db
+          image: "{{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}"
+          imagePullPolicy: {{ .Values.database.internal.image.pullPolicy }}
+          {{- with .Values.database.internal.envFrom }}
+          envFrom:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.database.internal.databaseName }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.database.internal.databaseUser }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: databasePassword
+                  name: hive-database-password
+            - name: POSTGRESQL_DATABASE
+              value: "{{ .Values.database.internal.databaseName }}"
+            - name: POSTGRESQL_USER
+              value: "{{ .Values.database.internal.databaseUser }}"
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: databasePassword
+                  name: hive-database-password
+            {{- if .Values.database.internal.databaseAdminPassword }}
+            - name: POSTGRESQL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: databaseAdminPassword
+                  name: hive-database-password
+            {{- end}}
+            {{- with .Values.database.internal.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.database.internal.port }}
+          livenessProbe:
+            exec:
+              command:
+                - psql
+                - -h
+                - localhost
+                - -U
+                - {{ .Values.database.internal.databaseUser }}
+                - -c
+                - 'select 1;'
+                - {{ .Values.database.internal.databaseName }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresql-storage
+              subPath: data
+            # dedicated mountpath for rhel based postgres images
+            - mountPath: /var/lib/pgsql/data
+              name: postgresql-storage
+              subPath: userdata
+          {{- with .Values.database.internal.resources }}
+          resources:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          terminationMessagePolicy: FallbackToLogsOnError
+        {{- end }}
+      volumes:
+        {{- if .Values.initFile }}
+        - name: init-file
+          secret:
+            secretName: {{ template "app.init-file-secret.name" . }}
+            defaultMode: 0555
+        {{- end }}
+        {{- if eq .Values.database.type "internal" }}
+        - name: postgresql-storage
+          {{- if .Values.database.internal.volume.persistentVolumeClaim }}
+          persistentVolumeClaim:
+            claimName: hive-postgresql-pvc
+          {{- else if .Values.database.internal.volume.existingVolumeClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.database.internal.volume.existingVolumeClaim }}
+          {{- else }}
+          {{- .Values.database.internal.volume | toYaml | nindent 10 }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.objectStorage.gs.cloudKeyFileSecret }}
+        - name: gcs-keyfile-volume
+          secret:
+            secretName: {{ .Values.objectStorage.gs.cloudKeyFileSecret }}
+        {{- end }}
+        {{- include "app.volumes" . | nindent 8 }}
+      {{- include "nodeSelector.nodePool" .  | nindent 6}}
+      {{- with .Values.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

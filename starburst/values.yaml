@@ -120,14 +120,14 @@ expose:
     name: "starburst"
     ports:
       http:
-        port: 8080
+        port: 8090
         # https:
         #   port: 8443
   nodePort:
     name: "starburst"
     ports:
       http:
-        port: 8080
+        port: 8090
         nodePort: 30080
     # https:
     #   port: 8443
@@ -138,7 +138,7 @@ expose:
     IP: ""
     ports:
       http:
-        port: 8080
+        port: 8090
     # https:
     #   port: 8443
     annotations: {}
@@ -146,7 +146,7 @@ expose:
   ingress:
     ingressName: "coordinator-ingress"
     serviceName: "starburst"
-    servicePort: 8080
+    servicePort: 8090
     ingressClassName:
     tls:
       enabled: true
@@ -159,7 +159,7 @@ expose:
 internal:
   ports:
     http:
-      port: 8080
+      port: 8090
     https:
       port: 8443
 # ------------------------------------------------------------------------------
@@ -239,8 +239,8 @@ coordinator:
     #
     other: {}
   resources:
-    memory: "60Gi"
-    cpu: 16
+    memory: "16Gi"
+    cpu: 2
   # size of container memory headroom, needs to be less than resource allocation limit for memory
   nodeMemoryHeadroom: "2Gi"
   # Percentage of container memory reduced with headroom assigned to Java heap, must be less than 100
@@ -336,9 +336,9 @@ worker:
   # number of workers
   replicas: 2
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 1
-    maxReplicas: 100
+    maxReplicas: 5
     targetCPUUtilizationPercentage: 80
   kedaScaler:
     enabled: false
@@ -355,7 +355,7 @@ worker:
       cooldownPeriod: 300
       idleReplicaCount: 0
       minReplicaCount: 1
-      maxReplicaCount: 100
+      maxReplicaCount: 10
       triggers:
         - metadata:
             scaleMethod: "query_queue"
@@ -368,8 +368,8 @@ worker:
   deploymentTerminationGracePeriodSeconds: 300 # 5 minutes
   starburstWorkerShutdownGracePeriodSeconds: 120 # 2 minutes
   resources:
-    memory: "100Gi"
-    cpu: 16
+    memory: "32Gi"
+    cpu: 4
   # size of container memory headroom, needs to be less that resource allocation limit for memory
   nodeMemoryHeadroom: "2Gi"
   # Percentage of container memory reduced with headroom assigned to Java heap, must be less than 100
