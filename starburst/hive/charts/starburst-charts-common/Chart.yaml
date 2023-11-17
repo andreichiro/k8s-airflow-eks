@@ -1,6 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: Common helpers for Starburstdata platform charts
-name: starburst-charts-common
-type: library
-version: 423.6.0

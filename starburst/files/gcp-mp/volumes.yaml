@@ -1,5 +1,0 @@
-- name: ubbagent-config
-  configMap:
-    name: ubbagent-config
-- name: ubbagent-state
-  emptyDir: {}

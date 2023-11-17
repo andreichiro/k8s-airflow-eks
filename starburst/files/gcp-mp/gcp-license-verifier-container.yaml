@@ -1,7 +1,0 @@
-- name: gcp-license-verifier
-  image: {{ .Values.gcpSepLicenseVerifier.image }}
-  imagePullPolicy: {{ .Values.gcpSepLicenseVerifier.pullPolicy | default "IfNotPresent" }}
-  volumeMounts:
-    - name: ubbagent-config
-      mountPath: /app/ubbagent/config.yaml
-      subPath: config.yaml
