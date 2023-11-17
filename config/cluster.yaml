@@ -69,7 +69,7 @@ vpc:
     
 managedNodeGroups:
   - name: lakehouse-on-k8s-demand
-    instanceType: m5.large
+    instanceTypes: ["m5.xlarge", "m5.2xlarge", "t3.medium"] 
     minSize: 0
     desiredCapacity: 1
     maxSize: 10
@@ -97,11 +97,11 @@ managedNodeGroups:
         externalDNS: true
 
   - name: lakehouse-on-k8s-spot
-    instancesDistribution:
-        instanceTypes: ["m5.xlarge", "m5.2xlarge", "m5.large", "m5dn.xlarge"] 
-        onDemandBaseCapacity: 0
-        onDemandPercentageAboveBaseCapacity: 0
-        spotAllocationStrategy: capacity-optimized
+    instanceTypes: ["m5.xlarge", "m5.2xlarge", "m5.large"] 
+    spot: true
+    onDemandBaseCapacity: 0
+    onDemandPercentageAboveBaseCapacity: 0
+    spotAllocationStrategy: capacity-optimized
     minSize: 0
     desiredCapacity: 3
     maxSize: 6
