@@ -428,8 +428,6 @@ data:
   # Note: brokerUrl can only be set during install, not upgrade
   #brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
 
-  SQLALCHEMY_DATABASE_URI: "postgresql://postgres:postgres@airflow-metastore.cetet7juxwom.us-east-1.rds.amazonaws.com:5432/airflow-metastore"
-
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
 
@@ -602,7 +600,7 @@ workers:
 
   persistence:
     # Enable persistent volumes
-    enabled: true
+    enabled: false
     # Volume size for worker StatefulSet
     size: 100Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
@@ -2400,13 +2398,13 @@ dags:
   # Where dags volume will be mounted. Works for both persistence and gitSync.
   # If not specified, dags mount path will be set to $AIRFLOW_HOME/dags
   mountPath: ~
-  persistence:
+  persistence: true
     # Annotations for dags PVC
     annotations: {}
     # Enable persistent volume for storing dags
     enabled: false
     # Volume size for dags
-    size: 1Gi
+    size: 100Gi
     # If using a custom storageClass, pass name here
     storageClassName:
     # access mode of the persistent volume

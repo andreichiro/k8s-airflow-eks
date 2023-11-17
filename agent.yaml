@@ -1,0 +1,504 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent-critical-pods
+    namespace: castai-agent
+spec:
+    scopeSelector:
+        matchExpressions:
+            - operator: In
+              scopeName: PriorityClass
+              values:
+                - system-cluster-critical
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+    namespace: castai-agent
+---
+apiVersion: v1
+data:
+    API_KEY: ZDYyZDBiMTM2M2NkYTBlYzMzM2NhMzU5ZDA2MTc0MTU4Y2ZlYzI0OGNmYzZjZDJiODM4YzI0Yzc5MWU2ODc2NQ==
+kind: Secret
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+    namespace: castai-agent
+---
+apiVersion: v1
+data:
+    castai-agent-autoscaler: |-
+        {
+          "agent": {
+            "requests": {
+              "memory": {
+                "base": "2Gi",
+                "max": "8Gi",
+                "step": "256Mi",
+                "nodesPerStep": 20,
+                "coresPerStep": 480
+              }
+            },
+            "limits": {
+              "memory": {
+                "base": "2Gi",
+                "max": "8Gi",
+                "step": "256Mi",
+                "nodesPerStep": 20,
+                "coresPerStep": 480
+              }
+            }
+          }
+        }
+kind: ConfigMap
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent-autoscaler
+    namespace: castai-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+rules:
+    - apiGroups:
+        - ""
+      resources:
+        - pods
+        - nodes
+        - replicationcontrollers
+        - persistentvolumeclaims
+        - persistentvolumes
+        - services
+        - namespaces
+        - events
+        - configmaps
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - ""
+      resources:
+        - namespaces
+      verbs:
+        - get
+    - apiGroups:
+        - apps
+      resources:
+        - deployments
+        - replicasets
+        - daemonsets
+        - statefulsets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - storage.k8s.io
+      resources:
+        - storageclasses
+        - csinodes
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - batch
+      resources:
+        - jobs
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - autoscaling
+      resources:
+        - horizontalpodautoscalers
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - coordination.k8s.io
+      resources:
+        - leases
+      verbs:
+        - create
+        - get
+        - list
+        - watch
+        - update
+    - apiGroups:
+        - metrics.k8s.io
+      resources:
+        - pods
+      verbs:
+        - get
+        - list
+    - apiGroups:
+        - policy
+      resources:
+        - poddisruptionbudgets
+      verbs:
+        - get
+        - list
+        - watch
+    - nonResourceURLs:
+        - /version
+      verbs:
+        - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: castai-agent
+subjects:
+    - kind: ServiceAccount
+      name: castai-agent
+      namespace: castai-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+    namespace: castai-agent
+rules:
+    - apiGroups:
+        - apps
+      resourceNames:
+        - castai-agent
+      resources:
+        - deployments
+      verbs:
+        - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+    namespace: castai-agent
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: castai-agent
+subjects:
+    - kind: ServiceAccount
+      name: castai-agent
+      namespace: castai-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent-cpvpa
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent-cpvpa
+    name: castai-agent-cpvpa
+    namespace: castai-agent
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: castai-agent-cpvpa
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/instance: castai-agent-cpvpa
+                app.kubernetes.io/name: castai-agent-cpvpa
+        spec:
+            affinity:
+                nodeAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                        - preference:
+                            matchExpressions:
+                                - key: provisioner.cast.ai/managed-by
+                                  operator: In
+                                  values:
+                                    - cast.ai
+                          weight: 100
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                            - matchExpressions:
+                                - key: kubernetes.io/os
+                                  operator: NotIn
+                                  values:
+                                    - windows
+                podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                        - podAffinityTerm:
+                            labelSelector:
+                                matchExpressions:
+                                    - key: app.kubernetes.io/name
+                                      operator: In
+                                      values:
+                                        - castai-agent
+                            topologyKey: kubernetes.io/hostname
+                          weight: 100
+            automountServiceAccountToken: true
+            containers:
+                - command:
+                    - /cpvpa
+                    - --target=deployment/castai-agent
+                    - --namespace=castai-agent
+                    - --logtostderr=true
+                    - --poll-period-seconds=300
+                    - --config-file=/etc/config/castai-agent-autoscaler
+                  image: registry.k8s.io/cpa/cpvpa:v0.8.4
+                  name: autoscaler
+                  resources: {}
+                  securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                        drop:
+                            - ALL
+                    readOnlyRootFilesystem: true
+                  volumeMounts:
+                    - mountPath: /etc/config
+                      name: autoscaler-config
+            priorityClassName: system-cluster-critical
+            securityContext:
+                fsGroup: 65532
+                runAsGroup: 65532
+                runAsNonRoot: true
+                runAsUser: 65532
+                seccompProfile:
+                    type: RuntimeDefault
+            serviceAccountName: castai-agent
+            volumes:
+                - configMap:
+                    name: castai-agent-autoscaler
+                  name: autoscaler-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+        meta.helm.sh/release-name: castai-agent
+        meta.helm.sh/release-namespace: castai-agent
+    labels:
+        app.kubernetes.io/instance: castai-agent
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: castai-agent
+        app.kubernetes.io/version: v0.52.5
+    name: castai-agent
+    namespace: castai-agent
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/instance: castai-agent
+            app.kubernetes.io/name: castai-agent
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/instance: castai-agent
+                app.kubernetes.io/name: castai-agent
+        spec:
+            affinity:
+                nodeAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                        - preference:
+                            matchExpressions:
+                                - key: provisioner.cast.ai/managed-by
+                                  operator: In
+                                  values:
+                                    - cast.ai
+                          weight: 100
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                            - matchExpressions:
+                                - key: kubernetes.io/os
+                                  operator: NotIn
+                                  values:
+                                    - windows
+                podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                        - podAffinityTerm:
+                            labelSelector:
+                                matchExpressions:
+                                    - key: app.kubernetes.io/name
+                                      operator: In
+                                      values:
+                                        - castai-agent
+                            topologyKey: kubernetes.io/hostname
+                          weight: 100
+            automountServiceAccountToken: true
+            containers:
+                - env:
+                    - name: API_URL
+                      value: api.cast.ai
+                    - name: PROVIDER
+                      value: eks
+                    - name: MONITOR_METADATA
+                      value: /agent-metadata/metadata
+                    - name: PPROF_PORT
+                      value: "6060"
+                  envFrom:
+                    - secretRef:
+                        name: castai-agent
+                  image: us-docker.pkg.dev/castai-hub/library/agent:v0.52.5
+                  imagePullPolicy: IfNotPresent
+                  livenessProbe:
+                    httpGet:
+                        port: healthz
+                  name: agent
+                  ports:
+                    - containerPort: 9876
+                      name: healthz
+                  readinessProbe:
+                    httpGet:
+                        port: healthz
+                  resources:
+                    limits:
+                        cpu: 1000m
+                    requests:
+                        cpu: 100m
+                  securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                        drop:
+                            - ALL
+                    readOnlyRootFilesystem: true
+                  volumeMounts:
+                    - mountPath: /agent-metadata
+                      name: shared-metadata
+                - env:
+                    - name: MODE
+                      value: monitor
+                    - name: MONITOR_METADATA
+                      value: /agent-metadata/metadata
+                    - name: SELF_POD_NAME
+                      valueFrom:
+                        fieldRef:
+                            fieldPath: metadata.name
+                    - name: SELF_POD_NAMESPACE
+                      valueFrom:
+                        fieldRef:
+                            fieldPath: metadata.namespace
+                    - name: SELF_POD_NODE
+                      valueFrom:
+                        fieldRef:
+                            fieldPath: spec.nodeName
+                    - name: API_URL
+                      value: api.cast.ai
+                    - name: PROVIDER
+                      value: eks
+                    - name: PPROF_PORT
+                      value: "6060"
+                  envFrom:
+                    - secretRef:
+                        name: castai-agent
+                  image: us-docker.pkg.dev/castai-hub/library/agent:v0.52.5
+                  imagePullPolicy: IfNotPresent
+                  name: monitor
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 128Mi
+                  securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                        drop:
+                            - ALL
+                    readOnlyRootFilesystem: true
+                  volumeMounts:
+                    - mountPath: /agent-metadata
+                      name: shared-metadata
+            priorityClassName: system-cluster-critical
+            securityContext:
+                fsGroup: 65532
+                runAsGroup: 65532
+                runAsNonRoot: true
+                runAsUser: 65532
+                seccompProfile:
+                    type: RuntimeDefault
+            serviceAccountName: castai-agent
+            shareProcessNamespace: true
+            volumes:
+                - emptyDir: {}
+                  name: shared-metadata
