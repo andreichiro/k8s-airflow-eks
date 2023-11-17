@@ -408,7 +408,14 @@ data:
     db: airflow-metastore
     sslmode: disable
   # resultBackendConnection defaults to the same database as metadataConnection
-  resultBackendConnection: ~
+  resultBackendConnection:
+    user: postgres
+    pass: postgres
+    protocol: postgresql
+    host: airflow-metastore.cetet7juxwom.us-east-1.rds.amazonaws.com
+    port: 5432
+    db: airflow-metastore
+    sslmode: disable
   # or, you can use a different database
   # resultBackendConnection:
   #   user: postgres
