@@ -428,6 +428,7 @@ data:
   # Note: brokerUrl can only be set during install, not upgrade
   #brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
 
+  SQLALCHEMY_DATABASE_URI: "postgresql://postgres:postgres@airflow-metastore.cetet7juxwom.us-east-1.rds.amazonaws.com:5432/airflow-metastore"
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
