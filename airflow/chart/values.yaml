@@ -2271,13 +2271,13 @@ cleanup:
 # Not recommended for production
 postgresql:
   enabled: false
-  image:
-    tag: "11"
-  auth:
-    enablePostgresUser: true
-    postgresPassword: postgres
-    username: postgres
-    password: postgres
+#  image:
+#    tag: "11"
+#  auth:
+#    enablePostgresUser: false
+#    postgresPassword: postgres
+#    username: postgres
+#    password: postgres
 
 # Config settings to go into the mounted airflow.cfg
 #
