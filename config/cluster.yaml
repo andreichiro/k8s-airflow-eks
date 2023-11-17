@@ -71,7 +71,7 @@ managedNodeGroups:
   - name: lakehouse-on-k8s
     instanceType: m5.xlarge
     minSize: 0
-    desiredCapacity: 3
+    desiredCapacity: 1
     maxSize: 10
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true

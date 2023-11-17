@@ -303,8 +303,6 @@ enableBuiltInSecretEnvVars:
   AIRFLOW__ELASTICSEARCH__HOST: true
   AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: true
   AIRFLOW__CORE__STORE_SERIALIZED_DAGS: true
-  AIRFLOW_CORE__STORE_CODE: true
-  AIRFLOW_CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL: 30
 
 # Priority Classes that will be installed by charts.
 # Ideally, there should be an entry for dagProcessor, flower,
