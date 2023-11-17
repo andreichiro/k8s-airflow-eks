@@ -137,7 +137,7 @@ labels: {}
 # Ingress configuration
 ingress:
   # Enable all ingress resources (deprecated - use ingress.web.enabled and ingress.flower.enabled)
-  enabled: ~
+  enabled: true
 
   # Configs for the Ingress of the web Service
   web:
@@ -302,6 +302,9 @@ enableBuiltInSecretEnvVars:
   AIRFLOW__CELERY__BROKER_URL: true
   AIRFLOW__ELASTICSEARCH__HOST: true
   AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: true
+  AIRFLOW__CORE__STORE_SERIALIZED_DAGS: true
+  AIRFLOW_CORE__STORE_CODE: true
+  AIRFLOW_CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL: 30
 
 # Priority Classes that will be installed by charts.
 # Ideally, there should be an entry for dagProcessor, flower,
@@ -403,9 +406,9 @@ data:
     user: postgres
     pass: postgres
     protocol: postgresql
-    host: ~
+    host: airflow-metastore.cetet7juxwom.us-east-1.rds.amazonaws.com
     port: 5432
-    db: postgres
+    db: airflow-metastore
     sslmode: disable
   # resultBackendConnection defaults to the same database as metadataConnection
   resultBackendConnection: ~
@@ -489,7 +492,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2270,7 +2273,7 @@ cleanup:
 # Configuration for postgresql subchart
 # Not recommended for production
 postgresql:
-  enabled: true
+  enabled: false
   image:
     tag: "11"
   auth:
