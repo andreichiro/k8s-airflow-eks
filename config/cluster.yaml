@@ -68,11 +68,43 @@ vpc:
         cidr: "10.0.103.0/24"   # (optional, must match CIDR used by the given subnet)
     
 managedNodeGroups:
-  - name: lakehouse-on-k8s
-    instanceType: m5.xlarge
+  - name: lakehouse-on-k8s-demand
+    instanceType: m5.large
     minSize: 0
     desiredCapacity: 1
     maxSize: 10
+    availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
+    privateNetworking: true
+    volumeSize: 1000
+    updateConfig:
+      maxUnavailable: 1 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
+    ssh:
+      allow: true
+      publicKeyName: andreichiro
+      # new feature for restricting SSH access to certain AWS security group IDs
+    labels: {role: worker}
+    # Note: unmanaged nodegroups (`nodeGroups` field) use a different structure (map[string]string) to express taints
+    tags:
+      nodegroup-role: worker
+    iam:
+      withAddonPolicies:
+        ebs: true
+        imageBuilder: true
+        efs: true
+        albIngress: true
+        autoScaler: true
+        cloudWatch: true
+        externalDNS: true
+
+  - name: lakehouse-on-k8s-spot
+    instancesDistribution:
+        instanceTypes: ["m5.xlarge", "m5.2xlarge", "m5.large", "m5dn.xlarge"] 
+        onDemandBaseCapacity: 0
+        onDemandPercentageAboveBaseCapacity: 0
+        spotAllocationStrategy: capacity-optimized
+    minSize: 0
+    desiredCapacity: 3
+    maxSize: 6
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
     volumeSize: 1000
