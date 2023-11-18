@@ -34,11 +34,11 @@ def sql_to_s3_to_emr_serverless_dag():
     # Task to transfer data from MySQL to S3
     query_to_s3 = SqlToS3Operator(
         task_id='mysql_to_s3',
-        mysql_conn_id="sql_rewards",
+        sql_conn_id="sql_rewards",
         aws_conn_id="aws_conn_id",
-        sql=Variable.get("sql_query"),
+        query=Variable.get("sql_query"),
         s3_bucket=Variable.get("s3_bucket"),
-        s3_key='data/output.sql',
+        s3_key='raw_output.sql',
         replace=True  # Overwrites the S3 file if it exists
     )
 
