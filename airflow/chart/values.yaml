@@ -696,8 +696,8 @@ workers:
   #      weight: 100
   tolerations:
     - key: "spot"
-      operator: "Exists"
-      effect: "NoSchedule"
+      value: "true"
+      effect: "NoExecute"
 
   topologySpreadConstraints: []
   # hostAliases to use in worker pods.
