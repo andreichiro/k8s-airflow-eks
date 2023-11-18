@@ -494,20 +494,6 @@ kerberos:
 
 # Airflow Worker Config
 workers:
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: "spot"
-            operator: "DoesNotExist"
-  tolerations:
-  - key: "spot"
-    operator: "Equal"
-    value: "true"
-    effect: "NoSchedule"
-
   # Number of airflow celery workers in StatefulSet
   replicas: 2
   # Max number of old replicasets to retain
@@ -657,7 +643,6 @@ workers:
     #   cpu: 100m
     #   memory: 128Mi
 
-
   resources: {}
   #  limits:
   #   cpu: 100m
@@ -709,7 +694,11 @@ workers:
   #            component: worker
   #        topologyKey: kubernetes.io/hostname
   #      weight: 100
-  tolerations: []
+  tolerations:
+    - key: "spot"
+      operator: "Exists"
+      effect: "NoSchedule"
+
   topologySpreadConstraints: []
   # hostAliases to use in worker pods.
   # See:
