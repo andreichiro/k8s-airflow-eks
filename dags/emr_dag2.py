@@ -19,6 +19,42 @@ default_args = {
     # Add other default args as needed
 }
 
+# Task to trigger the EMR Serverless Spark job
+@task
+def trigger_emr_serverless_spark_job():
+    aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
+    client = aws_hook.get_client_type('emr-serverless')
+    job_run_request = {
+        'ExecutionRoleArn': Variable.get("emr_execution_role_arn"),
+        'ReleaseLabel': 'emr-6.3.0',  # specify the EMR release
+        'JobDriver': {
+            'SparkSubmit': {
+                'EntryPoint': Variable.get("notebook_s3_path"),  # S3 path to your Jupyter notebook
+                'EntryPointArguments': [],  # any necessary arguments
+                'SparkSubmitParameters': '--conf spark.executor.instances=2'  # Spark parameters
+            }
+        },
+        'ConfigurationOverrides': {
+            'ApplicationConfiguration': [],  # additional configurations
+            'MonitoringConfiguration': {}  # monitoring configurations
+        }
+    }
+    response = client.start_job_run(**job_run_request)
+    return response['jobRunId']
+
+# Sensor task to monitor the EMR Serverless job status
+@sensor_task(timeout=300, mode="poke", poke_interval=30)
+def emr_serverless_sensor(job_run_id):
+    aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
+    client = aws_hook.get_client_type('emr-serverless')
+    response = client.describe_job_run(id=job_run_id)
+    status = response['jobRun']['state']
+    if status == 'SUCCESS':
+        return True
+    elif status in ['FAILED', 'CANCELLED']:
+        raise ValueError('EMR Serverless Job failed or was cancelled')
+    return False
+
 @dag(
     'sql_to_s3_to_emr_serverless', 
     default_args=default_args, 
@@ -26,6 +62,7 @@ default_args = {
     catchup=False,
     description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job'
 )
+
 def sql_to_s3_to_emr_serverless_dag():
     """
     DAG for transferring data from MySQL to S3 and then triggering an EMR Serverless Spark job.
@@ -42,46 +79,15 @@ def sql_to_s3_to_emr_serverless_dag():
         replace=True  # Overwrites the S3 file if it exists
     )
 
-    # Task to trigger the EMR Serverless Spark job
-    @task
-    def trigger_emr_serverless_spark_job():
-        aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
-        client = aws_hook.get_client_type('emr-serverless')
-        job_run_request = {
-            'ExecutionRoleArn': Variable.get("emr_execution_role_arn"),
-            'ReleaseLabel': 'emr-6.3.0',  # specify the EMR release
-            'JobDriver': {
-                'SparkSubmit': {
-                    'EntryPoint': Variable.get("notebook_s3_path"),  # S3 path to your Jupyter notebook
-                    'EntryPointArguments': [],  # any necessary arguments
-                    'SparkSubmitParameters': '--conf spark.executor.instances=2'  # Spark parameters
-                }
-            },
-            'ConfigurationOverrides': {
-                'ApplicationConfiguration': [],  # additional configurations
-                'MonitoringConfiguration': {}  # monitoring configurations
-            }
-        }
-        response = client.start_job_run(**job_run_request)
-        return response['jobRunId']
+     # Call the task function to create a task instance
+    trigger_emr_instance = trigger_emr_serverless_spark_job()
 
-    trigger_emr = trigger_emr_serverless_spark_job()
-
-    # Sensor task to monitor the EMR Serverless job status
-    @sensor_task(timeout=300, mode="poke", poke_interval=30)
-    def emr_serverless_sensor(job_run_id):
-        aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
-        client = aws_hook.get_client_type('emr-serverless')
-        response = client.describe_job_run(id=job_run_id)
-        status = response['jobRun']['state']
-        if status == 'SUCCESS':
-            return True
-        elif status in ['FAILED', 'CANCELLED']:
-            raise ValueError('EMR Serverless Job failed or was cancelled')
-        return False
+    # Call the sensor task function to create a task instance
+    emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance.output)
 
     # Defining the task sequence
-    query_to_s3 >> trigger_emr >> emr_serverless_sensor
+    query_to_s3 >> trigger_emr_instance >> emr_serverless_sensor_instance
+
 
 # Create the DAG instance
 dag = sql_to_s3_to_emr_serverless_dag()
