@@ -135,9 +135,9 @@ schedulerName: ~
 labels: {}
 
 # Ingress configuration
-ingress:
+ingress: ~
   # Enable all ingress resources (deprecated - use ingress.web.enabled and ingress.flower.enabled)
-  enabled: true
+  enabled: ~
 
   # Configs for the Ingress of the web Service
   web:
@@ -408,14 +408,7 @@ data:
     db: airflow-metastore
     sslmode: disable
   # resultBackendConnection defaults to the same database as metadataConnection
-  resultBackendConnection:
-    user: postgres
-    pass: postgres
-    protocol: postgresql
-    host: airflow-metastore.cetet7juxwom.us-east-1.rds.amazonaws.com
-    port: 5432
-    db: airflow-metastore
-    sslmode: disable
+  #resultBackendConnection: 
   # or, you can use a different database
   # resultBackendConnection:
   #   user: postgres
@@ -427,6 +420,7 @@ data:
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
   #brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
+
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
@@ -607,6 +601,7 @@ workers:
     storageClassName:
     # Execute init container to chown log directory.
     # This is currently only needed in kind, due to usage
+    # of local-path provisioner.
     fixPermissions: false
     # Annotations to add to worker volumes
     annotations: {}
@@ -642,6 +637,7 @@ workers:
     #  requests:
     #   cpu: 100m
     #   memory: 128Mi
+
 
   resources: {}
   #  limits:
@@ -694,7 +690,7 @@ workers:
   #            component: worker
   #        topologyKey: kubernetes.io/hostname
   #      weight: 100
-
+  tolerations: []
   topologySpreadConstraints: []
   # hostAliases to use in worker pods.
   # See:
@@ -2402,7 +2398,7 @@ dags:
     # Enable persistent volume for storing dags
     enabled: false
     # Volume size for dags
-    size: 100Gi
+    size: 1Gi
     # If using a custom storageClass, pass name here
     storageClassName:
     # access mode of the persistent volume
