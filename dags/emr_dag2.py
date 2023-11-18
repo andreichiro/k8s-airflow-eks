@@ -21,7 +21,7 @@ default_args = {
 
 # Task to trigger the EMR Serverless Spark job
 @task
-def trigger_emr_serverless_spark_job():
+def trigger_emr_serverless_spark_job(sql_query):
     aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
     client = aws_hook.get_client_type('emr-serverless')
     job_run_request = {
@@ -30,7 +30,7 @@ def trigger_emr_serverless_spark_job():
         'JobDriver': {
             'SparkSubmit': {
                 'EntryPoint': Variable.get("notebook_s3_path"),  # S3 path to your Jupyter notebook
-                'EntryPointArguments': [],  # any necessary arguments
+                'EntryPointArguments': [sql_query],  # Pass the SQL query as an argument
                 'SparkSubmitParameters': '--conf spark.executor.instances=2'  # Spark parameters
             }
         },
@@ -79,8 +79,10 @@ def sql_to_s3_to_emr_serverless_dag():
         replace=True  # Overwrites the S3 file if it exists
     )
 
-     # Call the task function to create a task instance
-    trigger_emr_instance = trigger_emr_serverless_spark_job()
+    sql_query = "SELECT * FROM table"  # Or fetch from Variable
+
+    # Call the task function to create a task instance
+    trigger_emr_instance = trigger_emr_serverless_spark_job(sql_query)
 
     # Call the sensor task function to create a task instance
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
