@@ -75,7 +75,7 @@ def sql_to_s3_to_emr_serverless_dag():
         aws_conn_id="aws_conn_id",
         query=Variable.get("sql_query"),
         s3_bucket=Variable.get("s3_bucket"),
-        s3_key='data/raw_output.parquet',
+        s3_key='raw/app_output.sql',
         replace=True  # Overwrites the S3 file if it exists
     )
 
