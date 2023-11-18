@@ -135,9 +135,9 @@ schedulerName: ~
 labels: {}
 
 # Ingress configuration
-ingress: 
+ingress:
   # Enable all ingress resources (deprecated - use ingress.web.enabled and ingress.flower.enabled)
-  enabled: false
+  enabled: ~
 
   # Configs for the Ingress of the web Service
   web:
@@ -403,12 +403,12 @@ data:
     user: postgres
     pass: postgres
     protocol: postgresql
-    host: airflow-metastore.cetet7juxwom.us-east-1.rds.amazonaws.com
+    host: ~
     port: 5432
-    db: airflow-metastore
+    db: postgres
     sslmode: disable
   # resultBackendConnection defaults to the same database as metadataConnection
-  #resultBackendConnection: 
+  resultBackendConnection: ~
   # or, you can use a different database
   # resultBackendConnection:
   #   user: postgres
@@ -489,7 +489,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2270,14 +2270,14 @@ cleanup:
 # Configuration for postgresql subchart
 # Not recommended for production
 postgresql:
-  enabled: false
-#  image:
-#    tag: "11"
-#  auth:
-#    enablePostgresUser: false
-#    postgresPassword: postgres
-#    username: postgres
-#    password: postgres
+  enabled: true
+  image:
+    tag: "11"
+  auth:
+    enablePostgresUser: true
+    postgresPassword: postgres
+    username: "andreichiro "
+    password: "andreichiro"
 
 # Config settings to go into the mounted airflow.cfg
 #
