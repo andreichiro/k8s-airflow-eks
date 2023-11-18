@@ -10,7 +10,7 @@ eksclt create cluster -f config/cluster.yaml
 helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=1 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=1 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=1 --set applicationSet.replicaCount=1 --set server.service.type=LoadBalancer --create-namespace
 
 base64 -> Y1JuYlNBUVFPaENod2xrTg==
-
+ifhETd3HAxSkdKcF
 
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 

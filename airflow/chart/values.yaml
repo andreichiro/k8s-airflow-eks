@@ -694,10 +694,6 @@ workers:
   #            component: worker
   #        topologyKey: kubernetes.io/hostname
   #      weight: 100
-  tolerations:
-    - key: "spot"
-      value: "true"
-      effect: "NoExecute"
 
   topologySpreadConstraints: []
   # hostAliases to use in worker pods.
