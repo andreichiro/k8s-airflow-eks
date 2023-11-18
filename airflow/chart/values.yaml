@@ -137,7 +137,7 @@ labels: {}
 # Ingress configuration
 ingress: ~
   # Enable all ingress resources (deprecated - use ingress.web.enabled and ingress.flower.enabled)
-  enabled: ~
+  enabled: false
 
   # Configs for the Ingress of the web Service
   web:
