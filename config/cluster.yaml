@@ -71,7 +71,7 @@ managedNodeGroups:
   - name: lakehouse-on-k8s-demand
     instanceTypes: ["t3.medium", "m5.xlarge", "m5.2xlarge"] 
     minSize: 0
-    desiredCapacity: 1
+    desiredCapacity: 4
     maxSize: 10
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
