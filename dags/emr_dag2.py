@@ -83,7 +83,7 @@ def sql_to_s3_to_emr_serverless_dag():
     trigger_emr_instance = trigger_emr_serverless_spark_job()
 
     # Call the sensor task function to create a task instance
-    emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance.output)
+    emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
 
     # Defining the task sequence
     query_to_s3 >> trigger_emr_instance >> emr_serverless_sensor_instance
