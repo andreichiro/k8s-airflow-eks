@@ -1,10 +1,11 @@
 from airflow import DAG
 from airflow.decorators import task, dag
 from datetime import datetime, timedelta
-from airflow.providers.amazon.aws.transfers.mysql_to_s3 import MySqlToS3Operator
+from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
 from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
+
 
 # Default arguments for the DAG
 default_args = {
@@ -31,7 +32,7 @@ def sql_to_s3_to_emr_serverless_dag():
     """
 
     # Task to transfer data from MySQL to S3
-    query_to_s3 = MySqlToS3Operator(
+    query_to_s3 = SqlToS3Operator(
         task_id='mysql_to_s3',
         mysql_conn_id=Variable.get("mysql_conn_id"),
         aws_conn_id=Variable.get("aws_conn_id"),
