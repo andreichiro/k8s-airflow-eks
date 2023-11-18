@@ -135,7 +135,7 @@ schedulerName: ~
 labels: {}
 
 # Ingress configuration
-ingress: ~
+ingress: 
   # Enable all ingress resources (deprecated - use ingress.web.enabled and ingress.flower.enabled)
   enabled: false
 
