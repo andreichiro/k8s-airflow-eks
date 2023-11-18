@@ -69,39 +69,10 @@ vpc:
     
 managedNodeGroups:
   - name: lakehouse-on-k8s-demand
-    instanceTypes: ["m5.xlarge", "m5.2xlarge", "t3.medium"] 
+    instanceTypes: ["t3.medium", "m5.xlarge", "m5.2xlarge"] 
     minSize: 0
     desiredCapacity: 1
     maxSize: 10
-    availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
-    privateNetworking: true
-    volumeSize: 1000
-    updateConfig:
-      maxUnavailable: 1 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
-    ssh:
-      allow: true
-      publicKeyName: andreichiro
-      # new feature for restricting SSH access to certain AWS security group IDs
-    labels: {role: worker}
-    # Note: unmanaged nodegroups (`nodeGroups` field) use a different structure (map[string]string) to express taints
-    tags:
-      nodegroup-role: worker
-    iam:
-      withAddonPolicies:
-        ebs: true
-        imageBuilder: true
-        efs: true
-        albIngress: true
-        autoScaler: true
-        cloudWatch: true
-        externalDNS: true
-
-  - name: lakehouse-on-k8s-spot
-    instanceTypes: ["m5.xlarge", "m5.2xlarge", "m5.large"] 
-    spot: true
-    minSize: 0
-    desiredCapacity: 3
-    maxSize: 6
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
     volumeSize: 1000
