@@ -596,7 +596,7 @@ workers:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 100Gi
+    size: 300Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.
@@ -1403,7 +1403,7 @@ triggerer:
     # Enable persistent volumes
     enabled: true
     # Volume size for triggerer StatefulSet
-    size: 100Gi
+    size: 300Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.
@@ -2099,7 +2099,7 @@ redis:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 20Gi
+    size: 200Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Annotations to add to redis volumes
@@ -2398,7 +2398,7 @@ dags:
     # Enable persistent volume for storing dags
     enabled: false
     # Volume size for dags
-    size: 1Gi
+    size: 100Gi
     # If using a custom storageClass, pass name here
     storageClassName:
     # access mode of the persistent volume
