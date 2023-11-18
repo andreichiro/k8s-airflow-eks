@@ -79,7 +79,7 @@ def sql_to_s3_to_emr_serverless_dag():
         replace=True  # Overwrites the S3 file if it exists
     )
 
-    sql_query = "SELECT * FROM table"  # Or fetch from Variable
+    sql_query = `SELECT * FROM app`  # Or fetch from Variable
 
     # Call the task function to create a task instance
     trigger_emr_instance = trigger_emr_serverless_spark_job(sql_query)
