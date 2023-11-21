@@ -29,6 +29,7 @@ def get_table_names():
 @task
 def process_tables(table_names):
     s3_paths = []
+    s3_files = []
     for table_name in table_names:
         query = f"SELECT * FROM {table_name}"
         s3_key = f'raw/{table_name}.sql'
@@ -43,11 +44,12 @@ def process_tables(table_names):
         )
         s3_path = f's3://{Variable.get("s3_bucket")}/{s3_key}'
         s3_paths.append(s3_path)
-    return s3_paths
+        s3_files.append(query_to_s3)
+    return s3_files
 
 # Task to trigger the EMR Serverless Spark job
 @task
-def trigger_emr_serverless_spark_job(s3_paths):
+def trigger_emr_serverless_spark_job(s3_files):
     aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
     client = aws_hook.get_client_type('emr-serverless')
     job_run_request = {
@@ -56,7 +58,7 @@ def trigger_emr_serverless_spark_job(s3_paths):
         'JobDriver': {
             'SparkSubmit': {
                 'EntryPoint': Variable.get("notebook_s3_path"),  # S3 path to your Jupyter notebook
-                'EntryPointArguments': s3_paths,  # Pass the S3 paths as arguments
+                'EntryPointArguments': s3_files,  # Pass the S3 paths as arguments
                 'SparkSubmitParameters': '--conf spark.executor.instances=2'  # Spark parameters
             }
         },
@@ -95,17 +97,17 @@ def sql_to_s3_to_emr_serverless_dag():
     """
 
     table_names = get_table_names()
-    s3_paths = process_tables(table_names)
+    s3_files = process_tables(table_names)
     
     # Call the task function to create a task instance
-    trigger_emr_instance = trigger_emr_serverless_spark_job(s3_paths)
+    trigger_emr_instance = trigger_emr_serverless_spark_job(s3_files)
 
     # Call the sensor task function to create a task instance
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
 
     # Defining the task sequence
         # Define task dependencies
-    s3_paths >> trigger_emr_instance >> emr_serverless_sensor_instance
+    s3_files >> trigger_emr_instance >> emr_serverless_sensor_instance
 
 # Create the DAG instance
 dag = sql_to_s3_to_emr_serverless_dag()
