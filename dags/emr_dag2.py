@@ -26,9 +26,29 @@ def get_table_names():
     table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
     return table_names
 
+@task
+def process_tables(table_names):
+    s3_paths = []
+    for table_name in table_names:
+        query = f"SELECT * FROM {table_name}"
+        s3_key = f'raw/{table_name}.sql'
+        query_to_s3 = SqlToS3Operator(
+            task_id=f'mysql_to_s3_{table_name}',
+            sql_conn_id="sql_rewards",
+            aws_conn_id="aws_conn_id",
+            query=query,
+            s3_bucket=Variable.get("s3_bucket"),
+            s3_key=s3_key,
+            replace=True
+        )
+        query_to_s3.execute(dict())  # Execute the SqlToS3Operator task
+        s3_path = f's3://{Variable.get("s3_bucket")}/{s3_key}'
+        s3_paths.append(s3_path)
+    return s3_paths
+
 # Task to trigger the EMR Serverless Spark job
 @task
-def trigger_emr_serverless_spark_job(sql_query):
+def trigger_emr_serverless_spark_job(s3_paths):
     aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
     client = aws_hook.get_client_type('emr-serverless')
     job_run_request = {
@@ -37,7 +57,7 @@ def trigger_emr_serverless_spark_job(sql_query):
         'JobDriver': {
             'SparkSubmit': {
                 'EntryPoint': Variable.get("notebook_s3_path"),  # S3 path to your Jupyter notebook
-                'EntryPointArguments': [sql_query],  # Pass the SQL query as an argument
+                'EntryPointArguments': s3_paths,  # Pass the S3 paths as arguments
                 'SparkSubmitParameters': '--conf spark.executor.instances=2'  # Spark parameters
             }
         },
@@ -76,27 +96,17 @@ def sql_to_s3_to_emr_serverless_dag():
     """
 
     table_names = get_table_names()
-
-    for table_name in table_names:
-        query = f"SELECT * FROM {table_name}"
-        query_to_s3 = SqlToS3Operator(
-            task_id=f'mysql_to_s3_{table_name}',
-            sql_conn_id="sql_rewards",
-            aws_conn_id="aws_conn_id",
-            query=query,
-            s3_bucket=Variable.get("s3_bucket"),
-            s3_key=f'raw/{table_name}.sql',
-            replace=True
-        )
-
+    s3_paths = process_tables(table_names)
+    
     # Call the task function to create a task instance
-    trigger_emr_instance = trigger_emr_serverless_spark_job(query)
+    trigger_emr_instance = trigger_emr_serverless_spark_job(s3_paths)
 
     # Call the sensor task function to create a task instance
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
 
     # Defining the task sequence
-    query_to_s3 >> trigger_emr_instance >> emr_serverless_sensor_instance
+        # Define task dependencies
+    s3_paths >> trigger_emr_instance >> emr_serverless_sensor_instance(trigger_emr_instance)
 
 # Create the DAG instance
 dag = sql_to_s3_to_emr_serverless_dag()
