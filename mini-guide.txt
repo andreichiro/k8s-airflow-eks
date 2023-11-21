@@ -33,7 +33,10 @@ choco install curl -y
 cast.AI
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
+choco install kustomize
+
 GitBash
+
 
 
 48d42b967cf74c3f309bf9747f95579fe7fa72617336e01023783d7f646bb7bb
