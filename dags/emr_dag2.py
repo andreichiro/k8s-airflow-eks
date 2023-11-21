@@ -21,7 +21,7 @@ default_args = {
 
 @task
 def get_table_names():
-    mysql_hook = MySqlHook(mysql_conn_id='your_mysql_connection_id')
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
     table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
     return table_names
