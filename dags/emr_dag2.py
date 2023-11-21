@@ -42,7 +42,7 @@ def sql_to_s3_to_emr_serverless_dag():
         s3_key = f'raw/{table_name}.sql'
         s3_paths.append(s3_path)
 
-        SqlToS3Operator(
+        upload_to_s3_task = SqlToS3Operator(
             task_id=f'mysql_to_s3_{table_name}',
             sql_conn_id="sql_rewards",
             aws_conn_id="aws_conn_id",
@@ -51,6 +51,9 @@ def sql_to_s3_to_emr_serverless_dag():
             s3_key=s3_key,
             replace=True
         )
+        
+        get_table_names >> upload_to_s3_task
+
     return s3_paths
         
 # Task to trigger the EMR Serverless Spark job
