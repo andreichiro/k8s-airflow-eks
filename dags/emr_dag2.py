@@ -41,7 +41,6 @@ def process_tables(table_names):
             s3_key=s3_key,
             replace=True
         )
-        query_to_s3.execute(dict())  # Execute the SqlToS3Operator task
         s3_path = f's3://{Variable.get("s3_bucket")}/{s3_key}'
         s3_paths.append(s3_path)
     return s3_paths
