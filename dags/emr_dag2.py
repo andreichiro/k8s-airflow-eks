@@ -71,7 +71,7 @@ description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless
 )
 
 def sql_to_s3_to_emr_serverless_dag():
-    table_names = get_table_names()
+    table_names_task = get_table_names()
     s3_paths = []
 
     for table_name in table_names:
@@ -89,7 +89,7 @@ def sql_to_s3_to_emr_serverless_dag():
             replace=True
         
         )
-        get_table_names >> upload_to_s3_task
+        table_names_task >> upload_to_s3_task
     
     trigger_emr_instance = trigger_emr_serverless_spark_job(s3_paths)
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
