@@ -74,7 +74,7 @@ def sql_to_s3_to_emr_serverless_dag():
     table_names_task = get_table_names()
     s3_paths = []
 
-    for table_name in table_names:
+    for table_name in table_names_task:
         s3_path = f's3://{Variable.get("s3_bucket")}/{s3_key}'
         s3_key = f'raw/{table_name}.sql'
         s3_paths.append(s3_path)
