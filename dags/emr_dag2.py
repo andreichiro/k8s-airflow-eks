@@ -28,7 +28,7 @@ def get_table_names():
 
 @task
 def generate_s3_key(table_name):
-    s3_key = f'raw/{table_name}.sql'
+    s3_key = f'raw/{table_name}.parquet'
     return s3_key
 
 @task
@@ -100,15 +100,16 @@ def sql_to_s3_to_emr_serverless_dag():
             query=f'SELECT * FROM {table_name}',
             s3_bucket=Variable.get('s3_bucket'),
             s3_key=s3_key,
-            replace=True
+            replace=True,
+            file_format='parquet'
         )
-        table_names_list >> upload_to_s3
+        table_name >> upload_to_s3
         
     trigger_emr_instance = trigger_emr_serverless_spark_job(table_names_list)
    
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
 
-    trigger_emr_instance >> emr_serverless_sensor_instance
+    upload_to_s3 >> trigger_emr_instance >> emr_serverless_sensor_instance
 
 # Create the DAG instance
 dag = sql_to_s3_to_emr_serverless_dag()
