@@ -106,7 +106,7 @@ def sql_to_s3_to_emr_serverless_dag():
 
     # Defining the task sequence
         # Define task dependencies
-    s3_paths >> trigger_emr_instance >> emr_serverless_sensor_instance(trigger_emr_instance)
+    s3_paths >> trigger_emr_instance >> emr_serverless_sensor_instance
 
 # Create the DAG instance
 dag = sql_to_s3_to_emr_serverless_dag()
