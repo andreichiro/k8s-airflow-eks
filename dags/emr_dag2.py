@@ -5,7 +5,7 @@ from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
 from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
-
+from airflow.providers.mysql.hooks.mysql import MySqlHook
 
 # Default arguments for the DAG
 default_args = {
@@ -18,6 +18,13 @@ default_args = {
     'email_on_retry': False,
     # Add other default args as needed
 }
+
+@task
+def get_table_names():
+    mysql_hook = MySqlHook(mysql_conn_id='your_mysql_connection_id')
+    tables = mysql_hook.get_records('SHOW TABLES;')
+    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
+    return table_names
 
 # Task to trigger the EMR Serverless Spark job
 @task
@@ -68,28 +75,28 @@ def sql_to_s3_to_emr_serverless_dag():
     DAG for transferring data from MySQL to S3 and then triggering an EMR Serverless Spark job.
     """
 
-    # Task to transfer data from MySQL to S3
-    query_to_s3 = SqlToS3Operator(
-        task_id='mysql_to_s3',
-        sql_conn_id="sql_rewards",
-        aws_conn_id="aws_conn_id",
-        query=Variable.get("sql_query"),
-        s3_bucket=Variable.get("s3_bucket"),
-        s3_key='raw/app_output.sql',
-        replace=True  # Overwrites the S3 file if it exists
-    )
+    table_names = get_table_names()
 
-    sql_query = "SELECT * FROM app"  # Or fetch from Variable
+    for table_name in table_names:
+        query = f"SELECT * FROM {table_name}"
+        query_to_s3 = SqlToS3Operator(
+            task_id=f'mysql_to_s3_{table_name}',
+            sql_conn_id="sql_rewards",
+            aws_conn_id="aws_conn_id",
+            query=query,
+            s3_bucket=Variable.get("s3_bucket"),
+            s3_key=f'raw/{table_name}.sql',
+            replace=True
+        )
 
     # Call the task function to create a task instance
-    trigger_emr_instance = trigger_emr_serverless_spark_job(sql_query)
+    trigger_emr_instance = trigger_emr_serverless_spark_job(query)
 
     # Call the sensor task function to create a task instance
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
 
     # Defining the task sequence
     query_to_s3 >> trigger_emr_instance >> emr_serverless_sensor_instance
-
 
 # Create the DAG instance
 dag = sql_to_s3_to_emr_serverless_dag()
