@@ -28,12 +28,22 @@ def get_table_names():
 
 @task
 def setup_sql_to_s3_tasks(table_names):
-    s3_paths = []
-    for table_name in table_names:
-        s3_key = f'raw/{table_name}.sql'
-        s3_path = f's3://{Variable.get("s3_bucket")}/{s3_key}'
-        s3_paths.append(s3_path)
-    return s3_paths
+    s3_keys = [f'raw/{table_name}.sql' for table_name in table_names]
+    return s3_keys
+
+@task
+def upload_to_s3(table_name, s3_key):
+    s3_bucket = Variable.get("s3_bucket")
+    upload_task = SqlToS3Operator(
+        task_id=f'upload_{table_name}_to_s3',
+        sql_conn_id='sql_rewards',
+        aws_conn_id='aws_conn_id',
+        query=f'SELECT * FROM {table_name}',
+        s3_bucket=s3_bucket,
+        s3_key=s3_key,
+        replace=True
+    )
+    return upload_task
 
 # Task to trigger the EMR Serverless Spark job
 @task
@@ -80,23 +90,14 @@ description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless
 )
 
 def sql_to_s3_to_emr_serverless_dag():
-    table_names = get_table_names()
-   
-    s3_paths = setup_sql_to_s3_tasks(table_names)
+    table_names_list = get_table_names()
+    s3_keys_list = setup_sql_to_s3_tasks(table_names_list)
  
-    for table_name in table_names:
-        upload_to_s3 = SqlToS3Operator(
-            task_id=f'upload_{table_name}_to_s3',
-            sql_conn_id='sql_rewards',
-            aws_conn_id='aws_conn_id',
-            query=f'SELECT * FROM {table_name}',
-            s3_bucket=Variable.get('s3_bucket'),
-            s3_key=f'raw/{table_name}.sql',
-            replace=True
-        )
-        s3_paths >> upload_to_s3
+    for table_name, s3_key in zip(table_names_list, s3_keys_list):
+        upload_task = upload_to_s3(table_name, s3_key)
+        table_names_list >> upload_task
 
-    trigger_emr_instance = trigger_emr_serverless_spark_job(s3_paths)
+    trigger_emr_instance = trigger_emr_serverless_spark_job(table_names_list)
    
     emr_serverless_sensor_instance = emr_serverless_sensor(trigger_emr_instance)
 
