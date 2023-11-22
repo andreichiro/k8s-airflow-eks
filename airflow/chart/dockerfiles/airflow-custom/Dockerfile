@@ -8,4 +8,5 @@ RUN pip install \
     pandas \
     pyspark \
     polars \
-    apache-airflow[amazon]
+    apache-airflow[amazon] \
+    apache-airflow-providers-apache-spark 
