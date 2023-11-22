@@ -7,9 +7,8 @@ from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from pyspark.sql import SparkSession
-from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
-
+from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook, SparkSqlOperator 
+    
 # Default arguments for the DAG
 default_args = {
     'owner': 'airflow',
@@ -36,7 +35,14 @@ def generate_s3_keys(table_names):
 @task
 def upload_tables_to_s3(table_names, s3_keys):
     s3_bucket = Variable.get("s3_bucket")
-    spark = SparkSession.builder.appName("ProcessTable").getOrCreate()            
+    
+  # Create a SparkSqlOperator to initialize SparkSession
+    spark_sql_task = SparkSqlOperator(
+        task_id="init_spark_session",
+        sql="SELECT 1 as dummy",  # Use a dummy query to initialize SparkSession
+        dag=dag,
+    )
+
     with SparkSqlHook(mysql_conn_id='sql_rewards') as spark_sql_hook:
         for table_name, s3_key in zip(table_names, s3_keys):
             sql = f"SELECT * FROM {table_name}"
@@ -103,7 +109,6 @@ def sql_to_s3_to_emr_serverless_dag():
     table_names_list = get_table_names() 
     s3_keys = generate_s3_keys(table_names_list)
     upload_to_s3 = upload_tables_to_s3(table_names_list, s3_keys)
-
     upload_to_s3 
 
 dag = sql_to_s3_to_emr_serverless_dag()
