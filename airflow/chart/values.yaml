@@ -84,6 +84,11 @@ images:
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
+    dependencies:  
+    - name: apache-airflow-providers-amazon
+      version: latest
+      repository: https://airflow.apache.org
+
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
   # will use the images from 'defaultAirflowRepository:defaultAirflowTag' values
@@ -91,6 +96,7 @@ images:
   useDefaultImageForMigration: false
   # timeout (in seconds) for airflow-migrations to complete
   migrationsWaitTimeout: 60
+
   pod_template:
     # Note that `images.pod_template.repository` and `images.pod_template.tag` parameters
     # can be overridden in `config.kubernetes` section. So for these parameters to have effect
