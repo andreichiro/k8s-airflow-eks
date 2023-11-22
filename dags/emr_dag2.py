@@ -7,9 +7,10 @@ from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from pyspark.sql import SparkSession
 from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
-from airflow.providers.apache.spark.operators.spark_sql import SparkSqlOperator 
-    
+
+
 # Default arguments for the DAG
 default_args = {
     'owner': 'airflow',
@@ -36,22 +37,24 @@ def generate_s3_keys(table_names):
 @task
 def upload_tables_to_s3(table_names, s3_keys):
     s3_bucket = Variable.get("s3_bucket")
+    spark = SparkSession.builder \
+        .appName("ProcessTable") \
+        .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
+        .getOrCreate()
     
-  # Create a SparkSqlOperator to initialize SparkSession
-    spark_sql_task = SparkSqlOperator(
-        task_id="init_spark_session",
-        sql="SELECT 1 as dummy",  # Use a dummy query to initialize SparkSession
-        dag=dag,
-    )
-
-    with SparkSqlHook(mysql_conn_id='sql_rewards') as spark_sql_hook:
+    with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
         for table_name, s3_key in zip(table_names, s3_keys):
             sql = f"SELECT * FROM {table_name}"
-            df = spark_sql_hook.run_query(sql)     
+            df = mysql_hook.get_pandas_df(sql)  # Get the data as a Pandas DataFrame
+            # Convert the Pandas DataFrame to a Spark DataFrame using Apache Arrow
+            spark_df = spark.createDataFrame(df, verifySchema=False)
             
              # Directly writing to S3
             s3_parquet_path = f"s3://{s3_bucket}/{s3_key}"
-            df.write.parquet(s3_parquet_path)
+            spark_df.write.parquet(s3_parquet_path)
+    
+    spark.stop()
+    
             
             # Upload to S3
 #            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
@@ -110,6 +113,7 @@ def sql_to_s3_to_emr_serverless_dag():
     table_names_list = get_table_names() 
     s3_keys = generate_s3_keys(table_names_list)
     upload_to_s3 = upload_tables_to_s3(table_names_list, s3_keys)
+
     upload_to_s3 
 
 dag = sql_to_s3_to_emr_serverless_dag()
