@@ -6,6 +6,12 @@ from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
 from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreateJobFlowOperator
+from airflow.providers.amazon.aws.sensors.emr_job_flow import EmrJobFlowSensor
+from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOperator
+from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
+from airflow.providers.amazon.aws.operators.emr_create_notebook_execution import EmrCreateNotebookExecutionOperator
 
 # Default arguments for the DAG
 default_args = {
@@ -31,21 +37,43 @@ def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
 @task
+def trigger_emr_notebook(table_name, sql_query):
+    notebook_execution_name = f'notebook_execution_{table_name}'
+    notebook_name = 'notebook'  # Specify the name of your EMR Notebook
+    notebook_params = {
+        'table_name': table_name,
+        'sql_query': sql_query
+    }
+    # Use EmrCreateNotebookExecutionOperator to trigger the EMR Notebook (Spark) here
+    emr_notebook_task = EmrCreateNotebookExecutionOperator(
+        task_id=notebook_execution_name,
+        aws_conn_id='aws_conn_id',  # Specify your AWS connection ID
+        notebook_execution_name=notebook_execution_name,
+        notebook_name=notebook_name,
+        notebook_params=notebook_params,
+        do_xcom_push=True,
+        )
+    return emr_notebook_task
+
+@task
 def upload_tables_to_s3(table_names, s3_keys):
     s3_bucket = Variable.get("s3_bucket")
-    for table_name, s3_key in zip(table_names, s3_keys):
-        upload_task = SqlToS3Operator(
-            task_id=f'upload_{table_name}_to_s3',
-            sql_conn_id='sql_rewards',
-            aws_conn_id='aws_conn_id',
-            query=f'SELECT * FROM {table_name}',
-            s3_bucket=s3_bucket,
-            s3_key=s3_key,
-            replace=True,
-            file_format='parquet'
-        )
-        upload_task.execute(context={}) 
-        
+
+    with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
+        for table_name, s3_key in zip(table_names, s3_keys):
+            sql = f"SELECT * FROM {table_name}"
+            emr_notebook_task = trigger_emr_notebook(table_name, sql)
+            spark_data = emr_notebook_task.output  # Retrieve output from the EMR Notebook
+            
+            # Upload to S3
+            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
+                s3_hook.load_bytes(
+                    bytes_data=spark_data,
+                    bucket_name=s3_bucket, 
+                    key=s3_key,
+                    replace=True
+                )
+                  
 # Task to trigger the EMR Serverless Spark job
 @task
 def trigger_emr_serverless_spark_job(s3_paths):

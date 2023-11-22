@@ -65,6 +65,26 @@ redis:
 
 kubectl port-forward svc/airflow-webserver 8080:8080 -n airflow
 
+---
+
+ eksctl create iamidentitymapping --cluster h2-lakehouse-on-k8s-eks --namespace emr-eks --service-name "emr-containers"
+
+aws emr-containers create-virtual-cluster --name emr_eks_cluster --container-provider '{
+    "id":   "h2-lakehouse-on-k8s-eks",
+    "type": "EKS",
+    "info": {
+        "eksInfo": {
+            "namespace": "emr-eks"
+        }
+    }
+}'
+
+aws emr-containers update-role-trust-policy \
+       --cluster-name h2-lakehouse-on-k8s-eks \
+       --namespace emr-eks \
+       --role-name EMR_DefaultRole
+
+
 ------------
 
 kubectl create namespace starburst-enterprise
