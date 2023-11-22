@@ -7,7 +7,7 @@ from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from airflow.providers.amazon.aws.operators.emr import EmrCreateNotebookExecutionOperator
+from airflow.providers.amazon.aws.operators.emr import EmrStartNotebookExecutionOperator
 
 
 # Default arguments for the DAG
@@ -42,7 +42,7 @@ def trigger_emr_notebook(table_name, sql_query):
         'sql_query': sql_query
     }
     # Use EmrCreateNotebookExecutionOperator to trigger the EMR Notebook (Spark) here
-    emr_notebook_task = EmrCreateNotebookExecutionOperator(
+    emr_notebook_task = EmrStartNotebookExecutionOperator(
         task_id=notebook_execution_name,
         aws_conn_id='aws_conn_id',  # Specify your AWS connection ID
         notebook_execution_name=notebook_execution_name,
