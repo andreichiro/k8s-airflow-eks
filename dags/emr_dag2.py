@@ -9,7 +9,7 @@ from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from pyspark.sql import SparkSession
 from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
-
+import os
 
 # Default arguments for the DAG
 default_args = {
@@ -40,6 +40,7 @@ def upload_tables_to_s3(table_names, s3_keys):
     spark = SparkSession.builder \
         .appName("ProcessTable") \
         .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
+        .config("spark.driver.extraJavaOptions", f"-Djava.home={os.environ['JAVA_HOME']}") \
         .getOrCreate()
     
     with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
