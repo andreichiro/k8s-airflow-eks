@@ -79,13 +79,11 @@ airflowVersion: "2.7.3"
 # Images
 images:
   airflow:
-    repository: apache/airflow
-    tag: 2.7.3
+    repository: 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom
+    tag: v1.0
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
-    extraPipPackages:
-    - apache-airflow-providers-amazon
     
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
