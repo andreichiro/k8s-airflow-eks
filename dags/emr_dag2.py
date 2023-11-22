@@ -8,6 +8,7 @@ from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from pyspark.sql import SparkSession
+from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
 
 
 # Default arguments for the DAG
@@ -36,23 +37,24 @@ def generate_s3_keys(table_names):
 @task
 def upload_tables_to_s3(table_names, s3_keys):
     s3_bucket = Variable.get("s3_bucket")
-    spark = SparkSession.builder.appName("ProcessTable").getOrCreate()
-    with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
+    spark = SparkSession.builder.appName("ProcessTable").getOrCreate()            
+    with SparkSqlHook(mysql_conn_id='sql_rewards') as spark_sql_hook:
         for table_name, s3_key in zip(table_names, s3_keys):
             sql = f"SELECT * FROM {table_name}"
-            df = mysql_hook.get_pandas_df(sql)  # Get the data as a Pandas DataFrame
-            spark_df = spark.createDataFrame(df)  # Convert the Pandas DataFrame to a Spark DataFrame
-            parquet_path = f"/path/to/parquet/{table_name}.parquet"
-            spark_df.write.parquet(parquet_path)
+            df = spark_sql_hook.run_query(sql)     
+            
+             # Directly writing to S3
+            s3_parquet_path = f"s3://{s3_bucket}/{s3_key}"
+            df.write.parquet(s3_parquet_path)
             
             # Upload to S3
-            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
-                s3_hook.load_bytes(
-                    bytes_data=parquet_path,
-                    bucket_name=s3_bucket, 
-                    key=s3_key,
-                    replace=True
-                )
+#            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
+#                s3_hook.load_bytes(
+#                    bytes_data=s3_parquet_path,
+#                    bucket_name=s3_bucket, 
+#                    key=s3_key,
+#                    replace=True
+#                )
                   
 # Task to trigger the EMR Serverless Spark job
 #@task
