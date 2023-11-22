@@ -17,3 +17,11 @@ spec:
     server: https://kubernetes.default.svc
     namespace: airflow
 
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Force=true
+      - Replace=true

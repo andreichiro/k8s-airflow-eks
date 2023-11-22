@@ -13,7 +13,7 @@ from airflow.providers.amazon.aws.operators.emr_create_job_flow import EmrCreate
 from airflow.providers.amazon.aws.sensors.emr_job_flow import EmrJobFlowSensor
 from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOperator
 from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
-from airflow.providers.amazon.aws.operators.emr_create_notebook_execution import EmrCreateNotebookExecutionOperator
+from airflow.providers.amazon.aws.operators.emr import EmrCreateNotebookExecutionOperator
 
 
 # Default arguments for the DAG
