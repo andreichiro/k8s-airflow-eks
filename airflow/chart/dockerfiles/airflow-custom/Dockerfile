@@ -7,4 +7,5 @@ RUN pip install \
     scikit-learn \
     pandas \
     pyspark \
-    polars
+    polars \
+    apache-airflow[amazon]
