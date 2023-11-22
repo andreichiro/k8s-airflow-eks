@@ -15,5 +15,6 @@ RUN pip install \
 USER root
 
 RUN apt-get update && apt-get install -y procps
+RUN apt-get install openjdk-8-jdk
 
 USER airflow
