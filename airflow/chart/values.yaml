@@ -84,10 +84,8 @@ images:
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
-    dependencies:  
-    - name: apache-airflow-providers-amazon
-      version: latest
-      repository: https://airflow.apache.org
+    extraPackages:
+      - apache-airflow-providers-amazon
 
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
