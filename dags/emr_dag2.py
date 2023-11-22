@@ -7,7 +7,8 @@ from airflow.models import Variable
 from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook, SparkSqlOperator 
+from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
+from airflow.providers.apache.spark.operators.spark_sql import SparkSqlOperator 
     
 # Default arguments for the DAG
 default_args = {
