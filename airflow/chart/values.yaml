@@ -84,9 +84,9 @@ images:
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
-    extraPackages:
-      - apache-airflow-providers-amazon
-
+    extraPipPackages:
+    - apache-airflow-providers-amazon
+    
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
   # will use the images from 'defaultAirflowRepository:defaultAirflowTag' values
