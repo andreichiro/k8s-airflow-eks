@@ -10,7 +10,6 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from pyspark.sql import SparkSession
 from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
 
-
 # Default arguments for the DAG
 default_args = {
     'owner': 'airflow',
