@@ -54,7 +54,7 @@ def process_and_upload_to_s3(table_name, s3_key):
     # Upload the Parquet data to S3
     s3_hook.load_bytes(
         parquet_data,
-        key=f'{s3_bucket}/{s3_key}'
+        key=f'{s3_bucket}/{s3_key}',
         bucket_name=s3_bucket,
         replace=True
         )
