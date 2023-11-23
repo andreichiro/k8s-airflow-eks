@@ -52,17 +52,15 @@ def process_and_upload_to_s3(table_name, s3_key):
         s3_parquet_path = f"{s3_bucket}/{s3_key}"
         s3_hook.load_file(filename=tmp_file.name, key=s3_parquet_path, bucket_name=s3_bucket, replace=True)
 
-@dag('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job')
-def sql_to_s3_to_emr_serverless_dag():
+
+with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job') as dag:
     table_names = get_table_names()
     
     with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
-        s3_keys = [generate_s3_keys(table_name) for table_name in table_names]
+        s3_keys = generate_s3_keys(table_names)
         process_and_upload_to_s3(table_names, s3_keys)
-
-dag = sql_to_s3_to_emr_serverless_dag()
-
-            # Upload to S3
+        
+        # Upload to S3
 #            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
 #                s3_hook.load_bytes(
 #                    bytes_data=s3_parquet_path,
