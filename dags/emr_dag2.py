@@ -37,15 +37,19 @@ def get_table_names():
 def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
+
 @task
-def process_and_upload_to_s3(table_name, s3_key):
+def process_and_upload_to_s3(table_name_xcom, s3_key_xcom):
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     
+    # Resolving XComArg objects
+    table_name = table_name_xcom.resolve()
+    s3_key = s3_key_xcom.resolve()
     
     sql = f"SELECT * FROM `{table_name}`"
-    pandas_df = mysql_hook.get_pandas_df(sql)
+    pandas_df = mysql_hook.get_pandas_df(sql)0
     polars_df = pl.from_pandas(pandas_df)
 
     with NamedTemporaryFile() as tmp_file:
@@ -53,59 +57,11 @@ def process_and_upload_to_s3(table_name, s3_key):
         s3_parquet_path = f"{s3_bucket}/{s3_key}"
         s3_hook.load_file(filename=tmp_file.name, key=s3_parquet_path, bucket_name=s3_bucket, replace=True)
 
-
-
 with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job') as dag:
     table_names = get_table_names()
-    s3_keys = generate_s3_keys(table_names)
-
-    def create_upload_task(table_name, s3_key):
-        return process_and_upload_to_s3(table_name, s3_key)
-
-    upload_tasks = [create_upload_task(table_name, s3_key) for table_name, s3_key in zip(table_names, s3_keys)]
+    
+    with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
+        s3_keys = generate_s3_keys(table_names)
+        for table_name, s3_key in zip(table_names, s3_keys):
+            process_and_upload_to_s3(table_name, s3_key)
         
-        # Upload to S3
-#            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
-#                s3_hook.load_bytes(
-#                    bytes_data=s3_parquet_path,
-#                    bucket_name=s3_bucket, 
-#                    key=s3_key,
-#                    replace=True
-#                )
-                  
-# Task to trigger the EMR Serverless Spark job
-#@task
-#def trigger_emr_serverless_spark_job(s3_paths):
-#    aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
-#    client = aws_hook.get_client_type('emr-serverless')
-#    job_run_request = {
-#        'ExecutionRoleArn': Variable.get("emr_execution_role_arn"),
-#        'ReleaseLabel': 'emr-6.3.0',  # specify the EMR release
-#        'JobDriver': {
-#            'SparkSubmit': {
-#                'EntryPoint': Variable.get("notebook_s3_path"),  # S3 path to your Jupyter notebook
-#                'EntryPointArguments': s3_paths,  # Pass the S3 paths as arguments
-#                'SparkSubmitParameters': '--conf spark.executor.instances=2'  # Spark parameters
-#            }
-#        },
-#        'ConfigurationOverrides': {
-#            'ApplicationConfiguration': [],  # additional configurations
-#            'MonitoringConfiguration': {}  # monitoring configurations
-#        }
-#    }
-#    response = client.start_job_run(**job_run_request)
-#    return response['jobRunId']#
-
-# Sensor task to monitor the EMR Serverless job status
-#@sensor_task(timeout=300, mode="poke", poke_interval=30)
-#def emr_serverless_sensor(job_run_id):
-#    aws_hook = AwsBaseHook(Variable.get("aws_conn_id"), client_type='emr-serverless')
-#    client = aws_hook.get_client_type('emr-serverless')
-#    response = client.describe_job_run(id=job_run_id)
-#    status = response['jobRun']['state']
-#    if status == 'SUCCESS':
-#        return True
-#    elif status in ['FAILED', 'CANCELLED']:
-#        raise ValueError('EMR Serverless Job failed or was cancelled')
-#    return False
-
