@@ -50,11 +50,11 @@ def process_and_upload_to_s3(table_name, s3_key):
     parquet_data = polars_df.to_parquet()
 
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
-
+    
     # Upload the Parquet data to S3
     s3_hook.load_bytes(
         parquet_data,
-        key=s3_key,
+        key=f'{s3_bucket}/{s3_key}'
         bucket_name=s3_bucket,
         replace=True
         )
@@ -66,14 +66,20 @@ with DAG(
     catchup=False,
     tags=['example'],
 ) as dag:
+   
     # Task 1: Get table names from MySQL
     table_names_task = get_table_names()
 
     # Task 2: Generate S3 keys
     s3_keys_task = generate_s3_keys(table_names_task)
-    print(table_names_task)
-    print(s3_keys_task)
 
+    # Dynamically creating tasks for each table
+    for table_name, s3_key in zip(table_names_task, s3_keys_task):
+        process_and_upload_to_s3(table_name, s3_key)
+
+    # Task dependencies
+    table_names_task >> s3_keys_task
+    s3_keys_task >> process_and_upload_to_s3
         # Set up dynamic task mapping
 #    for table_name, s3_key in zip(table_names_task, s3_keys_task):
     # Task 3: Process and upload to S3
