@@ -38,12 +38,7 @@ def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
 @task
-def process_tables(table_names, s3_keys):
-    for table_name, s3_key in zip(table_names, s3_keys):
-        upload_table_to_s3(table_name, s3_key)
-
-@task
-def upload_table_to_s3(table_name, s3_key):
+def process_and_upload_to_s3(table_name, s3_key):
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
 
@@ -59,22 +54,13 @@ def upload_table_to_s3(table_name, s3_key):
 
 @dag('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job')
 def sql_to_s3_to_emr_serverless_dag():
-    table_names_list = get_table_names() 
-    s3_keys = generate_s3_keys(table_names_list)
+    table_names = get_table_names()
+    
     with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
-        process_tables(table_names_list, s3_keys)
+        s3_keys = [generate_s3_keys(table_name) for table_name in table_names]
+        process_and_upload_to_s3(table_names, s3_keys)
 
 dag = sql_to_s3_to_emr_serverless_dag()
-
-
-
-def sql_to_s3_to_emr_serverless_dag():
-    table_names_list = get_table_names() 
-    s3_keys = generate_s3_keys(table_names_list)
-
-    with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
-        for table_name, s3_key in zip(table_names_list, s3_keys):
-            upload_table_to_s3_op = upload_table_to_s3(table_name, s3_key)
 
             # Upload to S3
 #            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
@@ -121,19 +107,3 @@ def sql_to_s3_to_emr_serverless_dag():
 #        raise ValueError('EMR Serverless Job failed or was cancelled')
 #    return False
 
-@dag(
-'sql_to_s3_to_emr_serverless', 
-default_args=default_args, 
-schedule_interval='@once', 
-catchup=False,
-description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job'
-)
-
-def sql_to_s3_to_emr_serverless_dag():
-    table_names_list = get_table_names() 
-    s3_keys = generate_s3_keys(table_names_list)
-    upload_to_s3 = upload_table_to_s3(table_names_list, s3_keys)
-
-    upload_to_s3 
-
-dag = sql_to_s3_to_emr_serverless_dag()
