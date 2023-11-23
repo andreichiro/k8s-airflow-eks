@@ -1,10 +1,12 @@
 from airflow import DAG
-from airflow.decorators import task
+from airflow.decorators import task, task_group
 from datetime import datetime, timedelta
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 import polars as pl
 from airflow.models import Variable
+# Import the correct operator for SQL to S3 transfer
+from airflow.providers.amazon.aws.transfers.mysql_to_s3 import MySqlToS3Operator
 
 # Default arguments for the DAG
 default_args = {
@@ -73,16 +75,20 @@ with DAG(
     # Task 2: Generate S3 keys
     s3_keys_task = generate_s3_keys(table_names_task)
 
-    # Dynamically creating tasks for each table
-    for table_name, s3_key in zip(table_names_task, s3_keys_task):
-        process_and_upload_to_s3(table_name, s3_key)
 
-    # Task dependencies
-    table_names_task >> s3_keys_task
-    s3_keys_task >> process_and_upload_to_s3
-        # Set up dynamic task mapping
-#    for table_name, s3_key in zip(table_names_task, s3_keys_task):
-    # Task 3: Process and upload to S3
- #      process_and_upload_to_s3.expand(table_name=table_name, s3_key=s3_key)
-
-  #  table_names_task >> s3_keys_task >> process_and_upload_to_s3
+    @task_group(group_id='sql_to_s3_group')
+    def process_tables_to_s3(tables, s3_keys):
+        for table, s3_key in zip(tables, s3_keys):
+            sql_to_s3_task = MySqlToS3Operator(
+                task_id=f"sql_to_s3_{table}",
+                sql_conn_id='your_actual_sql_connection_id',  # Replace with your actual connection ID
+                query=f"SELECT * FROM `{table}`",
+                s3_bucket=Variable.get("s3_bucket"),
+                s3_key=s3_key,
+                replace=True
+            )
+            
+    # Instantiate the task group and set up dependencies
+   # Instantiate the task group and set up dependencies
+    process_group = process_tables_to_s3(table_names_task, s3_keys_task)
+    table_names_task >> s3_keys_task >> process_group
