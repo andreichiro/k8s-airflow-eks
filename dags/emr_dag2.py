@@ -41,7 +41,6 @@ def generate_s3_keys(table_names):
 def process_and_upload_to_s3(table_name, s3_key):
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
-   
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     sql = f"SELECT * FROM `{table_name}`"
     pandas_df = mysql_hook.get_pandas_df(sql)
@@ -58,7 +57,8 @@ with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_inte
     
     with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
         s3_keys = generate_s3_keys(table_names)
-        process_and_upload_to_s3(table_names, s3_keys)
+        for table_name, s3_key in zip(table_names, s3_keys):
+            process_and_upload_to_s3(table_name, s3_key)
         
         # Upload to S3
 #            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
