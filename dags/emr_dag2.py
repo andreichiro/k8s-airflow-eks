@@ -34,28 +34,30 @@ def generate_s3_keys(table_names):
     """
     Task to generate S3 keys for storing Parquet files.
     """
-    files_paths = []
-    for table_name in table_names:
-        files_paths.append(f'raw/{table_name}.parquet')
-    print(files_paths)
+    files_paths = [f'raw/{table_name}.parquet' for table_name in table_names]
     return files_paths
 
 @task
-def process_and_upload_to_s3(table_names, files_paths):
+def process_and_upload_to_s3(table_name, s3_key):
     """
     Task to process data and upload it to S3.
     """
     s3_bucket = Variable.get("s3_bucket")
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    sql = f"SELECT * FROM `{table_name}`"
+    pandas_df = mysql_hook.get_pandas_df(sql)
+    polars_df = pl.from_pandas(pandas_df)
+    parquet_data = polars_df.to_parquet()
+
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
 
-    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-
-    for table_name, path in zip(table_names, files_paths):
-        sql = f"SELECT * FROM `{table_name}`"
-        pandas_df = mysql_hook.get_pandas_df(sql)
-        polars_df = pl.from_pandas(pandas_df)
-        polars_df.write_parquet(path)
-
+    # Upload the Parquet data to S3
+    s3_hook.load_bytes(
+        parquet_data,
+        key=s3_key,
+        bucket_name=s3_bucket,
+        replace=True
+        )
 # Define the main DAG
 with DAG(
     'my_dynamic_dag',
@@ -65,13 +67,12 @@ with DAG(
     tags=['example'],
 ) as dag:
     # Task 1: Get table names from MySQL
-    table_names = get_table_names()
+    table_names_task = get_table_names()
 
     # Task 2: Generate S3 keys
-    keys = generate_s3_keys(table_names)
+    s3_keys_task = generate_s3_keys(table_names_task)
 
     # Task 3: Process and upload to S3
-    process_and_upload = process_and_upload_to_s3(table_names, keys)
+    process_and_upload_to_s3.expand(table_name=table_names_task.output, s3_key=s3_keys_task.output)
 
-# Define the task dependencies as needed
-table_names >> keys >> process_and_upload
+    table_names_task >> s3_keys_task >> process_and_upload_to_s3
