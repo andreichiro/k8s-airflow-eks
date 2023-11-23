@@ -30,21 +30,19 @@ default_args = {
 def get_table_names():
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
-    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
+    table_names = [table[0] for table in tables]
     return table_names
 
 @task
 def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
-
 @task
 def process_and_upload_to_s3(table_name_xcom, s3_key_xcom):
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    
-    # Resolving XComArg objects
+
     table_name = table_name_xcom.resolve()
     s3_key = s3_key_xcom.resolve()
     
@@ -59,9 +57,7 @@ def process_and_upload_to_s3(table_name_xcom, s3_key_xcom):
 
 with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job') as dag:
     table_names = get_table_names()
-    
+
     with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
         s3_keys = generate_s3_keys(table_names)
-        for table_name, s3_key in zip(table_names, s3_keys):
-            process_and_upload_to_s3(table_name, s3_key)
-        
+        process_tasks = process_and_upload_to_s3.map(table_names, s3_keys)
