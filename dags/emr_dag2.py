@@ -40,16 +40,18 @@ def generate_s3_keys(table_names):
 
 
 @task
-def create_sql_to_s3_tasks(table_names, s3_keys, sql_conn_id, s3_bucket):
-    for table_name, s3_key in zip(table_names, s3_keys):
-        SqlToS3Operator(
-            task_id=f"sql_to_s3_{table_name}",
-            sql_conn_id=sql_conn_id,
-            query=f"SELECT * FROM `{table_name}`",
-            s3_bucket=s3_bucket,
-            s3_key=s3_key,
-            replace=True
-        )
+def create_sql_to_s3_task(table_name, s3_key):
+    """
+    Task to create and execute SqlToS3Operator for a specific table.
+    """
+    return SqlToS3Operator(
+        task_id=f"sql_to_s3_{table_name}",
+        sql_conn_id='sql_rewards',  # Replace with your actual connection ID
+        query=f"SELECT * FROM `{table_name}`",
+        s3_bucket=Variable.get("s3_bucket"),
+        s3_key=s3_key,
+        replace=True
+    )
 
 # Define the main DAG
 with DAG(
@@ -66,6 +68,8 @@ with DAG(
     # Task 2: Generate S3 keys
     s3_keys_task = generate_s3_keys(table_names_task)
 
-    create_sql_to_s3_tasks(table_names_task, s3_keys_task, 'sql_rewards', Variable.get("s3_bucket"))
-  
-    #sql_to_s3_tasks = [create_sql_to_s3_task(table, s3_key) for table, s3_key in zip(table_names_task, s3_keys_task)]
+    # Create and execute SqlToS3Operator tasks for each table
+    sql_to_s3_tasks = [create_sql_to_s3_task(table, s3_key) for table, s3_key in zip(table_names_task, s3_keys_task)]
+
+    # Set up dependencies
+    table_names_task >> s3_keys_task >> sql_to_s3_tasks
