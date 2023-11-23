@@ -38,6 +38,11 @@ def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
 @task
+def process_tables(table_names, s3_keys):
+    for table_name, s3_key in zip(table_names, s3_keys):
+        upload_table_to_s3(table_name, s3_key)
+
+@task
 def upload_table_to_s3(table_name, s3_key):
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
@@ -56,14 +61,20 @@ def upload_table_to_s3(table_name, s3_key):
 def sql_to_s3_to_emr_serverless_dag():
     table_names_list = get_table_names() 
     s3_keys = generate_s3_keys(table_names_list)
-
     with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
-        for table_name, s3_key in zip(table_names_list, s3_keys):
-            upload_table_to_s3(table_name, s3_key)
-    # Other tasks like triggering EMR Serverless job can be added here if needed
+        process_tables(table_names_list, s3_keys)
 
 dag = sql_to_s3_to_emr_serverless_dag()
 
+
+
+def sql_to_s3_to_emr_serverless_dag():
+    table_names_list = get_table_names() 
+    s3_keys = generate_s3_keys(table_names_list)
+
+    with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
+        for table_name, s3_key in zip(table_names_list, s3_keys):
+            upload_table_to_s3_op = upload_table_to_s3(table_name, s3_key)
 
             # Upload to S3
 #            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
