@@ -70,10 +70,12 @@ with DAG(
 
       # Create and execute SqlToS3Operator tasks for each table
     sql_to_s3_tasks = []
-    for table, s3_key in zip(table_names_task, s3_keys_task):
-        sql_to_s3_task = create_sql_to_s3_task(table, s3_key, 'sql_rewards', Variable.get("s3_bucket"))
-        sql_to_s3_tasks.append(sql_to_s3_task)
 
+    for table_name in table_names_task:
+        s3_key = f'raw/{table_name}.parquet'
+        sql_to_s3_task = create_sql_to_s3_task(table_name, s3_key)
+        sql_to_s3_tasks.append(sql_to_s3_task)
+        
     # Set up dependencies
     table_names_task >> s3_keys_task >> sql_to_s3_tasks
     
