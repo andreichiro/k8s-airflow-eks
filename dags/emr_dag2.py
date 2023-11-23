@@ -119,7 +119,7 @@ description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless
 def sql_to_s3_to_emr_serverless_dag():
     table_names_list = get_table_names() 
     s3_keys = generate_s3_keys(table_names_list)
-    upload_to_s3 = upload_tables_to_s3(table_names_list, s3_keys)
+    upload_to_s3 = upload_table_to_s3(table_names_list, s3_keys)
 
     upload_to_s3 
 
