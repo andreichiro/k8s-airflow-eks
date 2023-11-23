@@ -9,7 +9,10 @@ from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from pyspark.sql import SparkSession
 from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
+import polars as pl
+from tempfile import NamedTemporaryFile
 import os
+from airflow.utils.task_group import TaskGroup
 
 # Default arguments for the DAG
 default_args = {
@@ -34,29 +37,32 @@ def get_table_names():
 def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
+def sql_to_s3_to_emr_serverless_dag():
+    table_names_list = get_table_names() 
+    s3_keys = generate_s3_keys(table_names_list)
+
+    with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
+        for table_name, s3_key in zip(table_names_list, s3_keys):
+            upload_table_to_s3(table_name, s3_key)
+    # Other tasks like triggering EMR Serverless job can be added here if needed
+    return upload_to_s3_group
+
 @task
-def upload_tables_to_s3(table_names, s3_keys):
+def upload_table_to_s3(table_name, s3_key):
     s3_bucket = Variable.get("s3_bucket")
-    spark = SparkSession.builder \
-        .appName("ProcessTable") \
-        .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-        .config("spark.driver.extraJavaOptions", f"-Djava.home={os.environ['JAVA_HOME']}") \
-        .getOrCreate()
+    s3_hook = S3Hook(aws_conn_id='aws_conn_id')
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     
-    with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
-        for table_name, s3_key in zip(table_names, s3_keys):
-            sql = f"SELECT * FROM {table_name}"
-            df = mysql_hook.get_pandas_df(sql)  # Get the data as a Pandas DataFrame
-            # Convert the Pandas DataFrame to a Spark DataFrame using Apache Arrow
-            spark_df = spark.createDataFrame(df, verifySchema=False)
-            
-             # Directly writing to S3
-            s3_parquet_path = f"s3://{s3_bucket}/{s3_key}"
-            spark_df.write.parquet(s3_parquet_path)
-    
-    spark.stop()
-    
-            
+    sql = f"SELECT * FROM {table_name}"
+    pandas_df = mysql_hook.get_pandas_df(sql)
+    polars_df = pl.from_pandas(pandas_df)
+
+    with NamedTemporaryFile() as tmp_file:
+        polars_df.write_parquet(tmp_file.name)
+        s3_parquet_path = f"{s3_bucket}/{s3_key}"
+        s3_hook.load_file(filename=tmp_file.name, key=s3_parquet_path, bucket_name=s3_bucket, replace=True)
+
+
             # Upload to S3
 #            with S3Hook(aws_conn_id='aws_conn_id') as s3_hook:
 #                s3_hook.load_bytes(

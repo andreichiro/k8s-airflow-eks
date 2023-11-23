@@ -15,6 +15,7 @@ RUN pip install \
 USER root
 
 RUN apt-get update && apt-get install -y procps
-RUN apt-get install openjdk-8-jdk
+RUN sudo apt-get update
+### not working!!! RUN sudo apt-get install openjdk-17-jdk
 
 USER airflow
