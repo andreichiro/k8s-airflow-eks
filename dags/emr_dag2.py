@@ -49,7 +49,7 @@ def process_and_upload_to_s3(table_name_xcom, s3_key_xcom):
     s3_key = s3_key_xcom.resolve()
     
     sql = f"SELECT * FROM `{table_name}`"
-    pandas_df = mysql_hook.get_pandas_df(sql)0
+    pandas_df = mysql_hook.get_pandas_df(sql)
     polars_df = pl.from_pandas(pandas_df)
 
     with NamedTemporaryFile() as tmp_file:
