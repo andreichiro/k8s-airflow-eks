@@ -38,7 +38,6 @@ def generate_s3_keys(table_names):
     files_paths = [f'raw/{table_name}.parquet' for table_name in table_names]
     return files_paths
 
-
 @task
 def create_sql_to_s3_task(table_name, s3_key):
     """
@@ -64,18 +63,22 @@ with DAG(
    
     # Task 1: Get table names from MySQL
     table_names_task = get_table_names()
-
+    for table in table_names_task:
+        print(table)
+        
     # Task 2: Generate S3 keys
     s3_keys_task = generate_s3_keys(table_names_task)
-
+    for s3 in s3_keys_task:
+        print(s3)
+    
       # Create and execute SqlToS3Operator tasks for each table
-    sql_to_s3_tasks = []
+#    sql_to_s3_tasks = []
 
-    for table_name in table_names_task:
-        s3_key = f'raw/{table_name}.parquet'
-        sql_to_s3_task = create_sql_to_s3_task(table_name, s3_key)
-        sql_to_s3_tasks.append(sql_to_s3_task)
+#    for table_name in table_names_task:
+#        s3_key = f'raw/{table_name}.parquet'
+#        sql_to_s3_task = create_sql_to_s3_task(table_name, s3_key)
+#        sql_to_s3_tasks.append(sql_to_s3_task)
         
     # Set up dependencies
-    table_names_task >> s3_keys_task >> sql_to_s3_tasks
+#    table_names_task >> s3_keys_task >> sql_to_s3_tasks
     
