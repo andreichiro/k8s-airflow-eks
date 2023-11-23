@@ -1,18 +1,12 @@
 from airflow import DAG
-from airflow.decorators import task, dag
+from airflow.decorators import task
 from datetime import datetime, timedelta
-from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
-from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
-from airflow.models import Variable
-from airflow.decorators.sensor import sensor_task
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from pyspark.sql import SparkSession
-from airflow.providers.apache.spark.hooks.spark_sql import SparkSqlHook
 import polars as pl
 from tempfile import NamedTemporaryFile
-import os
 from airflow.utils.task_group import TaskGroup
+from airflow.models import Variable
 
 # Default arguments for the DAG
 default_args = {
@@ -37,11 +31,11 @@ def get_table_names():
     return table_names
 
 @task
-def generate_s3_keys(table_names):
+def generate_s3_keys(table_name):
     """
     Task to generate S3 keys for storing Parquet files.
     """
-    return [f'raw/{table_name}.parquet' for table_name in table_names]
+    return f'raw/{table_name}.parquet'
     
 @task
 def process_and_upload_to_s3(table_name, s3_key):
@@ -67,8 +61,10 @@ with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_inte
     # Task 1: Get table names from MySQL
     table_names = get_table_names()
     
-    # Task 2: Generate S3 keys for storing Parquet files
-    s3_keys = generate_s3_keys(table_names)
-    
-    # Task 3: Process and upload data to S3 in parallel
-    process_and_upload_to_s3.map(table_names, s3_keys)
+    with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
+        # Task 2: Generate S3 keys for storing Parquet files
+        s3_keys = generate_s3_keys(table_names)
+        
+        # Task 3: Process and upload data to S3 in parallel
+        process_and_upload_to_s3(table_names, s3_keys)
+
