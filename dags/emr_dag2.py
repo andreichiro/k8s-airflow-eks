@@ -37,6 +37,22 @@ def get_table_names():
 def generate_s3_keys(table_names):
     return [f'raw/{table_name}.parquet' for table_name in table_names]
 
+@task
+def upload_table_to_s3(table_name, s3_key):
+    s3_bucket = Variable.get("s3_bucket")
+    s3_hook = S3Hook(aws_conn_id='aws_conn_id')
+
+    with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
+        sql = f"SELECT * FROM `{table_name}`"
+        pandas_df = mysql_hook.get_pandas_df(sql)
+        polars_df = pl.from_pandas(pandas_df)
+
+    with NamedTemporaryFile() as tmp_file:
+        polars_df.write_parquet(tmp_file.name)
+        s3_parquet_path = f"{s3_bucket}/{s3_key}"
+        s3_hook.load_file(filename=tmp_file.name, key=s3_parquet_path, bucket_name=s3_bucket, replace=True)
+
+@dag('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job')
 def sql_to_s3_to_emr_serverless_dag():
     table_names_list = get_table_names() 
     s3_keys = generate_s3_keys(table_names_list)
@@ -45,22 +61,8 @@ def sql_to_s3_to_emr_serverless_dag():
         for table_name, s3_key in zip(table_names_list, s3_keys):
             upload_table_to_s3(table_name, s3_key)
     # Other tasks like triggering EMR Serverless job can be added here if needed
-    return upload_to_s3_group
 
-@task
-def upload_table_to_s3(table_name, s3_key):
-    s3_bucket = Variable.get("s3_bucket")
-    s3_hook = S3Hook(aws_conn_id='aws_conn_id')
-    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    
-    sql = f"SELECT * FROM {table_name}"
-    pandas_df = mysql_hook.get_pandas_df(sql)
-    polars_df = pl.from_pandas(pandas_df)
-
-    with NamedTemporaryFile() as tmp_file:
-        polars_df.write_parquet(tmp_file.name)
-        s3_parquet_path = f"{s3_bucket}/{s3_key}"
-        s3_hook.load_file(filename=tmp_file.name, key=s3_parquet_path, bucket_name=s3_bucket, replace=True)
+dag = sql_to_s3_to_emr_serverless_dag()
 
 
             # Upload to S3
