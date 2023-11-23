@@ -41,11 +41,11 @@ def generate_s3_keys(table_names):
 def process_and_upload_to_s3(table_name, s3_key):
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
-
-    with MySqlHook(mysql_conn_id='sql_rewards') as mysql_hook:
-        sql = f"SELECT * FROM `{table_name}`"
-        pandas_df = mysql_hook.get_pandas_df(sql)
-        polars_df = pl.from_pandas(pandas_df)
+   
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    sql = f"SELECT * FROM `{table_name}`"
+    pandas_df = mysql_hook.get_pandas_df(sql)
+    polars_df = pl.from_pandas(pandas_df)
 
     with NamedTemporaryFile() as tmp_file:
         polars_df.write_parquet(tmp_file.name)
