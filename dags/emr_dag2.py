@@ -25,7 +25,7 @@ def get_table_names():
     """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
-    table_names = [table for table in tables]  # Adjust based on the structure of the returned data
+    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
     print(table_names)
     return table_names
 
