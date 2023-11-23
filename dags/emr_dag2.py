@@ -5,8 +5,7 @@ from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 import polars as pl
 from airflow.models import Variable
-# Import the correct operator for SQL to S3 transfer
-from airflow.providers.amazon.aws.transfers.mysql_to_s3 import MySqlToS3Operator
+from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 
 # Default arguments for the DAG
 default_args = {
@@ -79,7 +78,7 @@ with DAG(
     @task_group(group_id='sql_to_s3_group')
     def process_tables_to_s3(tables, s3_keys):
         for table, s3_key in zip(tables, s3_keys):
-            sql_to_s3_task = MySqlToS3Operator(
+            sql_to_s3_task = SqlToS3Operator(
                 task_id=f"sql_to_s3_{table}",
                 sql_conn_id='your_actual_sql_connection_id',  # Replace with your actual connection ID
                 query=f"SELECT * FROM `{table}`",
