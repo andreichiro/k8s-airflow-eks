@@ -71,10 +71,12 @@ with DAG(
 
     # Task 2: Generate S3 keys
     s3_keys_task = generate_s3_keys(table_names_task)
+    print(table_names_task)
+    print(s3_keys_task)
 
         # Set up dynamic task mapping
-    for table_name, s3_key in zip(table_names_task, s3_keys_task):
+#    for table_name, s3_key in zip(table_names_task, s3_keys_task):
     # Task 3: Process and upload to S3
-       process_and_upload_to_s3.expand(table_name=table_name, s3_key=s3_key)
+ #      process_and_upload_to_s3.expand(table_name=table_name, s3_key=s3_key)
 
-    table_names_task >> s3_keys_task >> process_and_upload_to_s3
+  #  table_names_task >> s3_keys_task >> process_and_upload_to_s3
