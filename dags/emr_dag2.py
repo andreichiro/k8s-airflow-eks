@@ -28,24 +28,30 @@ default_args = {
 
 @task
 def get_table_names():
+    """
+    Task to retrieve table names from MySQL database.
+    """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
-    table_names = [table[0] for table in tables]
+    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
     return table_names
 
 @task
 def generate_s3_keys(table_names):
+    """
+    Task to generate S3 keys for storing Parquet files.
+    """
     return [f'raw/{table_name}.parquet' for table_name in table_names]
-
+    
 @task
-def process_and_upload_to_s3(table_name_xcom, s3_key_xcom):
+def process_and_upload_to_s3(table_name, s3_key):
+    """
+    Task to process data and upload it to S3.
+    """
     s3_bucket = Variable.get("s3_bucket")
     s3_hook = S3Hook(aws_conn_id='aws_conn_id')
+   
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-
-    table_name = table_name_xcom.resolve()
-    s3_key = s3_key_xcom.resolve()
-    
     sql = f"SELECT * FROM `{table_name}`"
     pandas_df = mysql_hook.get_pandas_df(sql)
     polars_df = pl.from_pandas(pandas_df)
@@ -55,9 +61,14 @@ def process_and_upload_to_s3(table_name_xcom, s3_key_xcom):
         s3_parquet_path = f"{s3_bucket}/{s3_key}"
         s3_hook.load_file(filename=tmp_file.name, key=s3_parquet_path, bucket_name=s3_bucket, replace=True)
 
-with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval='@once', catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job') as dag:
+# Define the DAG
+with DAG('sql_to_s3_to_emr_serverless', default_args=default_args, schedule_interval=None, catchup=False, description='DAG to transfer data from MySQL to S3 and trigger an EMR Serverless Spark job') as dag:
+    
+    # Task 1: Get table names from MySQL
     table_names = get_table_names()
-
-    with TaskGroup("upload_to_s3_group") as upload_to_s3_group:
-        s3_keys = generate_s3_keys(table_names)
-        process_tasks = process_and_upload_to_s3.map(table_names, s3_keys)
+    
+    # Task 2: Generate S3 keys for storing Parquet files
+    s3_keys = generate_s3_keys(table_names)
+    
+    # Task 3: Process and upload data to S3 in parallel
+    process_and_upload_to_s3.map(table_names, s3_keys)
