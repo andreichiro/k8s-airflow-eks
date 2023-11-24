@@ -491,7 +491,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 1
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1165,7 +1165,7 @@ webserver:
     scheme: HTTP
 
   # Number of webservers
-  replicas: 2
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
