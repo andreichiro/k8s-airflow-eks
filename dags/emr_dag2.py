@@ -106,15 +106,15 @@ with DAG('my_dynamic_dag', default_args=default_args, schedule_interval=None, ca
 #    )
 
 # Define the main DAG
-with DAG(
-    'my_dynamic_dag',
-    default_args=default_args,
-    schedule_interval=None,  # You can set the interval as needed
-    catchup=False,
-    tags=['example'],
-) as dag:
-    tables = get_table_names()
-    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
+#with DAG(
+#    'my_dynamic_dag',
+#    default_args=default_args,
+#    schedule_interval=None,  # You can set the interval as needed
+#    catchup=False,
+#    tags=['example'],
+#) as dag:
+#    tables = get_table_names()
+#    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
 
     
     # Task 1: Get table names from MySQL
