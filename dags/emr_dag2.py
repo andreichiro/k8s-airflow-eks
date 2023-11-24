@@ -87,7 +87,7 @@ with DAG(
     tags=['example'],
 ) as dag:
     tables = get_table_names()
-    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables.outlets)
+    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
     sql = create_sql_to_s3_task(tables)
     
     # Task 1: Get table names from MySQL
