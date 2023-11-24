@@ -58,6 +58,8 @@ def create_sql_to_s3_task(table_name, mysql_conn_id='sql_rewards', s3_bucket=Non
         file_format='parquet'  # Assuming you want to save the data in Parquet format
     )
     
+    sql_operator.execute(context={})    
+
 #@task
 #def create_sql_to_s3_task(table_name):
 #    """
