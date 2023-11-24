@@ -7,7 +7,8 @@ import polars as pl
 from airflow.models import Variable
 from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 from airflow import Dataset
-
+from airflow.operators.python_operator import PythonOperator
+from datetime import datetime, timedelta
 
 # Default arguments for the DAG
 default_args = {
