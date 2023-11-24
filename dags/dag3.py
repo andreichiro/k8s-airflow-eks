@@ -25,7 +25,7 @@ def query_to_s3(table_name, mysql_conn_id='sql_rewards', s3_bucket=None, aws_con
     s3_key = f'raw/{table_name}.parquet'
     s3_hook.load_bytes(parquet_buffer.getvalue(), bucket_name=s3_bucket, key=s3_key, replace=True)
 
-with DAG('my_dynamic_dag', default_args=default_args, schedule_interval=None, catchup=False, tags=['example']) as dag:
+with DAG('my_dynamic_dag2', default_args=default_args, schedule_interval=None, catchup=False, tags=['example']) as dag:
     
     # Assuming get_table_names() retrieves a list of table names dynamically
     table_names = get_table_names()
