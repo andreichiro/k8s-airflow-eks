@@ -40,33 +40,24 @@ def get_table_names():
 #    return files_paths###
 
 @task
-def create_sql_to_s3_task(tables, mysql_conn_id='sql_rewards', s3_bucket=Variable.get("s3_bucket")):
+def create_sql_to_s3_task(table_name, mysql_conn_id='sql_rewards', s3_bucket=None):
     """
     Task to create and execute SqlToS3Operator for a specific table.
     """
-    for table_name in tables:
-        mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-        df = mysql_hook.get_pandas_df(f"SELECT * FROM `{table_name}`")
-        parquet_buffer = df.to_parquet(index=False)
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    sql = f"SELECT * FROM `{table_name}`"
+    s3_key = f'raw/{table_name}.parquet'
+    s3_bucket = Variable.get("s3_bucket")
 
-        s3_hook = S3Hook(aws_conn_id='aws_default')
-        s3_key = f'raw/{table_name}.parquet'
-        s3_hook.load_bytes(parquet_buffer, bucket_name=s3_bucket, key=s3_key, replace=True)
-
-    #sql = f"SELECT * FROM `{table_name}`"
-    #s3_key = f'raw/{table_name}.parquet'
-    #s3_bucket = Variable.get("s3_bucket")
-
-#    sql_operator = SqlToS3Operator(
-#        task_id=f"sql_to_s3_{table_name}",
-#        sql_conn_id='sql_rewards',
-#        query=sql,
-#        s3_bucket=s3_bucket,
-#        s3_key=s3_key,
-#        replace=True,
-#        provide_context=True,
-#        op_kwargs={'dag': dag},
- #   )
+    sql_operator = SqlToS3Operator(
+        task_id=f"sql_to_s3_{table_name}",
+        sql_conn_id='sql_rewards',
+        query=sql,
+        s3_bucket=s3_bucket,
+        s3_key=s3_key,
+        replace=True,
+        provide_context=True
+    )
     
 #@task
 #def create_sql_to_s3_task(table_name):
@@ -91,7 +82,7 @@ with DAG(
     tags=['example'],
 ) as dag:
     tables = get_table_names()
-    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(tables=tables)
+    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
 
     
     # Task 1: Get table names from MySQL
