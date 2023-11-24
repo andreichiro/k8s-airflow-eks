@@ -6,6 +6,8 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 import polars as pl
 from airflow.models import Variable
 from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
+from airflow import Dataset
+
 
 # Default arguments for the DAG
 default_args = {
@@ -19,16 +21,16 @@ default_args = {
     # Add other default args as needed
 }
 
-#@task
-#def get_table_names():
-#    """
-#    Task to retrieve table names from MySQL database.
-#    """
-#    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-#    tables = mysql_hook.get_records('SHOW TABLES;')
-#    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
-#    print(table_names)
-#    return table_names
+@task
+def get_table_names():
+    """
+    Task to retrieve table names from MySQL database.
+    """
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    tables = mysql_hook.get_records('SHOW TABLES;')
+    table_names = [Dataset(table[0]) for table in tables]  # Adjust based on the structure of the returned data
+    print(table_names)
+    return table_names
 
 #@task
 #def generate_s3_keys(table_names):
@@ -38,40 +40,36 @@ default_args = {
 #    files_paths = [f'raw/{table_name}.parquet' for table_name in table_names]
 #    return files_paths###
 
-#@task
-#def create_sql_to_s3_task():
-#    """
-#    Task to create and execute SqlToS3Operator for a specific table.
-#    """
-
-#    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-#    tables = mysql_hook.get_records('SHOW TABLES;')
-#    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
-#    for table_name in table_names:
-
- #       return SqlToS3Operator(
- #           task_id=f"sql_to_s3_{table_name}",
- #           sql_conn_id='sql_rewards',  # Replace with your actual connection ID
- #           query=f"SELECT * FROM `{table_name}`",
- #           s3_bucket=Variable.get("s3_bucket"),
- #           s3_key=s3_key,
- #           replace=True
- #       )
-
-
 @task
-def create_sql_to_s3_task(table_name):
+def create_sql_to_s3_task(table_names):
     """
     Task to create and execute SqlToS3Operator for a specific table.
     """
-    return SqlToS3Operator(
-        task_id=f"sql_to_s3_{table_name}",
-        sql_conn_id='sql_rewards',  # Replace with your actual connection ID
-        query=f"SELECT * FROM `{table_name}`",
-        s3_bucket=Variable.get("s3_bucket"),
-        s3_key=f'raw/{table_name}.parquet',
-        replace=True
-    )
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    for table in table_names:
+        sql_operator = SqlToS3Operator(
+            task_id=f"sql_to_s3_{table}",
+            sql_conn_id='sql_rewards',  # Replace with your actual connection ID
+            query=f"SELECT * FROM `{table}`",
+            s3_bucket=Variable.get("s3_bucket"),
+            s3_key=f'raw/{table}.parquet',
+            replace=True
+        )
+        print(Dataset(sql_operator))
+        return Dataset(sql_operator) 
+#@task
+#def create_sql_to_s3_task(table_name):
+#    """
+#    Task to create and execute SqlToS3Operator for a specific table.
+#    """
+#    return SqlToS3Operator(
+#        task_id=f"sql_to_s3_{table_name}",
+#        sql_conn_id='sql_rewards',  # Replace with your actual connection ID
+#        query=f"SELECT * FROM `{table_name}`",
+#        s3_bucket=Variable.get("s3_bucket"),
+#        s3_key=f'raw/{table_name}.parquet',
+#        replace=True
+#    )
 
 # Define the main DAG
 with DAG(
@@ -81,14 +79,9 @@ with DAG(
     catchup=False,
     tags=['example'],
 ) as dag:
-   
-    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    tables = mysql_hook.get_records('SHOW TABLES;')
-    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
-
-    # Create tasks for each table
-    tasks = [create_sql_to_s3_task(table_name) for table_name in table_names]
-   
+    tables = get_table_names()
+    sql = create_sql_to_s3_task(tables)
+    
     # Task 1: Get table names from MySQL
 #    table_names_task = get_table_names()
 #    for table in table_names_task:
@@ -108,5 +101,4 @@ with DAG(
 #        sql_to_s3_tasks.append(sql_to_s3_task)
         
     # Set up dependencies
-#    table_names_task >> s3_keys_task >> sql_to_s3_tasks
-    
+tables >> sql
