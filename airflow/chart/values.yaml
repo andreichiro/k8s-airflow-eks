@@ -1165,7 +1165,7 @@ webserver:
     scheme: HTTP
 
   # Number of webservers
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1280,7 +1280,7 @@ webserver:
   webserverConfigConfigMapName: ~
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     ## service annotations
     annotations: {}
     ports:
@@ -1752,7 +1752,7 @@ flower:
   password: ~
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     ## service annotations
     annotations: {}
     ports:
