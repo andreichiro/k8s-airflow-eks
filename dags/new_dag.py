@@ -7,10 +7,16 @@ from datetime import datetime, timedelta
 import functools
 from airflow.operators.subdag import SubDagOperator
 
+# Default arguments for the DAG
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023, 11, 15),
-    # ... other default args
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    # Add other default args as needed
 }
 
 def get_table_names(**kwargs):
