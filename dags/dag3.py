@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import io
 from airflow.providers.mysql.hooks.mysql import MySqlHook
+from airflow.models import Variable
 
 default_args = {
     'owner': 'airflow',
