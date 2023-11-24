@@ -7,7 +7,6 @@ import polars as pl
 from airflow.models import Variable
 from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 from airflow import Dataset
-from airflow.operators.python_operator import PythonOperator
 
 
 # Default arguments for the DAG
@@ -56,7 +55,9 @@ def create_sql_to_s3_task(table_name):
         query=sql,
         s3_bucket=s3_bucket,
         s3_key=s3_key,
-        replace=True
+        replace=True,
+        provide_context=True,
+        op_kwargs={'dag': dag},
     )
     
 #@task
@@ -81,31 +82,10 @@ with DAG(
     catchup=False,
     tags=['example'],
 ) as dag:
-    
-    get_tables = PythonOperator(
-        task_id='get_table_names',
-        python_callable=get_table_names,
-        provide_context=True,
-        dag=dag
-    )
-
-
-    generate_s3 = PythonOperator(
-        task_id='generate_s3_tasks',
-        python_callable=create_sql_to_s3_task,
-        provide_context=True,
-        op_kwargs={'dag': dag},
-        dag=dag
-    )
-
-    get_tables >> generate_s3
-    
-    #tables = get_table_names()
-    #create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
-
+    tables = get_table_names()
+    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
 
     
-
     # Task 1: Get table names from MySQL
 #    table_names_task = get_table_names()
 #    for table in table_names_task:
