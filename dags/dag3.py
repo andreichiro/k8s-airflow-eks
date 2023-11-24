@@ -6,6 +6,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from datetime import datetime, timedelta
 import pandas as pd
 import io
+from airflow.providers.mysql.hooks.mysql import MySqlHook
 
 default_args = {
     'owner': 'airflow',
@@ -14,6 +15,14 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     # Add other default args as needed
 }
+
+def get_table_names(mysql_conn_id='sql_rewards'):
+    mysql_hook = MySqlHook(mysql_conn_id=mysql_conn_id)
+    connection = mysql_hook.get_conn()
+    cursor = connection.cursor()
+    cursor.execute('SHOW TABLES;')
+    tables = cursor.fetchall()
+    return [table[0] for table in tables]
 
 def query_to_s3(table_name, mysql_conn_id='sql_rewards', s3_bucket=None, aws_conn_id='aws_default'):
     mysql_hook = MySqlHook(mysql_conn_id=mysql_conn_id)
