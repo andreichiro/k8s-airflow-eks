@@ -1752,7 +1752,7 @@ flower:
   password: ~
 
   service:
-    type: LoadBalancer
+    type: NodePort
     ## service annotations
     annotations: {}
     ports:
