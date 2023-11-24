@@ -28,8 +28,7 @@ def get_table_names():
     """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
-    table_names = [Dataset(table[0]) for table in tables]  # Adjust based on the structure of the returned data
-    print(table_names)
+    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
     return table_names
 
 #@task
@@ -58,11 +57,6 @@ def create_sql_to_s3_task(table_name):
         s3_key=s3_key,
         replace=True
     )
-    sql_operator.execute(context={})
-    sql_dataset = Dataset(f"sql://adfbbaf9_bi_rewards/{table_name}")
-    return sql_dataset
-
-
 
 #@task
 #def create_sql_to_s3_task(table_name):
@@ -88,7 +82,6 @@ with DAG(
 ) as dag:
     tables = get_table_names()
     create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
-    sql = create_sql_to_s3_task(tables)
     
     # Task 1: Get table names from MySQL
 #    table_names_task = get_table_names()
@@ -109,4 +102,4 @@ with DAG(
 #        sql_to_s3_tasks.append(sql_to_s3_task)
         
     # Set up dependencies
-tables >> sql
+#tables >> create_sql_to_s3_tasks
