@@ -24,30 +24,64 @@ default_args = {
 
 @task
 def get_table_names():
+    """
+    Task to retrieve table names from MySQL database.
+    """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
-    cursor.execute("SHOW TABLES")
-    tables = cursor.fetchall()
+    tables = [table[0] for table in cursor.fetchall()]    
     for table in tables:
-        sql_to_s3_task = SqlToS3Operator(
-            task_id=f'sql_to_s3_{table}',
+            df = pd.read_sql(f"SELECT * FROM `{table}`", connection)
+            print(df)
+            sql_to_s3_task = SqlToS3Operator(
+            task_id=f"sql_to_s3_{table}",
             sql_conn_id='sql_rewards',
-            query=f'SELECT * FROM `{table}`',
-            s3_bucket=Variable.get('s3_bucket'),
+            query=f"SELECT * FROM `{table}`",
+            s3_bucket=Variable.get("s3_bucket"),
             s3_key=f'raw/{table}.parquet',
             replace=True,
             file_format='parquet',
-            aws_conn_id='aws_conn_id'
+            aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
         )
 
- 
     
+    #cursor.execute("SHOW TABLES")
+    #tables = [table[0] for table in cursor.fetchall()]
+
+
+#@task
+#def generate_s3_keys(table_names):
+#    """
+#    Task to generate S3 keys for storing Parquet files.
+#    """
+#    files_paths = [f'raw/{table_name}.parquet' for table_name in table_names]
+#    return files_paths###
+
+
+#@task
+#def create_sql_to_s3_task(table_name):
+#    """
+#    Task to create and execute SqlToS3Operator for a specific table.
+#    """
+#    return SqlToS3Operator(
+#        task_id=f"sql_to_s3_{table_name}",
+#        sql_conn_id='sql_rewards',  # Replace with your actual connection ID
+#        query=f"SELECT * FROM `{table_name}`",
+#        s3_bucket=Variable.get("s3_bucket"),
+#        s3_key=f'raw/{table_name}.parquet',
+#        replace=True
+#    )
+
+# Define the main DAG
 with DAG(
-    dag_id='sql_to_s3_dag',
+    'my_dynamic_dag',
     default_args=default_args,
-    schedule_interval=None,  # Adjust as needed
+    schedule_interval=None,  # You can set the interval as needed
     catchup=False,
     tags=['example'],
 ) as dag:
-    dag =  get_table_names()
+    tables = get_table_names()
+#    query_to_s3 = query_to_s3.expand(table_name=tables)
+
+tables #>> query_to_s3
