@@ -34,8 +34,7 @@ def get_tables():
     cursor = connection.cursor()
     cursor.execute('SHOW TABLES;')
     tables = [table[0] for table in cursor.fetchall()]     
-    for table in tables:       
-        return table
+    return tables
 #    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
 #    connection = mysql_hook.get_conn()
 #    cursor = connection.cursor()
