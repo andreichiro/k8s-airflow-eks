@@ -33,6 +33,7 @@ def get_table_names():
     tables = [table[0] for table in cursor.fetchall()]
     return tables
          
+@task
 def query_to_s3(table_name):
     s3_bucket = Variable.get("s3_bucket")
     s3_key = f'raw/{table_name}.parquet'
