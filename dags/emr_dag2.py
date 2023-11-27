@@ -30,7 +30,7 @@ def get_table_names():
     tables = mysql_hook.get_records("SHOW TABLES;")
     for table_name in tables:
             sql = "select * from {table_name};"
-            df = mysql_hook.to_pandas(sq=sql)            
+            df = mysql_hook.to_pandas(sql=sql)            
             print(df)
         # Adjust based on the structure of the returned data
 
@@ -68,7 +68,7 @@ def create_sql_to_s3_task():
         replace=True,
         file_format='parquet'  # Assuming you want to save the data in Parquet format
     )
-        return sql_operator
+
     
 #@task
 #def create_sql_to_s3_task(table_name):
