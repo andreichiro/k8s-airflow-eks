@@ -28,7 +28,7 @@ def get_table_names():
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
     cursor.execute("SHOW TABLES")
-    tables = [table[0] for table in cursor.fetchall()]
+    tables = cursor.fetchall()
     for table in tables:
         sql_to_s3_task = SqlToS3Operator(
             task_id=f'sql_to_s3_{table}',
