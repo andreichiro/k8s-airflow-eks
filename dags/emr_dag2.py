@@ -37,7 +37,7 @@ def get_table_names():
 def query_to_s3(table_name):
     s3_bucket = Variable.get("s3_bucket")
     s3_key = f'raw/{table_name}.parquet'
-    return SqlToS3Operator(
+    sql_operator = SqlToS3Operator(
         task_id=f"sql_to_s3_{table_name}",
         sql_conn_id='sql_rewards',
         query=f"SELECT * FROM `{table_name}`",

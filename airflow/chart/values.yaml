@@ -2130,7 +2130,7 @@ redis:
   # when it wants to scale a node down.
   safeToEvict: false
 
-  # Select certain nodes for redis pods.
+  # Select certain nodes for redis podsf
   nodeSelector: {}
   affinity: {}
   tolerations: []
