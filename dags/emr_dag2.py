@@ -29,35 +29,22 @@ def get_table_names():
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
-    tables = cursor.fetchall()
-
-    for table in tables:  
-        df = mysql_hook.get_pandas_df(f"SELECT * FROM `{table}`")
-#        parquet_buffer = io.BytesIO()
-        df.to_parquet(index=False)
+    cursor.execute("SHOW TABLES")
+    tables = [table[0] for table in cursor.fetchall()]
+    return tables
          
-def query_to_s3():
-    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    connection = mysql_hook.get_conn()
-    cursor = connection.cursor()
-    tables = cursor.fetchall()
-    sql = f"SELECT * FROM `{table}`"
-    s3_key = f'raw/{table}.parquet'
+def query_to_s3(table_name):
     s3_bucket = Variable.get("s3_bucket")
-    
-    for table in tables:
-        df = mysql_hook.get_pandas_df(f"SELECT * FROM `{table}`")
-        sql_operator = SqlToS3Operator(
-        task_id=f"sql_to_s3_{table}",
+    s3_key = f'raw/{table_name}.parquet'
+    return SqlToS3Operator(
+        task_id=f"sql_to_s3_{table_name}",
         sql_conn_id='sql_rewards',
-        query=sql,
+        query=f"SELECT * FROM `{table_name}`",
         s3_bucket=s3_bucket,
         s3_key=s3_key,
         replace=True,
-        file_format='parquet'  # Assuming you want to save the data in Parquet format
+        file_format='parquet'
     )
-        return df
-
         
 #@task
 #def generate_s3_keys(table_names):
@@ -91,7 +78,7 @@ with DAG(
     tags=['example'],
 ) as dag:
     tables = get_table_names()
-    query_to_s3 = query_to_s3()
+    query_to_s3 = query_to_s3.expand(table_name=tables)
 #    query_to_s3 = create_sql_to_s3_task.expand(table_name=tables)
 
     
@@ -114,4 +101,4 @@ with DAG(
 #        sql_to_s3_tasks.append(sql_to_s3_task)
         
     # Set up dependencies
-[tables, query_to_s3]
+tables >> query_to_s3
