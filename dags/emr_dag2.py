@@ -27,10 +27,12 @@ def get_table_names():
     Task to retrieve table names from MySQL database.
     """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    tables = mysql_hook.get_records("SELECT * FROM {table_name}")
+    tables = mysql_hook.get_records("SHOW TABLES;")
     for table_name in tables:
-        print (table_name)# Adjust based on the structure of the returned data
-    return tables
+            sql = "select * from {table_name};"
+            df = mysql_hook.to_pandas(sq=sql)            
+            print(df)
+        # Adjust based on the structure of the returned data
 
 #@task
 #def generate_s3_keys(table_names):
@@ -49,7 +51,7 @@ def create_sql_to_s3_task():
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
     table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
-    
+            
     s3_bucket = Variable.get("s3_bucket")
    
     for table_name in table_names:
@@ -66,6 +68,7 @@ def create_sql_to_s3_task():
         replace=True,
         file_format='parquet'  # Assuming you want to save the data in Parquet format
     )
+        return sql_operator
     
 #@task
 #def create_sql_to_s3_task(table_name):
