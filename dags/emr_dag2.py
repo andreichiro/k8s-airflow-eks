@@ -31,11 +31,9 @@ def get_table_names():
     cursor = connection.cursor()
     cursor.execute("SHOW TABLES")
     tables = [table[0] for table in cursor.fetchall()]
-    return tables
-tables = get_table_names()
-
-for table in tables:
-    sql_to_s3_task = SqlToS3Operator(
+    
+    for table in tables:
+        sql_to_s3_task = SqlToS3Operator(
             task_id=f"sql_to_s3_{table}",
             sql_conn_id='sql_rewards',
             query=f"SELECT * FROM `{table}`",
