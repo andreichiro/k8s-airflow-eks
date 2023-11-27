@@ -41,20 +41,21 @@ def get_table_names():
 #    return files_paths###
 
 @task
-def create_sql_to_s3_task(table_name, mysql_conn_id='sql_rewards', s3_bucket=None):
+def create_sql_to_s3_task():
     """
     Task to create and execute SqlToS3Operator for a specific table.
     """
-    
-    sql = f"SELECT * FROM `{table_name}`"
-    s3_key = f'raw/{table_name}.parquet'
-    s3_bucket = Variable.get("s3_bucket")
 
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     tables = mysql_hook.get_records('SHOW TABLES;')
     table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
+    
+    s3_bucket = Variable.get("s3_bucket")
    
-    for table in table_names:
+    for table_name in table_names:
+        sql = f"SELECT * FROM `{table_name}`"
+        s3_key = f'raw/{table_name}.parquet'
+ 
         sql_operator = SqlToS3Operator(
         task_id=f"sql_to_s3_{table_name}",
         sql_conn_id='sql_rewards',
