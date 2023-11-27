@@ -28,16 +28,7 @@ def get_table_names():
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
     cursor.execute("SHOW TABLES")
-    return [table[0] for table in cursor.fetchall()]
-
-with DAG(
-    dag_id='sql_to_s3_dag',
-    default_args=default_args,
-    schedule_interval=None,  # Adjust as needed
-    catchup=False,
-    tags=['example'],
-) as dag:
-    tables = get_table_names()
+    tables = [table[0] for table in cursor.fetchall()]
     for table in tables:
         sql_to_s3_task = SqlToS3Operator(
             task_id=f'sql_to_s3_{table}',
@@ -50,4 +41,13 @@ with DAG(
             aws_conn_id='aws_conn_id'
         )
 
-dag =  get_table_names()
+ 
+    
+with DAG(
+    dag_id='sql_to_s3_dag',
+    default_args=default_args,
+    schedule_interval=None,  # Adjust as needed
+    catchup=False,
+    tags=['example'],
+) as dag:
+    dag =  get_table_names()
