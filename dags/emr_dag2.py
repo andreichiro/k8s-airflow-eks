@@ -27,9 +27,9 @@ def get_table_names():
     Task to retrieve table names from MySQL database.
     """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    tables = mysql_hook.fetch_all()
-    for table in tables:
-        print (table)# Adjust based on the structure of the returned data
+    tables = mysql_hook.get_records("SELECT * FROM {table_name}")
+    for table_name in tables:
+        print (table_name)# Adjust based on the structure of the returned data
     return tables
 
 #@task
@@ -60,6 +60,7 @@ def create_sql_to_s3_task():
         task_id=f"sql_to_s3_{table_name}",
         sql_conn_id='sql_rewards',
         query=sql,
+        aws_conn_id="aws_conn_id",
         s3_bucket=s3_bucket,
         s3_key=s3_key,
         replace=True,
