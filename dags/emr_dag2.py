@@ -43,6 +43,8 @@ def get_table_names():
             file_format='parquet',
             aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
         )
+        
+    return tables
     
 @task
 def query_to_s3(table_name):
