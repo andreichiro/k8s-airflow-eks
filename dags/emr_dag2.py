@@ -32,7 +32,20 @@ def get_table_names():
     cursor.execute("SHOW TABLES")
     tables = [table[0] for table in cursor.fetchall()]
     return tables
-         
+tables = get_table_names()
+
+for table in tables:
+    sql_to_s3_task = SqlToS3Operator(
+            task_id=f"sql_to_s3_{table}",
+            sql_conn_id='sql_rewards',
+            query=f"SELECT * FROM `{table}`",
+            s3_bucket=Variable.get("s3_bucket"),
+            s3_key=f'raw/{table}.parquet',
+            replace=True,
+            file_format='parquet',
+            aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
+        )
+    
 @task
 def query_to_s3(table_name):
     s3_bucket = Variable.get("s3_bucket")
@@ -80,26 +93,5 @@ with DAG(
 ) as dag:
     tables = get_table_names()
     query_to_s3 = query_to_s3.expand(table_name=tables)
-#    query_to_s3 = create_sql_to_s3_task.expand(table_name=tables)
 
-    
-    # Task 1: Get table names from MySQL
-#    table_names_task = get_table_names()
-#    for table in table_names_task:
-#        print(table)
-        
-    # Task 2: Generate S3 keys
- #   s3_keys_task = generate_s3_keys(table_names_task)
- #   for s3 in s3_keys_task:
- #       print(s3)
-    
-      # Create and execute SqlToS3Operator tasks for each table
-#    sql_to_s3_tasks = []
-
-#    for table_name in table_names_task:
-#        s3_key = f'raw/{table_name}.parquet'
-#        sql_to_s3_task = create_sql_to_s3_task(table_name, s3_key)
-#        sql_to_s3_tasks.append(sql_to_s3_task)
-        
-    # Set up dependencies
 tables >> query_to_s3
