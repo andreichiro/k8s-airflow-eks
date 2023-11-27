@@ -9,6 +9,7 @@ from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 from airflow import Dataset
 from airflow.providers.mysql.operators.mysql import MySqlOperator
 import pandas as pd
+from airflow.providers.mysql.operators.mysql import SQLExecuteQueryOperator 
 
 # Default arguments for the DAG
 default_args = {
@@ -27,23 +28,32 @@ def get_table_names():
     """
     Task to retrieve table names from MySQL database.
     """
-    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    
+    mysql_hook = MySqlHook(mysql_conn_id="sql_rewards")
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
-    tables = [table[0] for table in cursor.fetchall()]    
-    for table in tables:
-            df = pd.read_sql(f"SELECT * FROM `{table}`", connection)
-            print(df)
-            sql_to_s3_task = SqlToS3Operator(
-            task_id=f"sql_to_s3_{table}",
-            sql_conn_id='sql_rewards',
-            query=f"SELECT * FROM `{table}`",
-            s3_bucket=Variable.get("s3_bucket"),
-            s3_key=f'raw/{table}.parquet',
-            replace=True,
-            file_format='parquet',
-            aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
-        )
+    cursor.execute('SHOW TABLES;')
+    tables = [table[0] for table in cursor.fetchall()]     
+    
+    return tables
+#    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+#    connection = mysql_hook.get_conn()
+#    cursor = connection.cursor()
+#    tables = cursor.fetchall()
+#    
+#    for table in tables:
+#            df = pd.read_sql(f"SELECT * FROM `{table}`", connection)
+#            print(df)
+#            sql_to_s3_task = SqlToS3Operator(
+#            task_id=f"sql_to_s3_{table}",
+#            sql_conn_id='sql_rewards',
+#            query=f"SELECT * FROM `{table}`",
+#            s3_bucket=Variable.get("s3_bucket"),
+#            s3_key=f'raw/{table}.parquet',
+#            replace=True,
+#            file_format='parquet',
+#            aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
+#        )
 
     
     #cursor.execute("SHOW TABLES")
@@ -82,6 +92,18 @@ with DAG(
     tags=['example'],
 ) as dag:
     tables = get_table_names()
+    for table in tables:
+        sql_to_s3_task = SqlToS3Operator(
+                task_id=f"sql_to_s3_{table}",
+                sql_conn_id='sql_rewards',
+                query=f"SELECT * FROM `{table}`",
+                s3_bucket=Variable.get("s3_bucket"),
+                s3_key=f'raw/{table}.parquet',
+                replace=True,
+                file_format='parquet',
+                aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
+        )
+    
 #    query_to_s3 = query_to_s3.expand(table_name=tables)
 
 tables #>> query_to_s3
