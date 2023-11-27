@@ -24,7 +24,7 @@ default_args = {
 }
 
 @task
-def get_table_names():
+def get_tables():
     """
     Task to retrieve table names from MySQL database.
     """
@@ -34,8 +34,8 @@ def get_table_names():
     cursor = connection.cursor()
     cursor.execute('SHOW TABLES;')
     tables = [table[0] for table in cursor.fetchall()]     
-    
-    return tables
+    for table in tables:       
+        return table
 #    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
 #    connection = mysql_hook.get_conn()
 #    cursor = connection.cursor()
@@ -60,11 +60,23 @@ def get_table_names():
     #tables = [table[0] for table in cursor.fetchall()]
 
 
-#@task
-#def generate_s3_keys(table_names):
-#    """
-#    Task to generate S3 keys for storing Parquet files.
-#    """
+@task
+def sql_to_s3(table):
+    """
+    Task to generate S3 keys for storing Parquet files.
+    """
+    
+    sql_to_s3_task = SqlToS3Operator(
+                task_id=f"sql_to_s3_{table}",
+                sql_conn_id='sql_rewards',
+                query=f"SELECT * FROM `{table}`",
+                s3_bucket=Variable.get("s3_bucket"),
+                s3_key=f'raw/{table}.parquet',
+                replace=True,
+                file_format='parquet',
+                aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
+        )
+     
 #    files_paths = [f'raw/{table_name}.parquet' for table_name in table_names]
 #    return files_paths###
 
@@ -91,19 +103,9 @@ with DAG(
     catchup=False,
     tags=['example'],
 ) as dag:
-    tables = get_table_names()
-    for table in tables:
-        sql_to_s3_task = SqlToS3Operator(
-                task_id=f"sql_to_s3_{table}",
-                sql_conn_id='sql_rewards',
-                query=f"SELECT * FROM `{table}`",
-                s3_bucket=Variable.get("s3_bucket"),
-                s3_key=f'raw/{table}.parquet',
-                replace=True,
-                file_format='parquet',
-                aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
-        )
-    
+    tables = get_tables()
+    sql = sql_to_s3.expand(table=tables)
+        
 #    query_to_s3 = query_to_s3.expand(table_name=tables)
 
-tables #>> query_to_s3
+tables >> sql_to_s3
