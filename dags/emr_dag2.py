@@ -8,6 +8,7 @@ from airflow.models import Variable
 from airflow.providers.amazon.aws.transfers.sql_to_s3 import SqlToS3Operator
 from airflow import Dataset
 from airflow.providers.mysql.operators.mysql import MySqlOperator
+import pandas as pd
 
 # Default arguments for the DAG
 default_args = {
@@ -29,11 +30,11 @@ def get_table_names():
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
-    cursor.execute("SHOW TABLES")
-    tables = [table[0] for table in cursor.fetchall()]
-    
+    cursor.execute(f"SELECT * FROM `{table}`")
+    tables = [table[0] for table in cursor.fetchall()]    
     for table in tables:
-        sql_to_s3_task = SqlToS3Operator(
+            df = pd.DataFrame(cursor.fetchall())
+            sql_to_s3_task = SqlToS3Operator(
             task_id=f"sql_to_s3_{table}",
             sql_conn_id='sql_rewards',
             query=f"SELECT * FROM `{table}`",
@@ -43,22 +44,22 @@ def get_table_names():
             file_format='parquet',
             aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
         )
-        
-    return tables
+
     
+    #cursor.execute("SHOW TABLES")
+    #tables = [table[0] for table in cursor.fetchall()]
+
+
 @task
 def query_to_s3(table_name):
-    s3_bucket = Variable.get("s3_bucket")
-    s3_key = f'raw/{table_name}.parquet'
-    sql_operator = SqlToS3Operator(
-        task_id=f"sql_to_s3_{table_name}",
-        sql_conn_id='sql_rewards',
-        query=f"SELECT * FROM `{table_name}`",
-        s3_bucket=s3_bucket,
-        s3_key=s3_key,
-        replace=True,
-        file_format='parquet'
-    )
+        
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    df = mysql_hook.get_pandas_df(f"SELECT * FROM `{table_name}`")
+    connection = mysql_hook.get_conn()
+    cursor = connection.cursor()
+    tables = [table[0] for table in cursor.fetchall()]    
+    
+    
         
 #@task
 #def generate_s3_keys(table_names):
