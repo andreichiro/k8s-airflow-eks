@@ -114,4 +114,4 @@ with DAG(
 #        sql_to_s3_tasks.append(sql_to_s3_task)
         
     # Set up dependencies
-tables >> query_to_s3
+[tables, query_to_s3]
