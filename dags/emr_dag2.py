@@ -27,9 +27,10 @@ def get_table_names():
     Task to retrieve table names from MySQL database.
     """
     mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
-    tables = mysql_hook.get_records('SHOW TABLES;')
-    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
-    return table_names
+    tables = mysql_hook.fetch_all()
+    for table in tables:
+        print (table)# Adjust based on the structure of the returned data
+    return tables
 
 #@task
 #def generate_s3_keys(table_names):
@@ -44,11 +45,17 @@ def create_sql_to_s3_task(table_name, mysql_conn_id='sql_rewards', s3_bucket=Non
     """
     Task to create and execute SqlToS3Operator for a specific table.
     """
+    
     sql = f"SELECT * FROM `{table_name}`"
     s3_key = f'raw/{table_name}.parquet'
     s3_bucket = Variable.get("s3_bucket")
 
-    sql_operator = SqlToS3Operator(
+    mysql_hook = MySqlHook(mysql_conn_id='sql_rewards')
+    tables = mysql_hook.get_records('SHOW TABLES;')
+    table_names = [table[0] for table in tables]  # Adjust based on the structure of the returned data
+   
+    for table in table_names:
+        sql_operator = SqlToS3Operator(
         task_id=f"sql_to_s3_{table_name}",
         sql_conn_id='sql_rewards',
         query=sql,
@@ -58,8 +65,6 @@ def create_sql_to_s3_task(table_name, mysql_conn_id='sql_rewards', s3_bucket=Non
         file_format='parquet'  # Assuming you want to save the data in Parquet format
     )
     
-    sql_operator.execute(context={})    
-
 #@task
 #def create_sql_to_s3_task(table_name):
 #    """
@@ -83,7 +88,7 @@ with DAG(
     tags=['example'],
 ) as dag:
     tables = get_table_names()
-    create_sql_to_s3_tasks = create_sql_to_s3_task.expand(table_name=tables)
+    create_sql_to_s3_tasks = create_sql_to_s3_task.expand()
 
     
     # Task 1: Get table names from MySQL
