@@ -101,7 +101,7 @@ with DAG(
     tags=['example'],
 ) as dag:
     tables = get_tables()
-    sql = sql_to_s3.expand(table=tables)
+    sql = sql_to_s3(table=tables)
         
 #    query_to_s3 = query_to_s3.expand(table_name=tables)
 
