@@ -23,7 +23,6 @@ default_args = {
     # Add other default args as needed
 }
 
-@task
 def get_tables():
     """
     Task to retrieve table names from MySQL database.
@@ -59,7 +58,6 @@ def get_tables():
     #tables = [table[0] for table in cursor.fetchall()]
 
 
-@task
 def sql_to_s3(table):
     """
     Task to generate S3 keys for storing Parquet files.
