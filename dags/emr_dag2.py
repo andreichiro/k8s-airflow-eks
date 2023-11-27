@@ -106,4 +106,3 @@ with DAG(
         
 #    query_to_s3 = query_to_s3.expand(table_name=tables)
 
-tables >> sql_to_s3
