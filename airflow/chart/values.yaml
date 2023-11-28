@@ -782,7 +782,7 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -797,7 +797,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 2
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1347,7 +1347,7 @@ webserver:
 triggerer:
   enabled: true
   # Number of airflow triggerers in the deployment
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
