@@ -15,3 +15,39 @@ spec:
       port: 8080
       targetPort: 8080
   type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-elb-trigger
+  namespace: airflow
+  labels:
+    role: triggerer
+  annotations:
+spec:
+  selector:
+    role: triggerer
+  ports:
+    - name: triggerer
+      protocol: TCP
+      port: 8794
+      targetPort: 8794
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-elb-worker
+  namespace: airflow
+  labels:
+    role: worker
+  annotations:
+spec:
+  selector:
+    role: worker
+  ports:
+    - name: worker
+      protocol: TCP
+      port: 8793
+      targetPort: 8793
+  type: LoadBalancer
