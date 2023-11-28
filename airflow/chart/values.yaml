@@ -907,7 +907,7 @@ scheduler:
   podAnnotations: {}
 
   # Labels specific to scheduler objects and pods
-  labels: {role: scheduker}
+  labels: {role: scheduler}
 
   logGroomerSidecar:
     # Whether to deploy the Airflow scheduler log groomer sidecar.
