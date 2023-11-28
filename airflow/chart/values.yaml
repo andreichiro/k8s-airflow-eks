@@ -1510,7 +1510,7 @@ triggerer:
 
   # Allow KEDA autoscaling.
   keda:
-    enabled: true
+    enabled: false
     namespaceLabels: {}
 
     # How often KEDA polls the airflow DB to report new scale requests to the HPA
