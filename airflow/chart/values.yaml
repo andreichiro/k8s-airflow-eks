@@ -784,7 +784,7 @@ scheduler:
   livenessProbe:
     initialDelaySeconds: 60
     timeoutSeconds: 20
-    failureThreshold: 5
+    failureThreshold: 1
     periodSeconds: 60
     command: ~
 
@@ -797,7 +797,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 3
+  replicas: 4
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
