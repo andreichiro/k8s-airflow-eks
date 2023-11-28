@@ -26,22 +26,16 @@ Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers
 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
 
 
-$env:CASTAI_API_TOKEN="3a45836d248eba2948cce4454aa4d5082b01210a5d7313e38ef80f6223b8dab1"
-$env:CASTAI_CLUSTER_ID="cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9"
-$env:CLUSTER_NAME="h2-lakehouse-on-k8s-eks"
-$env:INSTALL_KVISOR=$true
-$env:REGION="us-east-1"
-$env:USER_ARN="arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9"
+export CASTAI_API_TOKEN="8fbd3bbe016ac9f495f329dbd30c14a44a1308468dfed6d98676c1c77819fdf7"
+export CASTAI_CLUSTER_ID="cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9"
+export CLUSTER_NAME="h2-lakehouse-on-k8s-eks"
+export INSTALL_KVISOR=$true
+export REGION="us-east-1"
+export USER_ARN="arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9"
 
-Invoke-WebRequest -Uri 'https://api.cast.ai/v1/scripts/eks/onboarding.sh' -OutFile 'onboarding.sh'
-bash ./onboarding.sh
+curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh' | bash
 
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-
-cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9 CLUSTER_NAME=h2-lakehouse-on-k8s-eks INSTALL_KVISOR=true REGION=us-east-1 USER_ARN=arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
-
-
-
 
 redis:
   existingSecret: "airflow-redis-password"

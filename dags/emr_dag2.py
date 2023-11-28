@@ -28,7 +28,7 @@ def get_tables():
     Task to retrieve table names from MySQL database.
     """
     
-    mysql_hook = MySqlHook(mysql_conn_id="sql_rewards")
+    mysql_hook = MySqlHook(mysql_conn_id="sql_bi_rewards")
     connection = mysql_hook.get_conn()
     cursor = connection.cursor()
     cursor.execute('SHOW TABLES;')
@@ -42,7 +42,7 @@ def sql_to_s3(table):
     
     sql_to_s3_task = SqlToS3Operator(
                 task_id=f"sql_to_s3_{table}",
-                sql_conn_id='sql_rewards',
+                sql_conn_id='sql_bi_rewards',
                 query=f"SELECT * FROM `{table}`",
                 s3_bucket=Variable.get("s3_bucket"),
                 s3_key=f'raw/{table}.parquet',
