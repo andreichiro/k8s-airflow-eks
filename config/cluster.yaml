@@ -70,8 +70,8 @@ vpc:
 managedNodeGroups:
   - name: lakehouse-on-k8s-demand
     instanceTypes: ["t3.medium", "m5.xlarge", "m5.2xlarge"] 
-    minSize: 0
-    desiredCapacity: 4
+    minSize: 6
+    desiredCapacity: 6
     maxSize: 10
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
@@ -82,10 +82,10 @@ managedNodeGroups:
       allow: true
       publicKeyName: andreichiro
       # new feature for restricting SSH access to certain AWS security group IDs
-    labels: {role: worker}
+    labels: {role: managed_node_group}
     # Note: unmanaged nodegroups (`nodeGroups` field) use a different structure (map[string]string) to express taints
-    tags:
-      nodegroup-role: worker
+  #  tags:
+  #    nodegroup-role: worker
     iam:
       withAddonPolicies:
         ebs: true

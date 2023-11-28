@@ -491,7 +491,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 3
+  replicas: 9
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -510,9 +510,9 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
-    failureThreshold: 5
+    failureThreshold: 2
     periodSeconds: 60
     command: ~
 
@@ -522,7 +522,7 @@ workers:
   strategy:
     rollingUpdate:
       maxSurge: "100%"
-      maxUnavailable: "50%"
+      maxUnavailable: "10%"
 
   # When not set, the values defined in the global securityContext will be used
   securityContext: {}
@@ -554,7 +554,7 @@ workers:
 
   # Allow KEDA autoscaling.
   keda:
-    enabled: false
+    enabled: true
     namespaceLabels: {}
 
     # How often KEDA polls the airflow DB to report new scale requests to the HPA
@@ -562,7 +562,7 @@ workers:
 
     # How many seconds KEDA will wait before scaling to zero.
     # Note that HPA has a separate cooldown period for scale-downs
-    cooldownPeriod: 30
+    cooldownPeriod: 600
 
     # Minimum number of workers created by keda
     minReplicaCount: 0
@@ -711,7 +711,7 @@ workers:
   podAnnotations: {}
 
   # Labels specific to workers objects and pods
-  labels: {}
+  labels: {role: worker}
 
   logGroomerSidecar:
     # Whether to deploy the Airflow worker log groomer sidecar.
@@ -797,7 +797,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -907,7 +907,7 @@ scheduler:
   podAnnotations: {}
 
   # Labels specific to scheduler objects and pods
-  labels: {}
+  labels: {role: scheduker}
 
   logGroomerSidecar:
     # Whether to deploy the Airflow scheduler log groomer sidecar.
@@ -1145,14 +1145,14 @@ webserver:
   #      - "foo.remote"
   allowPodLogReading: true
   livenessProbe:
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     timeoutSeconds: 5
     failureThreshold: 5
     periodSeconds: 10
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     timeoutSeconds: 5
     failureThreshold: 5
     periodSeconds: 10
@@ -1303,7 +1303,7 @@ webserver:
     #     port: 8080
     #     targetPort: 8080
     #     nodePort: 31151
-    loadBalancerIP: ~
+    loadBalancerIP: 10.0.0.0/16
     ## Limit load balancer source ips to list of CIDRs
     # loadBalancerSourceRanges:
     #   - "10.123.0.0/16"
@@ -1331,7 +1331,7 @@ webserver:
   podAnnotations: {}
 
   # Labels specific webserver app
-  labels: {}
+  labels: {role: webserver}
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
@@ -1347,7 +1347,7 @@ webserver:
 triggerer:
   enabled: true
   # Number of airflow triggerers in the deployment
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1362,12 +1362,12 @@ triggerer:
   strategy:
     rollingUpdate:
       maxSurge: "100%"
-      maxUnavailable: "50%"
+      maxUnavailable: "10%"
 
   # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the
   # triggerer and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
@@ -1473,7 +1473,7 @@ triggerer:
   podAnnotations: {}
 
   # Labels specific to triggerer objects and pods
-  labels: {}
+  labels: {role: triggerer}
 
   logGroomerSidecar:
     # Whether to deploy the Airflow triggerer log groomer sidecar.
@@ -1510,7 +1510,7 @@ triggerer:
 
   # Allow KEDA autoscaling.
   keda:
-    enabled: false
+    enabled: true
     namespaceLabels: {}
 
     # How often KEDA polls the airflow DB to report new scale requests to the HPA
@@ -1518,7 +1518,7 @@ triggerer:
 
     # How many seconds KEDA will wait before scaling to zero.
     # Note that HPA has a separate cooldown period for scale-downs
-    cooldownPeriod: 30
+    cooldownPeriod: 600
 
     # Minimum number of triggerers created by keda
     minReplicaCount: 0
@@ -1559,7 +1559,7 @@ dagProcessor:
   strategy:
     rollingUpdate:
       maxSurge: "100%"
-      maxUnavailable: "50%"
+      maxUnavailable: "10%"
 
   # If the dag processor stops heartbeating for 5 minutes (5*60s) kill the
   # dag processor and let Kubernetes restart it
@@ -1888,7 +1888,7 @@ pgbouncer:
   # Enable PgBouncer
   enabled: false
   # Number of PgBouncer replicas to run in Deployment
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
   # Command to use for PgBouncer(templated).
@@ -2314,7 +2314,7 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 16
+    worker_concurrency: 32
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" .Values.dagProcessor.enabled }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
@@ -2400,7 +2400,7 @@ dags:
     # Enable persistent volume for storing dags
     enabled: false
     # Volume size for dags
-    size: 100Gi
+    size: 200Gi
     # If using a custom storageClass, pass name here
     storageClassName:
     # access mode of the persistent volume
@@ -2509,9 +2509,9 @@ logs:
 
   persistence:
     # Enable persistent volume for storing logs
-    enabled: false
+    enabled: true
     # Volume size for logs
-    size: 30Gi
+    size: 100Gi
     # Annotations for the logs PVC
     annotations: {}
     # If using a custom storageClass, pass name here

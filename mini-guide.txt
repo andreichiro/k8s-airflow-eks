@@ -5,63 +5,46 @@ cluster name:
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 
-eksclt create cluster -f config/cluster.yaml
+eksctl create cluster -f config/cluster.yaml
 
-helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=1 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=1 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=1 --set applicationSet.replicaCount=1 --set server.service.type=LoadBalancer --create-namespace
+kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow               
+kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
 
-base64 -> Y1JuYlNBUVFPaENod2xrTg==
-ifhETd3HAxSkdKcF
-
-aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
+helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=3 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=3 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
 
 kubectl apply -f argoCD\deployment.yaml                                                                                      
 
-kubectl autoscale statefulset airflow-worker -n airflow --cpu-percent=80 --min=1 --max=10
-
-Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers @{"Authorization"="Token 76ad6b740a6c2ea356be418a321560a750e1bac89fda4ae8117e6c8bdd837028"} | Select-Object -ExpandProperty Content | kubectl apply -f -
-
-
-curl -H "Authorization: Token aaea4d9c021c2beee293f6d86eb83516614a54ce1df365ffe2347e3a36374da8" "https://api.cast.ai/v1/agent.yaml?provider=eks" | kubectl apply -f -
-
-$response = Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers @{"Authorization"="Token 48d42b967cf74c3f309bf9747f95579fe7fa72617336e01023783d7f646bb7bb"} -UseBasicParsing
-
+base64 -> Y1JuYlNBUVFPaENod2xrTg==
+GwNZAIJwPvh6Suc8
 
 choco install jq -y
 
 choco install curl -y
 
-cast.AI
+Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers @{"Authorization"="Token e0accaa10306e15a91562247d37527693f47268a331eaa40b2cdf123899f862b"} | Select-Object -ExpandProperty Content | kubectl apply -f -
+
+/bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
+
+
+$env:CASTAI_API_TOKEN="3a45836d248eba2948cce4454aa4d5082b01210a5d7313e38ef80f6223b8dab1"
+$env:CASTAI_CLUSTER_ID="cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9"
+$env:CLUSTER_NAME="h2-lakehouse-on-k8s-eks"
+$env:INSTALL_KVISOR=$true
+$env:REGION="us-east-1"
+$env:USER_ARN="arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9"
+
+Invoke-WebRequest -Uri 'https://api.cast.ai/v1/scripts/eks/onboarding.sh' -OutFile 'onboarding.sh'
+bash ./onboarding.sh
+
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
-choco install kustomize
-
-GitBash
+cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9 CLUSTER_NAME=h2-lakehouse-on-k8s-eks INSTALL_KVISOR=true REGION=us-east-1 USER_ARN=arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499d-a9bc-b4281b5dfbd9 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
 
 
-
-48d42b967cf74c3f309bf9747f95579fe7fa72617336e01023783d7f646bb7bb
-curl -H "Authorization: Token 48d42b967cf74c3f309bf9747f95579fe7fa72617336e01023783d7f646bb7bb" "https://api.cast.ai/v1/agent.yaml?provider=eks"
-
-
-CASTAI_API_TOKEN=917a3c194a804c2bfe50339bd5fe38592a8cf00d88f2843fc91c0519948d1a76 CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 CLUSTER_NAME=h2-lakehouse-on-k8s-eks REGION=us-east-1 USER_ARN=arn:aws:iam::809060229965:user/cast-crossrole-4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
-
-
-CASTAI_API_TOKEN=917a3c194a804c2bfe50339bd5fe38592a8cf00d88f2843fc91c0519948d1a76 CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 CLUSTER_NAME=h2-lakehouse-on-k8s-eks REGION=us-east-1 USER_ARN=arn:aws:iam::809060229965:user/cast-crossrole-4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
-
-CASTAI_API_TOKEN=eb44503ae775bc327aaf7465de07b0a7fbaa287d29d639f54322265d2129f122 CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 CLUSTER_NAME=h2-lakehouse-on-k8s-eks INSTALL_KVISOR=true REGION=us-east-1 USER_ARN=arn:aws:iam::809060229965:user/cast-crossrole-4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
-
-CASTAI_API_TOKEN=eb44503ae775bc327aaf7465de07b0a7fbaa287d29d639f54322265d2129f122 CASTAI_CLUSTER_ID=4590a7dc-a6a9-47ce-a18e-2c402f4e4282 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/egressd/install.sh')"
-
-kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow               
-kubectl create secret generic airflow-redis-secret --from-literal=password='Mzc5LzA=' -n airflow               
-
-kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
 
 
 redis:
   existingSecret: "airflow-redis-password"
-
-
 
 kubectl port-forward svc/airflow-webserver 8080:8080 -n airflow
 
