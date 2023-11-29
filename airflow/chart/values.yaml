@@ -1657,7 +1657,7 @@ dagProcessor:
 
   logGroomerSidecar:
     # Whether to deploy the Airflow dag processor log groomer sidecar.
-    enabled: true
+    enabled: false
     # Command to use when running the Airflow dag processor log groomer sidecar (templated).
     command: ~
     # Args to use when running the Airflow dag processor log groomer sidecar (templated).

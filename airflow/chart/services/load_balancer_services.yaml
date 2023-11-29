@@ -4,11 +4,13 @@ metadata:
   name: airflow-elb-web
   namespace: airflow
   labels:
-    role: webserver
+    component: webserver
+    release: airflow
   annotations:
 spec:
   selector:
-    role: webserver
+    component: webserver
+    release: airflow
   ports:
     - name: web
       protocol: TCP
