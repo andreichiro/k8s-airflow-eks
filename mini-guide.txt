@@ -7,21 +7,21 @@ aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 
 eksctl create cluster -f config/cluster.yaml
 
-kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow               
-kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
-
 helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=3 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=3 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
 
 kubectl apply -f argoCD\deployment.yaml                                                                                      
 
+kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow               
+kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
+
 base64 -> Y1JuYlNBUVFPaENod2xrTg==
-GwNZAIJwPvh6Suc8
+i9Fe3tbaMJavoch3
 
 choco install jq -y
 
 choco install curl -y
 
-Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers @{"Authorization"="Token e0accaa10306e15a91562247d37527693f47268a331eaa40b2cdf123899f862b"} | Select-Object -ExpandProperty Content | kubectl apply -f -
+Invoke-WebRequest -Uri "https://api.cast.ai/v1/agent.yaml?provider=eks" -Headers @{"Authorization"="Token de1426c717a267c8ec843afd4795bfac487a360f7eeedc247c6ae164c4aad4cd"} | Select-Object -ExpandProperty Content | kubectl apply -f -
 
 /bin/bash -c "$(curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh')"
 
@@ -39,11 +39,6 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 
 redis:
   existingSecret: "airflow-redis-password"
-
-helm repo add kedacore https://kedacore.github.io/charts
-helm repo update
-helm install keda kedacore/keda --namespace keda --create-namespace
-
 
 kubectl port-forward svc/airflow-webserver 8080:8080 -n airflow
 

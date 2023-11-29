@@ -491,7 +491,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 9
+  replicas: 6
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -797,7 +797,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 4
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1165,7 +1165,7 @@ webserver:
     scheme: HTTP
 
   # Number of webservers
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1280,7 +1280,7 @@ webserver:
   webserverConfigConfigMapName: ~
 
   service:
-    type: ClusterIP
+    type: NodePort
     ## service annotations
     annotations: {}
     ports:
@@ -1347,7 +1347,7 @@ webserver:
 triggerer:
   enabled: true
   # Number of airflow triggerers in the deployment
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1546,7 +1546,7 @@ triggerer:
 dagProcessor:
   enabled: false
   # Number of airflow dag processors in the deployment
-  replicas: 3
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1888,7 +1888,7 @@ pgbouncer:
   # Enable PgBouncer
   enabled: false
   # Number of PgBouncer replicas to run in Deployment
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
   # Command to use for PgBouncer(templated).
