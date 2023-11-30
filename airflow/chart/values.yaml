@@ -1159,16 +1159,16 @@ webserver:
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 60
+    initialDelaySeconds: 180
     timeoutSeconds: 5
     failureThreshold: 5
     periodSeconds: 10
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 20
+    timeoutSeconds: 60
     failureThreshold: 6
-    periodSeconds: 10
+    periodSeconds: 30
     scheme: HTTP
 
   # Number of webservers
