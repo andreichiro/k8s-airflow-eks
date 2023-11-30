@@ -1888,7 +1888,7 @@ pgbouncer:
   # Enable PgBouncer
   enabled: true
   # Number of PgBouncer replicas to run in Deployment
-  replicas: 3
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
   # Command to use for PgBouncer(templated).
