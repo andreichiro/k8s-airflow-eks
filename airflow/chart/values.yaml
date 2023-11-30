@@ -1203,7 +1203,7 @@ webserver:
     config:
       # minAvailable and maxUnavailable are mutually exclusive
       #maxUnavailable: 1
-      minAvailable: 2
+      minAvailable: 1
 
   # Allow overriding Update Strategy for Webserver
   strategy: ~
