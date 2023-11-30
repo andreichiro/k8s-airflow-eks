@@ -640,11 +640,10 @@ workers:
     #   cpu: 100m
     #   memory: 128Mi
 
-
-resources:
-  requests:
-    cpu: "2000m"
-    memory: "2Gi"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "500Mi"
 
   #  limits:
   #   cpu: 100m
@@ -854,12 +853,19 @@ scheduler:
     config:
       # minAvailable and maxUnavailable are mutually exclusive
       #maxUnavailable: 1
-      # minAvailable: 1
+      minAvailable: 1
 
-  resources: 
+  resources:
     requests:
       cpu: "2000m"
       memory: "2Gi"
+
+  #  limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #  requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
