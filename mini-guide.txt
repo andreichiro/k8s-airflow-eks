@@ -15,7 +15,7 @@ kubectl create secret generic airflow-redis-secret --from-literal=password='dado
 kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
 
 base64 -> Y1JuYlNBUVFPaENod2xrTg==
-i9Fe3tbaMJavoch3
+jwWCus3Pr7pK3oga
 
 choco install jq -y
 

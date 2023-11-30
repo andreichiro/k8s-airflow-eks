@@ -84,8 +84,8 @@ managedNodeGroups:
       # new feature for restricting SSH access to certain AWS security group IDs
     labels: {role: managed_node_group}
     # Note: unmanaged nodegroups (`nodeGroups` field) use a different structure (map[string]string) to express taints
-  #  tags:
-  #    nodegroup-role: worker
+    tags:
+      nodegroup-role: managed_node_group
     iam:
       withAddonPolicies:
         ebs: true
