@@ -37,7 +37,7 @@ nameOverride: ""
 #
 # Note:fernet-key,redis-password and broker-url secrets don't use this logic yet,
 # as this may break existing installations due to how they get installed via pre-install hook.
-useStandardNaming: false
+useStandardNaming: true
 
 # Max number of old replicasets to retain. Can be overridden by each deployment's revisionHistoryLimit
 revisionHistoryLimit: ~
@@ -302,8 +302,8 @@ enableBuiltInSecretEnvVars:
   AIRFLOW__CELERY__CELERY_RESULT_BACKEND: true
   AIRFLOW__CELERY__RESULT_BACKEND: true
   AIRFLOW__CELERY__BROKER_URL: true
-  AIRFLOW__ELASTICSEARCH__HOST: true
-  AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: true
+  AIRFLOW__ELASTICSEARCH__HOST: false
+  AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: false
 
 # Priority Classes that will be installed by charts.
 # Ideally, there should be an entry for dagProcessor, flower,
@@ -512,7 +512,7 @@ workers:
     initialDelaySeconds: 60
     timeoutSeconds: 20
     failureThreshold: 2
-    periodSeconds: 60
+    periodSeconds: 5
     command: ~
 
   # Update Strategy when worker is deployed as a StatefulSet
@@ -786,15 +786,15 @@ scheduler:
   livenessProbe:
     initialDelaySeconds: 60
     timeoutSeconds: 20
-    failureThreshold: 1
-    periodSeconds: 60
+    failureThreshold: 2
+    periodSeconds: 5
     command: ~
 
   # Wait for at most 10 minutes (6*10s) for the scheduler container to startup.
   # livenessProbe kicks in after the startup
   startupProbe:
     failureThreshold: 6
-    periodSeconds: 10
+    periodSeconds: 30
     timeoutSeconds: 20
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
@@ -1152,16 +1152,16 @@ webserver:
   allowPodLogReading: true
   livenessProbe:
     initialDelaySeconds: 60
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 5
-    periodSeconds: 10
+    periodSeconds: 30
     scheme: HTTP
 
   readinessProbe:
     initialDelaySeconds: 180
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 5
-    periodSeconds: 10
+    periodSeconds: 30
     scheme: HTTP
 
   startupProbe:
@@ -1232,13 +1232,13 @@ webserver:
       ports:
         - port: "{{ .Values.ports.airflowUI }}"
 
-  resources: {}
+  resources: 
   #   limits:
   #     cpu: 100m
   #     memory: 128Mi
-  #   requests:
-  #     cpu: 100m
-  #     memory: 128Mi
+     requests:
+      cpu: "1000m"
+      memory: "500Mi"
 
   # Create initial user.
   defaultUser:
@@ -1373,7 +1373,7 @@ triggerer:
   # triggerer and let Kubernetes restart it
   livenessProbe:
     initialDelaySeconds: 60
-    timeoutSeconds: 20
+    timeoutSeconds: 30
     failureThreshold: 5
     periodSeconds: 60
     command: ~
@@ -1420,13 +1420,13 @@ triggerer:
     # Annotations to add to triggerer volumes
     annotations: {}
 
-  resources: {}
+  resources: 
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+    requests:
+      cpu: "1000m"
+      memory: "500Mi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -1570,7 +1570,7 @@ dagProcessor:
   # dag processor and let Kubernetes restart it
   livenessProbe:
     initialDelaySeconds: 60
-    timeoutSeconds: 20
+    timeoutSeconds: 30
     failureThreshold: 5
     periodSeconds: 60
     command: ~
@@ -1964,14 +1964,13 @@ pgbouncer:
   # See: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   # Example:
   #
-  # resource:
+    resources:
   #   limits:
   #     cpu: 100m
   #     memory: 128Mi
-  #   requests:
-  #     cpu: 100m
-  #     memory: 128Mi
-  resources: {}
+    requests:
+      cpu: "1000m"
+      memory: "500Mi"
 
   service:
     extraAnnotations: {}
@@ -2073,12 +2072,12 @@ pgbouncer:
 
     livenessProbe:
       initialDelaySeconds: 60
-      periodSeconds: 10
+      periodSeconds: 30
       timeoutSeconds: 1
 
     readinessProbe:
       initialDelaySeconds: 60
-      periodSeconds: 10
+      periodSeconds: 30
       timeoutSeconds: 1
 
   # Environment variables to add to pgbouncer container
@@ -2233,13 +2232,13 @@ cleanup:
   # Labels specific to cleanup objects and pods
   labels: {}
 
-  resources: {}
+  resources: 
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+    requests:
+      cpu: "1000m"
+      memory: "500Mi"
 
   # Create ServiceAccount
   serviceAccount:
@@ -2319,7 +2318,7 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 20
+    worker_concurrency: 10
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" .Values.dagProcessor.enabled }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
@@ -2498,13 +2497,13 @@ dags:
     #   sizeLimit: 1Gi
     #   medium: Memory
 
-    resources: {}
+    resources: 
     #  limits:
     #   cpu: 100m
     #   memory: 128Mi
-    #  requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+      requests:
+        cpu: "1000m"
+        memory: "500Mi"
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
