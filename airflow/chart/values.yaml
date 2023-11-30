@@ -711,7 +711,7 @@ workers:
   podAnnotations: {}
 
   # Labels specific to workers objects and pods
-  labels: {role: worker}
+  labels: {role: managed_node_group} 
 
   logGroomerSidecar:
     # Whether to deploy the Airflow worker log groomer sidecar.
@@ -907,7 +907,7 @@ scheduler:
   podAnnotations: {}
 
   # Labels specific to scheduler objects and pods
-  labels: {role: scheduler}
+  labels: {role: managed_node_group}
 
   logGroomerSidecar:
     # Whether to deploy the Airflow scheduler log groomer sidecar.
@@ -1331,7 +1331,7 @@ webserver:
   podAnnotations: {}
 
   # Labels specific webserver app
-  labels: {role: webserver}
+  labels: {role: managed_node_group}
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
@@ -1473,7 +1473,7 @@ triggerer:
   podAnnotations: {}
 
   # Labels specific to triggerer objects and pods
-  labels: {role: triggerer}
+  labels: {role: managed_node_group}
 
   logGroomerSidecar:
     # Whether to deploy the Airflow triggerer log groomer sidecar.
