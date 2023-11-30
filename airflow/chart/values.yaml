@@ -597,7 +597,7 @@ workers:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 300Gi
+    size: 200Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.
@@ -642,7 +642,7 @@ workers:
   resources:
     requests:
       cpu: "1000m"
-      memory: "500Mi"
+      memory: "2Gi"
 
   #  limits:
   #   cpu: 100m
@@ -1238,7 +1238,7 @@ webserver:
   #     memory: 128Mi
      requests:
       cpu: "1000m"
-      memory: "500Mi"
+      memory: "2Gi"
 
   # Create initial user.
   defaultUser:
@@ -1426,7 +1426,7 @@ triggerer:
   #   memory: 128Mi
     requests:
       cpu: "1000m"
-      memory: "500Mi"
+      memory: "1Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -1970,7 +1970,7 @@ pgbouncer:
   #     memory: 128Mi
     requests:
       cpu: "1000m"
-      memory: "500Mi"
+      memory: "1Gi"
 
   service:
     extraAnnotations: {}
@@ -2105,7 +2105,7 @@ redis:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 300Gi
+    size: 200Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Annotations to add to redis volumes
@@ -2238,7 +2238,7 @@ cleanup:
   #   memory: 128Mi
     requests:
       cpu: "1000m"
-      memory: "500Mi"
+      memory: "1Gi"
 
   # Create ServiceAccount
   serviceAccount:
@@ -2503,7 +2503,7 @@ dags:
     #   memory: 128Mi
       requests:
         cpu: "1000m"
-        memory: "500Mi"
+        memory: "1Gi"
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
