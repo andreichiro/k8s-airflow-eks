@@ -491,7 +491,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 4
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -643,8 +643,8 @@ workers:
 
 resources:
   requests:
-    cpu: "4000m"
-    memory: "8Gi"
+    cpu: "2000m"
+    memory: "2Gi"
 
   #  limits:
   #   cpu: 100m
@@ -858,8 +858,8 @@ scheduler:
 
   resources: 
     requests:
-      cpu: "4000m"
-      memory: "8Gi"
+      cpu: "2000m"
+      memory: "2Gi"
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
