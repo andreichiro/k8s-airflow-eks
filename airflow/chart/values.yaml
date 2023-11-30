@@ -1282,8 +1282,6 @@ webserver:
   service:
     type: LoadBalancer
     ## service annotations
-    annotations: 
-      service.beta.kubernetes.io/aws-load-balancer-internal: "true"
     ports:
       - name: airflow-ui
         port: "{{ .Values.ports.airflowUI }}"
@@ -2102,7 +2100,7 @@ redis:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 500Gi
+    size: 300Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Annotations to add to redis volumes
