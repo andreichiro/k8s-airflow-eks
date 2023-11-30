@@ -37,7 +37,7 @@ nameOverride: ""
 #
 # Note:fernet-key,redis-password and broker-url secrets don't use this logic yet,
 # as this may break existing installations due to how they get installed via pre-install hook.
-useStandardNaming: True
+useStandardNaming: false
 
 # Max number of old replicasets to retain. Can be overridden by each deployment's revisionHistoryLimit
 revisionHistoryLimit: ~
@@ -421,8 +421,7 @@ data:
   #   db: postgres
   #   sslmode: disable
   # Note: brokerUrl can only be set during install, not upgrade
-  #brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
-
+  brokerUrl: redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
@@ -598,7 +597,7 @@ workers:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 500Gi
+    size: 300Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.
@@ -1411,7 +1410,7 @@ triggerer:
     # Enable persistent volumes
     enabled: true
     # Volume size for triggerer StatefulSet
-    size: 300Gi
+    size: 100Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.
@@ -2136,7 +2135,7 @@ redis:
   # when it wants to scale a node down.
   safeToEvict: false
 
-  # Select certain nodes for redis podsf
+  # Select certain nodes for redis pods
   nodeSelector: {}
   affinity: {}
   tolerations: []
