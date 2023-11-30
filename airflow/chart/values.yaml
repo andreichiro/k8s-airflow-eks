@@ -2117,13 +2117,13 @@ redis:
   #   sizeLimit: 1Gi
   #   medium: Memory
 
-  resources: {}
+  resources: 
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
