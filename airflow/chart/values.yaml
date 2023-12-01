@@ -1168,18 +1168,7 @@ webserver:
     failureThreshold: 2
     periodSeconds: 300
     scheme: HTTP
-
-  startupProbe:
-    timeoutSeconds: 120
-    failureThreshold: 6
-    periodSeconds: 300
-    scheme: HTTP
-    httpGet:
-      path: /health  # Replace with the correct endpoint if different
-      port: 8080    #31010 Internal port that Airflow webserver is listening on
-      scheme: HTTP
-
-
+    
   # Number of webservers
   replicas: 1
   # Max number of old replicasets to retain
