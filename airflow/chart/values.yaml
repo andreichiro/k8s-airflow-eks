@@ -1169,7 +1169,6 @@ webserver:
     periodSeconds: 300
 
   startupProbe:
-    initialDelaySeconds: 300
     timeoutSeconds: 300
     failureThreshold: 2
     periodSeconds: 300
