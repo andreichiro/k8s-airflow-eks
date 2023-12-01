@@ -41,7 +41,7 @@ def sql_to_s3(table):
     """
     
     sql_to_s3_task = SqlToS3Operator(
-                task_id=f"sql_to_s3_{table}",
+                task_id=f"sql_to_s3_{table.replace(' ', '_').replace('.', '_')}",
                 sql_conn_id='sql_bi_rewards',
                 query=f"SELECT * FROM `{table}`",
                 s3_bucket=Variable.get("s3_bucket"),
