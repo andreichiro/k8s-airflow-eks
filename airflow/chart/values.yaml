@@ -1239,11 +1239,11 @@ webserver:
 
   resources: 
      limits:
-       cpu: "500m"
-       memory: "500Mi"
+       cpu: "1000m"
+       memory: "1Gi"
      requests:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "1000m"
+      memory: "1Gi"
 
   # Create initial user.
   defaultUser:
