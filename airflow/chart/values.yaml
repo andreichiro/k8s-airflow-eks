@@ -1241,10 +1241,10 @@ webserver:
   resources: 
      limits:
        cpu: "1000m"
-       memory: "2Gi"
+       memory: "1Gi"
      requests:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "500m"
+      memory: "500Mi"
 
   # Create initial user.
   defaultUser:
@@ -1431,8 +1431,8 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "500m"
+      memory: "500Mi"
     limits:
       cpu: "1000m"
       memory: "1Gi"
@@ -2120,10 +2120,10 @@ redis:
   resources: 
     limits:
       cpu: "1000m"
-      memory: "2Gi"
+      memory: "1Gi"
     requests:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "500m"
+      memory: "1Gi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
@@ -2238,8 +2238,8 @@ cleanup:
       cpu: "1000m"
       memory: "1Gi"
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "500m"
+      memory: "500Mi"
 
   # Create ServiceAccount
   serviceAccount:
@@ -2503,8 +2503,8 @@ dags:
         cpu: "1000m"
         memory: "1Gi"
       requests:
-        cpu: "1000m"
-        memory: "1Gi"
+        cpu: "500m"
+        memory: "500Mi"
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
