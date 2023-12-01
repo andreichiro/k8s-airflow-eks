@@ -1973,17 +1973,6 @@ pgbouncer:
   # See: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   # Example:
   #
-    resources:
-  #   limits:
-  #     cpu: 100m
-  #     memory: 128Mi
-    requests:
-      cpu: "1000m"
-      memory: "1Gi"
-    limits:
-      cpu: "2000m"
-      memory: "2Gi"
-
   service:
     extraAnnotations: {}
 
