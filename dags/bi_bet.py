@@ -69,7 +69,8 @@ with DAG(
 ) as dag:
     tables = get_tables()
     for table in tables:
-        sql = sql_to_s3(table=table)
+        sanitized_table = sanitize_task_id(table)
+        sql = sql_to_s3(table=sanitized_table)
         
 #    query_to_s3 = query_to_s3.expand(table_name=tables)
 
