@@ -509,10 +509,10 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 300
+    initialDelaySeconds: 120
     timeoutSeconds: 120
     failureThreshold: 2
-    periodSeconds: 300
+    periodSeconds: 120
     command: ~
 
   # Update Strategy when worker is deployed as a StatefulSet
@@ -1157,21 +1157,21 @@ webserver:
   allowPodLogReading: true
 
   livenessProbe:
-    initialDelaySeconds: 300
+    initialDelaySeconds: 180
     timeoutSeconds: 120
     failureThreshold: 2
-    periodSeconds: 300
+    periodSeconds: 120
 
   readinessProbe:
-    initialDelaySeconds: 300
+    initialDelaySeconds: 180
     timeoutSeconds: 120
     failureThreshold: 2
-    periodSeconds: 300
+    periodSeconds: 120
 
   startupProbe:
-    timeoutSeconds: 300
+    timeoutSeconds: 120
     failureThreshold: 2
-    periodSeconds: 300
+    periodSeconds: 120
 
   # Number of webservers
   replicas: 2
