@@ -597,7 +597,7 @@ workers:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 200Gi
+    size: 300Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.
@@ -644,8 +644,8 @@ workers:
       cpu: "6000m"
       memory: "6Gi"
     requests:
-      cpu: "4000m"
-      memory: "4Gi"
+      cpu: "3000m"
+      memory: "3Gi"
 
   #  limits:
   #   cpu: 100m
