@@ -1171,7 +1171,7 @@ webserver:
 
   startupProbe:
     timeoutSeconds: 300
-    failureThreshold: 6
+    failureThreshold: 2
     periodSeconds: 300
     scheme: HTTP
 
@@ -1239,8 +1239,8 @@ webserver:
 
   resources: 
      limits:
-       cpu: "1000m"
-       memory: "1Gi"
+       cpu: "2000m"
+       memory: "2Gi"
      requests:
       cpu: "1000m"
       memory: "1Gi"
