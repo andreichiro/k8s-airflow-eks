@@ -1156,13 +1156,9 @@ webserver:
   #      - "foo.remote"
   allowPodLogReading: true
   livenessProbe:
-    tcpSocket:
-      port: 8080  # Replace with the port your webserver listens on
-    initialDelaySeconds: 300
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 300
-
+    httpGet:
+      path: /health
+      port: 8080
   readinessProbe:
     httpGet:
       path: /health  # Replace with the correct path if different
