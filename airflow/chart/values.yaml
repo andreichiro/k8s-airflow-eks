@@ -509,10 +509,10 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    timeoutSeconds: 20
+    initialDelaySeconds: 300
+    timeoutSeconds: 120
     failureThreshold: 2
-    periodSeconds: 5
+    periodSeconds: 300
     command: ~
 
   # Update Strategy when worker is deployed as a StatefulSet
@@ -787,18 +787,18 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 20
+    initialDelaySeconds: 300
+    timeoutSeconds: 120
     failureThreshold: 2
-    periodSeconds: 5
+    periodSeconds: 300
     command: ~
 
   # Wait for at most 10 minutes (6*10s) for the scheduler container to startup.
   # livenessProbe kicks in after the startup
   startupProbe:
-    failureThreshold: 6
-    periodSeconds: 30
-    timeoutSeconds: 20
+    failureThreshold: 2
+    periodSeconds: 300
+    timeoutSeconds: 120
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
@@ -1157,23 +1157,23 @@ webserver:
   #      - "foo.remote"
   allowPodLogReading: true
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 10
-    failureThreshold: 5
-    periodSeconds: 30
+    initialDelaySeconds: 300
+    timeoutSeconds: 120
+    failureThreshold: 2
+    periodSeconds: 300
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 10
-    failureThreshold: 5
-    periodSeconds: 30
+    initialDelaySeconds: 300
+    timeoutSeconds: 120
+    failureThreshold: 2
+    periodSeconds: 300
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 60
+    timeoutSeconds: 120
     failureThreshold: 6
-    periodSeconds: 30
+    periodSeconds: 300
     scheme: HTTP
 
   # Number of webservers
@@ -1378,10 +1378,10 @@ triggerer:
   # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the
   # triggerer and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 30
-    failureThreshold: 5
-    periodSeconds: 60
+    initialDelaySeconds: 300
+    timeoutSeconds: 120
+    failureThreshold: 2
+    periodSeconds: 300
     command: ~
 
   # Create ServiceAccount
@@ -1578,10 +1578,10 @@ dagProcessor:
   # If the dag processor stops heartbeating for 5 minutes (5*60s) kill the
   # dag processor and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 30
-    failureThreshold: 5
-    periodSeconds: 60
+    initialDelaySeconds: 300
+    timeoutSeconds: 120
+    failureThreshold: 2
+    periodSeconds: 300
     command: ~
 
   # Create ServiceAccount
@@ -2072,14 +2072,16 @@ pgbouncer:
     containerLifecycleHooks: {}
 
     livenessProbe:
-      initialDelaySeconds: 60
-      periodSeconds: 30
-      timeoutSeconds: 1
-
+      initialDelaySeconds: 300
+      failureThreshold: 2
+      periodSeconds: 120
+      timeoutSeconds: 300
+      command: ~
     readinessProbe:
-      initialDelaySeconds: 60
-      periodSeconds: 30
-      timeoutSeconds: 1
+      initialDelaySeconds: 300
+      periodSeconds: 300
+      timeoutSeconds: 120
+      failureThreshold: 2
 
   # Environment variables to add to pgbouncer container
   env: []
