@@ -1062,7 +1062,7 @@ migrateDatabaseJob:
   applyCustomEnv: false
 
   # Limit the lifetime of the job object after it finished execution.
-  ttlSecondsAfterFinished: 300
+  ttlSecondsAfterFinished: 120
   # Command to use when running the migrate database job (templated).
   command: ~
   # Args to use when running the migrate database job (templated).
