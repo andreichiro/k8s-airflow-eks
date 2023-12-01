@@ -640,6 +640,9 @@ workers:
     #   memory: 128Mi
 
   resources:
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
     requests:
       cpu: "1000m"
       memory: "2Gi"
@@ -855,6 +858,9 @@ scheduler:
       minAvailable: 1
 
   resources:
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
     requests:
       cpu: "1000m"
       memory: "2Gi"
@@ -1427,6 +1433,9 @@ triggerer:
     requests:
       cpu: "1000m"
       memory: "1Gi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -1971,6 +1980,9 @@ pgbouncer:
     requests:
       cpu: "1000m"
       memory: "1Gi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
 
   service:
     extraAnnotations: {}
@@ -2117,9 +2129,9 @@ redis:
   #   medium: Memory
 
   resources: 
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
     requests:
       cpu: "1000m"
       memory: "2Gi"
@@ -2233,9 +2245,9 @@ cleanup:
   labels: {}
 
   resources: 
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
     requests:
       cpu: "1000m"
       memory: "1Gi"
@@ -2318,7 +2330,7 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 10
+    worker_concurrency: 5
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" .Values.dagProcessor.enabled }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
@@ -2498,9 +2510,9 @@ dags:
     #   medium: Memory
 
     resources: 
-    #  limits:
-    #   cpu: 100m
-    #   memory: 128Mi
+      limits:
+        cpu: "2000m"
+        memory: "2Gi"
       requests:
         cpu: "1000m"
         memory: "1Gi"
