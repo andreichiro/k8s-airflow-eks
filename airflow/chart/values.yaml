@@ -1176,7 +1176,7 @@ webserver:
     scheme: HTTP
     httpGet:
       path: /health  # Replace with the correct endpoint if different
-      port: 31010    # Internal port that Airflow webserver is listening on
+      port: 8080    #31010 Internal port that Airflow webserver is listening on
       scheme: HTTP
 
 
