@@ -42,6 +42,7 @@ def sanitize_task_id(table_name):
                   .replace('(', '_')
                   .replace(')', '_')
                   .replace(',', '_')
+                  .replace('-', '_')  # Replace dashes as well 
     )
 
 def sql_to_s3(table):
