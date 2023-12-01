@@ -1156,25 +1156,25 @@ webserver:
   #      - "foo.remote"
   allowPodLogReading: true
   livenessProbe:
-    httpGet:
-      path: /health
-      port: 8080
+    exec:
+        command:
+        - cat
+        - /tmp/healthy        
+    initialDelaySeconds: 300
+    periodSeconds: 300
+
   readinessProbe:
-    httpGet:
-      path: /health  # Replace with the correct path if different
-      port: 8080      # Replace with the correct port if different  
     initialDelaySeconds: 300
     timeoutSeconds: 120
     failureThreshold: 2
     periodSeconds: 300
+    scheme: HTTP
 
   startupProbe:
-    httpGet:
-      path: /health  # Replace with the correct path if different
-      port: 8080      # Replace with the correct port if different
     timeoutSeconds: 300
     failureThreshold: 2
     periodSeconds: 300
+    scheme: HTTP
 
   # Number of webservers
   replicas: 1
