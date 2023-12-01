@@ -490,7 +490,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -641,8 +641,8 @@ workers:
 
   resources:
     limits:
-      cpu: "2000m"
-      memory: "2Gi"
+      cpu: "3000m"
+      memory: "3Gi"
     requests:
       cpu: "2000m"
       memory: "2Gi"
@@ -1174,7 +1174,7 @@ webserver:
     periodSeconds: 120
 
   # Number of webservers
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1237,8 +1237,8 @@ webserver:
 
   resources: 
      limits:
-       cpu: "2000m"
-       memory: "2Gi"
+       cpu: "3000m"
+       memory: "3Gi"
      requests:
       cpu: "2000m"
       memory: "2Gi"
