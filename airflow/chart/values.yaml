@@ -644,8 +644,8 @@ workers:
       cpu: "2000m"
       memory: "2Gi"
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -1174,7 +1174,7 @@ webserver:
     periodSeconds: 300
 
   # Number of webservers
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1240,8 +1240,8 @@ webserver:
        cpu: "2000m"
        memory: "2Gi"
      requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
 
   # Create initial user.
   defaultUser:
