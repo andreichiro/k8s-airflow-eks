@@ -641,8 +641,8 @@ workers:
 
   resources:
     limits:
-      cpu: "2000m"
-      memory: "2Gi"
+      cpu: "3000m"
+      memory: "3Gi"
     requests:
       cpu: "2000m"
       memory: "2Gi"
@@ -858,11 +858,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
 
   #  limits:
   #   cpu: 100m
@@ -2318,7 +2318,7 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 3
+    worker_concurrency: 2
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" .Values.dagProcessor.enabled }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
