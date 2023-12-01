@@ -62,7 +62,7 @@ def sql_to_s3(table):
         )
      
 with DAG(
-    'my_dynamic_dag',
+    'rewards_dag',
     default_args=default_args,
     schedule_interval=None,  # You can set the interval as needed
     catchup=False,
