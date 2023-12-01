@@ -1163,20 +1163,13 @@ webserver:
     periodSeconds: 300
 
   readinessProbe:
-    exec:
-        command:
-        - cat
-        - /tmp/healthy          
     initialDelaySeconds: 300
     timeoutSeconds: 120
     failureThreshold: 2
     periodSeconds: 300
 
   startupProbe:
-    exec:
-        command:
-        - cat
-        - /tmp/healthy        
+    initialDelaySeconds: 300
     timeoutSeconds: 300
     failureThreshold: 2
     periodSeconds: 300
