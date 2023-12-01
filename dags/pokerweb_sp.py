@@ -35,13 +35,22 @@ def get_tables():
     tables = [table[0] for table in cursor.fetchall()]     
     return tables
 
+def sanitize_task_id(table_name):
+    return (
+        table_name.replace(' ', '_')
+                  .replace('.', '_')
+                  .replace('(', '_')
+                  .replace(')', '_')
+                  .replace(',', '_')
+                  .replace('-', '_')  # Replace dashes as well 
+    )
+                
 def sql_to_s3(table):
     """
     Task to generate S3 keys for storing Parquet files.
-    """
-    
+    """    
     sql_to_s3_task = SqlToS3Operator(
-                task_id=f"sql_to_s3_{table.replace(' ', '_').replace('.', '_')}",
+                task_id=f"sql_to_s3_{sanitize_task_id(table)}",
                 sql_conn_id='sql_bi_rewards',
                 query=f"SELECT * FROM `{table}`",
                 s3_bucket=Variable.get("s3_bucket"),
