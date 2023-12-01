@@ -641,8 +641,8 @@ workers:
 
   resources:
     limits:
-      cpu: "3000m"
-      memory: "3Gi"
+      cpu: "2000m"
+      memory: "2Gi"
     requests:
       cpu: "2000m"
       memory: "2Gi"
@@ -858,8 +858,8 @@ scheduler:
 
   resources:
     limits:
-      cpu: "2000m"
-      memory: "2Gi"
+      cpu: "1000m"
+      memory: "1Gi"
     requests:
       cpu: "1000m"
       memory: "1Gi"
@@ -1239,8 +1239,8 @@ webserver:
 
   resources: 
      limits:
-       cpu: "1000m"
-       memory: "1Gi"
+       cpu: "500m"
+       memory: "500Mi"
      requests:
       cpu: "500m"
       memory: "500Mi"
@@ -1430,8 +1430,8 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "500m"
+      memory: "500Mi"
     limits:
       cpu: "500m"
       memory: "500Mi"
@@ -2118,11 +2118,11 @@ redis:
 
   resources: 
     limits:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "500m"
+      memory: "500Mi"
     requests:
       cpu: "500m"
-      memory: "1Gi"
+      memory: "500Mi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
@@ -2499,8 +2499,8 @@ dags:
 
     resources: 
       limits:
-        cpu: "1000m"
-        memory: "1Gi"
+        cpu: "500m"
+        memory: "500Mi"
       requests:
         cpu: "500m"
         memory: "500Mi"
