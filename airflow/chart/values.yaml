@@ -1168,7 +1168,13 @@ webserver:
     failureThreshold: 2
     periodSeconds: 300
     scheme: HTTP
-    
+
+  startupProbe:
+    timeoutSeconds: 300
+    failureThreshold: 6
+    periodSeconds: 300
+    scheme: HTTP
+
   # Number of webservers
   replicas: 1
   # Max number of old replicasets to retain
