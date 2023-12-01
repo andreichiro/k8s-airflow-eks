@@ -1431,11 +1431,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "500m"
-      memory: "500Mi"
-    limits:
       cpu: "1000m"
       memory: "1Gi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
