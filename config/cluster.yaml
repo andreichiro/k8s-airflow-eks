@@ -75,7 +75,7 @@ managedNodeGroups:
     maxSize: 10
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
-    volumeSize: 1000
+    volumeSize: 500
     updateConfig:
       maxUnavailable: 1 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
     ssh:
@@ -95,7 +95,6 @@ managedNodeGroups:
         autoScaler: true
         cloudWatch: true
         externalDNS: true
-    
 addons:
 - name: vpc-cni # no version is specified so it deploys the default version
   version: latest

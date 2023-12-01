@@ -45,7 +45,7 @@ def sql_to_s3(table):
                 sql_conn_id='sql_bi_rewards',
                 query=f"SELECT * FROM `{table}`",
                 s3_bucket=Variable.get("s3_bucket"),
-                s3_key=f'raw/{table}.parquet',
+                s3_key=f'bi_rewards/raw/{table}.parquet',
                 replace=True,
                 file_format='parquet',
                 aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
