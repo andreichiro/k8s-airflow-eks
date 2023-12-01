@@ -52,10 +52,10 @@ def sql_to_s3(table):
     
     sql_to_s3_task = SqlToS3Operator(
                 task_id=f"sql_to_s3_{sanitize_task_id(table)}",
-                sql_conn_id='sql_bi_rewards',
+                sql_conn_id='sql_rewards',
                 query=f"SELECT * FROM `{table}`",
                 s3_bucket=Variable.get("s3_bucket"),
-                s3_key=f'bi_rewards/raw/{table}.parquet',
+                s3_key=f'rewards/raw/{table}.parquet',
                 replace=True,
                 file_format='parquet',
                 aws_conn_id='aws_conn_id'  # Or your specific AWS connection ID
@@ -70,9 +70,8 @@ with DAG(
 ) as dag:
     tables = get_tables()
     for table in tables:
-        sanitized_table = sanitize_task_id(table)
-        sql = sql_to_s3(table=sanitized_table)
-
+        sql = sql_to_s3(table=table)
+        
         
 #    query_to_s3 = query_to_s3.expand(table_name=tables)
 
