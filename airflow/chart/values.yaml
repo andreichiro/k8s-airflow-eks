@@ -2073,7 +2073,6 @@ pgbouncer:
 
     livenessProbe:
       initialDelaySeconds: 300
-      failureThreshold: 2
       periodSeconds: 120
       timeoutSeconds: 300
       command: ~
@@ -2081,7 +2080,6 @@ pgbouncer:
       initialDelaySeconds: 300
       periodSeconds: 300
       timeoutSeconds: 120
-      failureThreshold: 2
 
   # Environment variables to add to pgbouncer container
   env: []
