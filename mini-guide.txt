@@ -33,6 +33,12 @@ AAAEAz+rVvXz3EbtxUqaKbQ2iqszKbk5cbc/ZZRW40ZDOyEeOzASxKi1BahHn/Wugwc1NC
 5IlYPoY6dXK/RkiMaO/cAAAAFWFuZHJlaWNoaXJvQGdtYWlsLmNvbQ==
 -----END OPENSSH PRIVATE KEY-----
 
+kubectl apply -f airflow\chart\secrets\airflow-secret.yaml
+ssh-keyscan github.com
+kubectl apply -f git-known-hosts.yaml
+
+-
+
 eksctl upgrade cluster -f config/cluster.yaml                                                                             
 eksctl upgrade nodegroup --cluster h2-lakehouse-on-k8s-eks --name lakehouse-on-k8s-demand --region us-east-1
 -
