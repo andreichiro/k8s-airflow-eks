@@ -1111,11 +1111,11 @@ migrateDatabaseJob:
 
   resources:
     limits:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "2000m"
+      memory: "2Gi"
     requests:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "1000m"
+      memory: "1Gi"
 
   # Launch additional containers into database migration job
   extraContainers: []
@@ -2499,8 +2499,8 @@ dags:
 
     resources: 
       limits:
-        cpu: "500m"
-        memory: "500Mi"
+        cpu: "1000m"
+        memory: "1Gi"
       requests:
         cpu: "500m"
         memory: "500Mi"
