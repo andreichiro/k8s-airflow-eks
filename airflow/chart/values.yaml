@@ -91,7 +91,7 @@ images:
   # to run and wait for DB migrations .
   useDefaultImageForMigration: false
   # timeout (in seconds) for airflow-migrations to complete
-  migrationsWaitTimeout: 300
+  migrationsWaitTimeout: 600
 
   pod_template:
     # Note that `images.pod_template.repository` and `images.pod_template.tag` parameters
@@ -739,7 +739,7 @@ workers:
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
-    enabled: true
+    enabled: false
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
@@ -950,7 +950,7 @@ scheduler:
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
-    enabled: true
+    enabled: false
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
@@ -2340,7 +2340,7 @@ config:
     log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
   elasticsearch_configs:
     max_retries: 3
-    timeout: 30
+    timeout: 120
     retry_timeout: 'True'
   kerberos:
     keytab: '{{ .Values.kerberos.keytabPath }}'
@@ -2473,7 +2473,7 @@ dags:
     # interval between git sync attempts in seconds
     # high values are more likely to cause DAGs to become out of sync between different components
     # low values cause more traffic to the remote git repository
-    wait: 20
+    wait: 120
     containerName: git-sync
     uid: 65533
 

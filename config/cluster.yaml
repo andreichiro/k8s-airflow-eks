@@ -70,8 +70,8 @@ vpc:
 managedNodeGroups:
   - name: lakehouse-on-k8s-demand
     instanceTypes: ["t3.xlarge", "m5.xlarge", "m5.2xlarge"] 
-    minSize: 3
-    desiredCapacity: 4
+    minSize: 4
+    desiredCapacity: 5
     maxSize: 6
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
