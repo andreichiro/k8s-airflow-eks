@@ -80,7 +80,7 @@ airflowVersion: "2.7.3"
 images:
   airflow:
     repository: 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom
-    tag: v1.3
+    tag: v1.4
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
@@ -490,7 +490,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 1
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -641,8 +641,8 @@ workers:
 
   resources:
     limits:
-      cpu: "3000m"
-      memory: "3Gi"
+      cpu: "4000m"
+      memory: "4Gi"
     requests:
       cpu: "2000m"
       memory: "2Gi"
@@ -801,7 +801,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -858,8 +858,8 @@ scheduler:
 
   resources:
     limits:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
     requests:
       cpu: "1000m"
       memory: "1Gi"
@@ -2116,8 +2116,8 @@ redis:
 
   resources: 
     limits:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "1000m"
+      memory: "1Gi"
     requests:
       cpu: "500m"
       memory: "500Mi"
@@ -2316,7 +2316,7 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 4
+    worker_concurrency: 8
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" .Values.dagProcessor.enabled }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
@@ -2417,12 +2417,12 @@ dags:
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/andreichiro/k8s-airflow-eks.git
+    repo: git@github.com:andreichiro/k8s-airflow-dags.git
     branch: main
     rev: HEAD
     depth: 1
     # the number of consecutive failures allowed before aborting
-    maxFailures: 0
+    maxFailures: 1
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
     subPath: "dags/"

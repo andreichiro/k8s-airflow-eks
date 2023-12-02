@@ -4,6 +4,11 @@ fs-074b0526db14cdee8
 cluster name:
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
+-
+aws ecr get-login-password --region region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
+docker tag imageid 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4
+docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4    
+-
 
 eksctl create cluster -f config/cluster.yaml
 
@@ -13,10 +18,22 @@ kubectl apply -f argoCD\deployment.yaml
 
 kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow
 kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 
 
 base64 -> Y1JuYlNBUVFPaENod2xrTg==
-PAHydDQBbxbIVrGG
+anbPjdDtP35UKAIt
 
+kubectl get svc -n argocd
+-
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACDjswEsSotQWoR5/1roMHNTQuSJWD6GOnVyv0ZIjGjv3AAAAJgaqwwrGqsM
+KwAAAAtzc2gtZWQyNTUxOQAAACDjswEsSotQWoR5/1roMHNTQuSJWD6GOnVyv0ZIjGjv3A
+AAAEAz+rVvXz3EbtxUqaKbQ2iqszKbk5cbc/ZZRW40ZDOyEeOzASxKi1BahHn/Wugwc1NC
+5IlYPoY6dXK/RkiMaO/cAAAAFWFuZHJlaWNoaXJvQGdtYWlsLmNvbQ==
+-----END OPENSSH PRIVATE KEY-----
+
+-
 choco install jq -y
 
 choco install curl -y
