@@ -1174,7 +1174,7 @@ webserver:
     periodSeconds: 120
 
   # Number of webservers
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1355,7 +1355,7 @@ webserver:
 triggerer:
   enabled: true
   # Number of airflow triggerers in the deployment
-  replicas: 1
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1428,11 +1428,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "3000m"
+      memory: "3Gi"
     limits:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "2000m"
+      memory: "2Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -2116,11 +2116,11 @@ redis:
 
   resources: 
     limits:
+      cpu: "2000m"
+      memory: "2Gi"
+    requests:
       cpu: "1000m"
       memory: "1Gi"
-    requests:
-      cpu: "500m"
-      memory: "500Mi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
