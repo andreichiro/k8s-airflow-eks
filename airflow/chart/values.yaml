@@ -807,7 +807,7 @@ scheduler:
       - "pgrep -f 'airflow scheduler'"
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1121,8 +1121,8 @@ migrateDatabaseJob:
       cpu: "2000m"
       memory: "2Gi"
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
 
   # Launch additional containers into database migration job
   extraContainers: []
@@ -2473,7 +2473,7 @@ dags:
     # interval between git sync attempts in seconds
     # high values are more likely to cause DAGs to become out of sync between different components
     # low values cause more traffic to the remote git repository
-    wait: 5
+    wait: 20
     containerName: git-sync
     uid: 65533
 
@@ -2506,11 +2506,11 @@ dags:
 
     resources: 
       limits:
+        cpu: "2000m"
+        memory: "2Gi"
+      requests:
         cpu: "1000m"
         memory: "1Gi"
-      requests:
-        cpu: "500m"
-        memory: "500Mi"
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
