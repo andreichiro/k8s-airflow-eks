@@ -1161,18 +1161,20 @@ webserver:
     timeoutSeconds: 120
     failureThreshold: 2
     periodSeconds: 120
+    scheme: HTTP
 
   readinessProbe:
     initialDelaySeconds: 180
     timeoutSeconds: 120
     failureThreshold: 2
     periodSeconds: 120
+    scheme: HTTP
 
   startupProbe:
     timeoutSeconds: 120
     failureThreshold: 2
     periodSeconds: 120
-
+    scheme: HTTP
   # Number of webservers
   replicas: 2
   # Max number of old replicasets to retain
