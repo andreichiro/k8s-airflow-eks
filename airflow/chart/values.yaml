@@ -2477,7 +2477,7 @@ dags:
     # interval between git sync attempts in seconds
     # high values are more likely to cause DAGs to become out of sync between different components
     # low values cause more traffic to the remote git repository
-    wait: 60
+    wait: 30
     containerName: git-sync
     uid: 65533
 
