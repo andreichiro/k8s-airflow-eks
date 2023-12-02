@@ -91,7 +91,7 @@ images:
   # to run and wait for DB migrations .
   useDefaultImageForMigration: false
   # timeout (in seconds) for airflow-migrations to complete
-  migrationsWaitTimeout: 600
+  migrationsWaitTimeout: 300
 
   pod_template:
     # Note that `images.pod_template.repository` and `images.pod_template.tag` parameters
@@ -509,10 +509,10 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+    failureThreshold: 3
+    periodSeconds: 60
     command: ~
 
   # Update Strategy when worker is deployed as a StatefulSet
@@ -786,10 +786,10 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
     failureThreshold: 3
-    periodSeconds: 120
+    periodSeconds: 60
     command: 
       - bash
       - -c
@@ -799,8 +799,8 @@ scheduler:
   # livenessProbe kicks in after the startup
   startupProbe:
     failureThreshold: 3
-    periodSeconds: 120
-    timeoutSeconds: 120
+    periodSeconds: 60
+    timeoutSeconds: 60
     command:
       - bash
       - -c
@@ -1164,23 +1164,23 @@ webserver:
   allowPodLogReading: true
 
   livenessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+    failureThreshold: 3
+    periodSeconds: 60
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+    failureThreshold: 3
+    periodSeconds: 60
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 120
+    timeoutSeconds: 60
+    failureThreshold: 3
+    periodSeconds: 60
     scheme: HTTP
   # Number of webservers
   replicas: 2
@@ -1384,10 +1384,10 @@ triggerer:
   # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the
   # triggerer and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+    failureThreshold: 3
+    periodSeconds: 60
     command: ~
 
   # Create ServiceAccount
@@ -1584,10 +1584,10 @@ dagProcessor:
   # If the dag processor stops heartbeating for 5 minutes (5*60s) kill the
   # dag processor and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
-    failureThreshold: 2
-    periodSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+    failureThreshold: 3
+    periodSeconds: 60
     command: ~
 
   # Create ServiceAccount
@@ -2078,14 +2078,14 @@ pgbouncer:
     containerLifecycleHooks: {}
 
     livenessProbe:
-      initialDelaySeconds: 180
-      periodSeconds: 120
-      timeoutSeconds: 120
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      timeoutSeconds: 60
       command: ~
     readinessProbe:
-      initialDelaySeconds: 180
-      periodSeconds: 120
-      timeoutSeconds: 120
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      timeoutSeconds: 60
 
   # Environment variables to add to pgbouncer container
   env: []
@@ -2470,7 +2470,6 @@ dags:
     knownHosts: |
       github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
     # Add other keys here if needed
-
     # knownHosts: |
     #    <host1>,<ip1> <key1>
     #    <host2>,<ip2> <key2>
