@@ -91,7 +91,7 @@ images:
   # to run and wait for DB migrations .
   useDefaultImageForMigration: false
   # timeout (in seconds) for airflow-migrations to complete
-  migrationsWaitTimeout: 60
+  migrationsWaitTimeout: 300
 
   pod_template:
     # Note that `images.pod_template.repository` and `images.pod_template.tag` parameters
@@ -787,8 +787,8 @@ scheduler:
   # scheduler and let Kubernetes restart it
   livenessProbe:
     initialDelaySeconds: 300
-    timeoutSeconds: 120
-    failureThreshold: 2
+    timeoutSeconds: 300
+    failureThreshold: 3
     periodSeconds: 300
     command: 
       - bash
@@ -798,9 +798,9 @@ scheduler:
   # Wait for at most 10 minutes (6*10s) for the scheduler container to startup.
   # livenessProbe kicks in after the startup
   startupProbe:
-    failureThreshold: 2
+    failureThreshold: 3
     periodSeconds: 300
-    timeoutSeconds: 120
+    timeoutSeconds: 300
     command:
       - bash
       - -c
@@ -1068,7 +1068,7 @@ migrateDatabaseJob:
   applyCustomEnv: false
 
   # Limit the lifetime of the job object after it finished execution.
-  ttlSecondsAfterFinished: 120
+  ttlSecondsAfterFinished: 300
   # Command to use when running the migrate database job (templated).
   command: ~
   # Args to use when running the migrate database job (templated).
@@ -1085,7 +1085,8 @@ migrateDatabaseJob:
   # Annotations on the database migration pod
   annotations: {}
   # jobAnnotations are annotations on the database migration job
-  jobAnnotations: {}
+  jobAnnotations:
+    "argocd.argoproj.io/hook": Sync
 
   # When not set, the values defined in the global securityContext will be used
   securityContext: {}
