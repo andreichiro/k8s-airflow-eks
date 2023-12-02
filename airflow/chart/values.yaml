@@ -509,10 +509,10 @@ workers:
   # worker and let Kubernetes restart it
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    timeoutSeconds: 60
+    initialDelaySeconds: 120
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 120
     command: ~
 
   # Update Strategy when worker is deployed as a StatefulSet
@@ -786,10 +786,10 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 60
+    initialDelaySeconds: 120
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 120
     command: 
       - bash
       - -c
@@ -799,8 +799,8 @@ scheduler:
   # livenessProbe kicks in after the startup
   startupProbe:
     failureThreshold: 3
-    periodSeconds: 60
-    timeoutSeconds: 60
+    periodSeconds: 120
+    timeoutSeconds: 120
     command:
       - bash
       - -c
@@ -1164,23 +1164,23 @@ webserver:
   allowPodLogReading: true
 
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 60
+    initialDelaySeconds: 240
+    timeoutSeconds: 240
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 240
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 60
+    initialDelaySeconds: 240
+    timeoutSeconds: 240
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 240
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 60
+    timeoutSeconds: 240
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 240
     scheme: HTTP
   # Number of webservers
   replicas: 2
@@ -1384,10 +1384,10 @@ triggerer:
   # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the
   # triggerer and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 60
+    initialDelaySeconds: 120
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 120
     command: ~
 
   # Create ServiceAccount
@@ -1584,10 +1584,10 @@ dagProcessor:
   # If the dag processor stops heartbeating for 5 minutes (5*60s) kill the
   # dag processor and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 60
-    timeoutSeconds: 60
+    initialDelaySeconds: 120
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 120
     command: ~
 
   # Create ServiceAccount
@@ -2078,14 +2078,14 @@ pgbouncer:
     containerLifecycleHooks: {}
 
     livenessProbe:
-      initialDelaySeconds: 60
-      periodSeconds: 60
-      timeoutSeconds: 60
+      initialDelaySeconds: 120
+      periodSeconds: 120
+      timeoutSeconds: 120
       command: ~
     readinessProbe:
-      initialDelaySeconds: 60
-      periodSeconds: 60
-      timeoutSeconds: 60
+      initialDelaySeconds: 120
+      periodSeconds: 120
+      timeoutSeconds: 120
 
   # Environment variables to add to pgbouncer container
   env: []
