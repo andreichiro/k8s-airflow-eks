@@ -790,7 +790,10 @@ scheduler:
     timeoutSeconds: 120
     failureThreshold: 2
     periodSeconds: 300
-    command: ~
+    command: 
+      - bash
+      - -c
+      - "airflow jobs check --job-type SchedulerJob --limit 1"
 
   # Wait for at most 10 minutes (6*10s) for the scheduler container to startup.
   # livenessProbe kicks in after the startup
@@ -798,7 +801,10 @@ scheduler:
     failureThreshold: 2
     periodSeconds: 300
     timeoutSeconds: 120
-    command: ~
+    command:
+      - bash
+      - -c
+      - "pgrep -f 'airflow scheduler'"
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
   replicas: 2
@@ -848,7 +854,7 @@ scheduler:
 
   # Scheduler pod disruption budget
   podDisruptionBudget:
-    enabled: false
+    enabled: true
 
     # PDB configuration
     config:
