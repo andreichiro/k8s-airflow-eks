@@ -104,3 +104,5 @@ addons:
   version: latest
 - name: aws-ebs-csi-driver
   version: latest
+- name: eks-pod-identity-agent
+  version: latest

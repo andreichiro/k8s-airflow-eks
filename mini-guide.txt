@@ -33,6 +33,8 @@ AAAEAz+rVvXz3EbtxUqaKbQ2iqszKbk5cbc/ZZRW40ZDOyEeOzASxKi1BahHn/Wugwc1NC
 5IlYPoY6dXK/RkiMaO/cAAAAFWFuZHJlaWNoaXJvQGdtYWlsLmNvbQ==
 -----END OPENSSH PRIVATE KEY-----
 
+eksctl upgrade cluster -f config/cluster.yaml                                                                             
+eksctl upgrade nodegroup --cluster h2-lakehouse-on-k8s-eks --name lakehouse-on-k8s-demand --region us-east-1
 -
 choco install jq -y
 
