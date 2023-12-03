@@ -1,0 +1,44 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: h2-lakehouse-on-k8s-eks
+  region: us-east-1
+managedNodeGroups:
+  - name: lakehouse-on-k8s-demand
+    instanceTypes: ["c6g.4xlarge", "t3.xlarge", "m5.2xlarge"] 
+    minSize: 3
+    desiredCapacity: 3
+    maxSize: 4
+    availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
+    privateNetworking: true
+    volumeSize: 1500
+    updateConfig:
+      maxUnavailable: 1 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
+    ssh:
+      allow: true
+      publicKeyName: andreichiro
+      # new feature for restricting SSH access to certain AWS security group IDs
+    labels: {role: managed_node_group}
+    # Note: unmanaged nodegroups (`nodeGroups` field) use a different structure (map[string]string) to express taints
+    tags:
+      nodegroup-role: managed_node_group
+    iam:
+      withAddonPolicies:
+        ebs: true
+        imageBuilder: true
+        efs: true
+        albIngress: true
+        autoScaler: true
+        cloudWatch: true
+        externalDNS: true
+addons:
+- name: vpc-cni # no version is specified so it deploys the default version
+  version: latest
+- name: coredns
+  version: latest # auto discovers the latest available
+- name: kube-proxy
+  version: latest
+- name: aws-ebs-csi-driver
+  version: latest
+- name: eks-pod-identity-agent
+  version: latest

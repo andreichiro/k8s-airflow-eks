@@ -1,3 +1,5 @@
+c6g.4xlarge	
+--
 efs id:
 fs-074b0526db14cdee8
 
@@ -9,7 +11,21 @@ aws ecr get-login-password --region region | docker login --username AWS --passw
 docker tag imageid 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4
 docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4    
 -
+Tags 
 
+aws:cloudformation:stack-name	eksctl-h2-lakehouse-on-k8s-eks-nodegroup-lakehouse-on-k8s-demand
+alpha.eksctl.io/cluster-name	h2-lakehouse-on-k8s-eks
+alpha.eksctl.io/nodegroup-name	lakehouse-on-k8s-demand
+karpenter.sh/discovery	h2-lakehouse-on-k8s-eks
+aws:cloudformation:stack-id	arn:aws:cloudformation:us-east-1:003422509138:stack/eksctl-h2-lakehouse-on-k8s-eks-nodegroup-lakehouse-on-k8s-demand/2d771020-91e5-11ee-b572-0e2c11b2ce3f
+eksctl.cluster.k8s.io/v1alpha1/cluster-name	h2-lakehouse-on-k8s-eks
+aws:cloudformation:logical-id	ManagedNodeGroup
+alpha.eksctl.io/nodegroup-type	managed
+alpha.eksctl.io/eksctl-version	0.164.0
+nodegroup-role	managed_node_group
+
+
+-
 eksctl create cluster -f config/cluster.yaml
 
 helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=2 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=2 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace

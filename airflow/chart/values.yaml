@@ -302,8 +302,8 @@ enableBuiltInSecretEnvVars:
   AIRFLOW__CELERY__CELERY_RESULT_BACKEND: true
   AIRFLOW__CELERY__RESULT_BACKEND: true
   AIRFLOW__CELERY__BROKER_URL: true
-  AIRFLOW__ELASTICSEARCH__HOST: false
-  AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: false
+  AIRFLOW__ELASTICSEARCH__HOST: true
+  AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: true
 
 # Priority Classes that will be installed by charts.
 # Ideally, there should be an entry for dagProcessor, flower,
@@ -490,7 +490,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 5
+  replicas: 4
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -641,8 +641,8 @@ workers:
 
   resources:
     limits:
-      cpu: "5000m"
-      memory: "7Gi"
+      cpu: "6000m"
+      memory: "8Gi"
     requests:
       cpu: "4000m"
       memory: "6Gi"
@@ -2119,11 +2119,11 @@ redis:
 
   resources: 
     limits:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "2000m"
+      memory: "4Gi"
     requests:
       cpu: "1000m"
-      memory: "1Gi"
+      memory: "2Gi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
