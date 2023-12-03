@@ -490,7 +490,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -864,11 +864,11 @@ scheduler:
 
   resources:
     limits:
+      cpu: "5000m"
+      memory: "7Gi"
+    requests:
       cpu: "4000m"
       memory: "6Gi"
-    requests:
-      cpu: "3000m"
-      memory: "5Gi"
 
   #  limits:
   #   cpu: 100m
@@ -1246,11 +1246,11 @@ webserver:
 
   resources: 
      limits:
-       cpu: "3000m"
-       memory: "4Gi"
+       cpu: "4000m"
+       memory: "5Gi"
      requests:
-      cpu: "2000m"
-      memory: "3Gi"
+      cpu: "3000m"
+      memory: "4Gi"
 
   # Create initial user.
   defaultUser:
@@ -2125,8 +2125,8 @@ redis:
 
   resources: 
     limits:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "2000m"
+      memory: "2Gi"
     requests:
       cpu: "1000m"
       memory: "1Gi"
@@ -2510,10 +2510,10 @@ dags:
 
     resources: 
       limits:
-        cpu: "1000m"
-        memory: "1Gi"
+        cpu: "2000m"
+        memory: "2Gi"
       requests:
-        cpu: "500m"
+        cpu: "1000m"
         memory: "1Gi"
 
 logs:
