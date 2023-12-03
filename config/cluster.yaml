@@ -70,12 +70,12 @@ vpc:
 managedNodeGroups:
   - name: lakehouse-on-k8s-demand
     instanceTypes: ["t3.xlarge", "m5.xlarge", "m5.2xlarge"] 
-    minSize: 4
-    desiredCapacity: 5
-    maxSize: 6
+    minSize: 5
+    desiredCapacity: 6
+    maxSize: 7
     availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c"]
     privateNetworking: true
-    volumeSize: 500
+    volumeSize: 1500
     updateConfig:
       maxUnavailable: 1 # or `maxUnavailablePercentage: 75` to specify maxUnavailable as a percentage of total nodes
     ssh:

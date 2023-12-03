@@ -12,7 +12,7 @@ docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4
 
 eksctl create cluster -f config/cluster.yaml
 
-helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=3 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=3 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
+helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=2 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=2 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
 
 kubectl apply -f argoCD\deployment.yaml                                                                                      
 
@@ -21,7 +21,7 @@ kubectl create secret generic broker-secret --from-literal=connection='redis://:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 
 
 base64 -> Y1JuYlNBUVFPaENod2xrTg==
-anbPjdDtP35UKAIt
+HBhPfmPKTNi3DXJ8
 
 kubectl get svc -n argocd
 -
