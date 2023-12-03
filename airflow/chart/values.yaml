@@ -1240,7 +1240,7 @@ webserver:
 
   resources: 
      limits:
-       cpu: "3000m"
+       cpu: "2000m"
        memory: "5Gi"
      requests:
       cpu: "2000m"
@@ -1431,10 +1431,10 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "2000m"
+      cpu: "1500m"
       memory: "2Gi"
     limits:
-      cpu: "1500m"
+      cpu: "1000m"
       memory: "2Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
@@ -2119,7 +2119,7 @@ redis:
 
   resources: 
     limits:
-      cpu: "2000m"
+      cpu: "1000m"
       memory: "2Gi"
     requests:
       cpu: "1000m"
@@ -2504,10 +2504,10 @@ dags:
 
     resources: 
       limits:
-        cpu: "2500m"
+        cpu: "1500m"
         memory: "3Gi"
       requests:
-        cpu: "2000m"
+        cpu: "1000m"
         memory: "2Gi"
 
 logs:
