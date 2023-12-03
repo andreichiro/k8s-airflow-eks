@@ -1358,7 +1358,7 @@ webserver:
 triggerer:
   enabled: true
   # Number of airflow triggerers in the deployment
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1434,8 +1434,8 @@ triggerer:
       cpu: "2000m"
       memory: "2Gi"
     limits:
-      cpu: "1000m"
-      memory: "1Gi"
+      cpu: "1500m"
+      memory: "2Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
