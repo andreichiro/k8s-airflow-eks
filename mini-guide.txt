@@ -26,7 +26,7 @@ nodegroup-role	managed_node_group
 
 
 -
-eksctl create cluster -f config/cluster.yaml
+eksctl create cluster -f cluster/cluster.yaml
 
 helm install argocd -n argocd argo/argo-cd --set redis-ha.enabled=true --set controller.replicas=2 --set server.autoscaling.enabled=true --set server.autoscaling.minReplicas=2 --set repoServer.autoscaling.enabled=true --set repoServer.autoscaling.minReplicas=2 --set applicationSet.replicaCount=2 --set server.service.type=LoadBalancer --create-namespace
 
@@ -58,6 +58,7 @@ kubectl logs airflow-scheduler-7d7f564869-j95zz -c git-sync-init -n airflow
 eksctl upgrade cluster -f config/cluster.yaml                                                                             
 eksctl upgrade nodegroup --cluster h2-lakehouse-on-k8s-eks --name lakehouse-on-k8s-demand --region us-east-1
 -
+
 choco install jq -y
 
 choco install curl -y
@@ -76,7 +77,9 @@ export USER_ARN="arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499
 
 curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh' | bash
 
+-
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+-
 
 redis:
   existingSecret: "airflow-redis-password"
@@ -127,8 +130,123 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/
 kubectl -n kube-system annotate deployment.apps/cluster-autoscaler cluster-autoscaler.kubernetes.io/safe-to-evict="false"
 kubectl -n kube-system edit deployment.apps/cluster-autoscaler
 
-- --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/eksdemo1
+- --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/CLUSTERNAME
 - --balance-similar-node-groups
 - --skip-nodes-with-system-pods=false
 
 kubectl -n kube-system set image deployment.apps/cluster-autoscaler cluster-autoscaler=us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.28.1
+
+---
+tables with modelling problems:
+
+eb_cps_dag
+bar_contagem
+bar_promocoes
+bar_vendas
+cash_modalidades
+cash_rake
+clientes_saldos
+clubesonline_agentes
+clubesonline_clubes_ids
+clubesonline_lancamentos
+clubesonline_lancamentos_opcoes
+clubesonline_up_member_statistics
+clubesonline_up_overlay_slots
+clubesonline_up_transactions
+torneios_alternates
+torneios_config
+torneios_estruturas_itens
+torneios_estruturas_itens_taxas
+torneios_inf_ticket
+torneios_transferencias
+torneios_vagas_vinculadas
+torneios_valores_caixa
+
+bi_bet
+b_casino_report_by_bet
+b_transactions
+s_history_games
+
+bi_rewards
+cacheta_h2_historico_dados_cash_games
+
+pokerweb ctba
+configs_logs
+
+pokerweb sp
+bar_promocoes
+
+rewards
+ac_app_dados_torneios_historico
+ac_app_ppp_dados_torneios
+ac_app_suprema_torneios
+ac_clubes_ativos_dash
+ac_clubes_metas_zeradas
+ac_slot_liga
+ac_torneio
+app_agentes_idiomas
+app_cacheta_dados_cash_games
+app_clubes
+app_clubes_aux
+app_conciliacao_pppoker
+app_dados
+app_dados_suprema
+app_depositos_backup
+app_depositos_logs
+app_ppp_cash_games
+app_ppp_dados
+app_ppp_dados_cash_games
+app_ppp_dados_torneios
+app_promocoes
+app_promocoes_inscritos
+app_rake_back_pppoker
+app_rake_back_spm
+app_saques
+app_saques_regras_seguranca
+app_solicit_importa_dados
+app_spm_dados_cash_games
+app_spm_dados_torneios
+bi_dados_gerais_app_mkt_toda_liga
+clientes_com_limite
+formacao_mesas_sugestao_clientes
+jackpot_maos_combinacoes
+jackpot_premios_jogos_rfid
+landing_pages_templates
+landing_pages_trafego_ids
+landingpages_live_cadastros
+logs_oauth_api
+logs_usuarios
+logs_usuarios_unidades_has_unidades
+logs_usuarios_unidades_has_unidades
+menus
+menus_tipos
+menus_unidades
+menus_unidades_tipos
+metas_departamentos
+metas_valores
+mudancas_niveis_vip
+niveis_app_agentesr
+niveis_vip
+play_audio
+pontos_complementos
+pre_agentes_app_unidades
+pre_clientes_app_ids
+premios_fotos
+promo_live_enquetes
+promocoes_live_dados
+promocoes_live_hora_premiada_premios
+promocoes_live_unidades
+promocoes_unidades
+rd_aux
+recruta_app_agentesr
+relacionamentos
+relacionamentos_envios_clientes
+relacionamentos_envios_mensagens
+relacionamentos_envios_mensagens_clientes
+saques_complementos
+saques_complementos_historico
+sorteios_clientes
+sorteios_cupons_impressoes
+temporizador
+teste_bi_dados_gerais_app_mkt_toda_liga_teste
+view_app_depositos

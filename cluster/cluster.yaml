@@ -68,7 +68,7 @@ vpc:
         cidr: "10.0.103.0/24"   # (optional, must match CIDR used by the given subnet)
     
 managedNodeGroups:
-  - name: lakehouse-on-k8s-demand
+  - name: lakehouse-on-k8s
     instanceTypes: ["c6g.4xlarge", "t3.xlarge", "m5.2xlarge"] 
     minSize: 2
     desiredCapacity: 3
