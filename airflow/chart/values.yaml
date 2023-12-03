@@ -641,10 +641,10 @@ workers:
 
   resources:
     limits:
-      cpu: "6000m"
+      cpu: "4000m"
       memory: "7Gi"
     requests:
-      cpu: "5000m"
+      cpu: "3000m"
       memory: "6Gi"
   #  limits:
   #   cpu: 100m
