@@ -33,7 +33,7 @@ AAAEAz+rVvXz3EbtxUqaKbQ2iqszKbk5cbc/ZZRW40ZDOyEeOzASxKi1BahHn/Wugwc1NC
 5IlYPoY6dXK/RkiMaO/cAAAAFWFuZHJlaWNoaXJvQGdtYWlsLmNvbQ==
 -----END OPENSSH PRIVATE KEY-----
 
-kubectl apply -f airflow\chart\secrets\airflow-secret.yaml
+kubectl apply -f airflow\chart\config-map-secrets\airflow-secret.yaml
 ssh-keyscan github.com
 
 kubectl logs airflow-scheduler-7d7f564869-j95zz -c git-sync-init -n airflow

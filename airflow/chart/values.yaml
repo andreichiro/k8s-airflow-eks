@@ -786,7 +786,7 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 180
+    initialDelaySeconds: 240
     timeoutSeconds: 180
     failureThreshold: 3
     periodSeconds: 180
@@ -796,8 +796,8 @@ scheduler:
   # livenessProbe kicks in after the startup
   startupProbe:
     failureThreshold: 3
-    periodSeconds: 180
-    timeoutSeconds: 180
+    periodSeconds: 240
+    timeoutSeconds: 240
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
@@ -1158,21 +1158,21 @@ webserver:
   allowPodLogReading: true
 
   livenessProbe:
-    initialDelaySeconds: 240
+    initialDelaySeconds: 300
     timeoutSeconds: 240
     failureThreshold: 3
     periodSeconds: 240
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 240
+    initialDelaySeconds: 300
     timeoutSeconds: 240
     failureThreshold: 3
     periodSeconds: 240
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 240
+    timeoutSeconds: 300
     failureThreshold: 3
     periodSeconds: 240
     scheme: HTTP
@@ -2319,7 +2319,7 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 8
+    worker_concurrency: 4
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" .Values.dagProcessor.enabled }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
