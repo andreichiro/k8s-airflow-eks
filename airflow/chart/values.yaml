@@ -1158,21 +1158,21 @@ webserver:
   allowPodLogReading: true
 
   livenessProbe:
-    initialDelaySeconds: 300
+    initialDelaySeconds: 240
     timeoutSeconds: 240
     failureThreshold: 3
     periodSeconds: 240
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 300
+    initialDelaySeconds: 240
     timeoutSeconds: 240
     failureThreshold: 3
     periodSeconds: 240
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 300
+    timeoutSeconds: 240
     failureThreshold: 3
     periodSeconds: 240
     scheme: HTTP
