@@ -69,7 +69,7 @@ vpc:
     
 managedNodeGroups:
   - name: lakehouse-on-k8s
-    instanceTypes: ["c6g.4xlarge", "t3.xlarge", "m5.2xlarge"] 
+    instanceTypes: ["c6g.4xlarge"] 
     minSize: 2
     desiredCapacity: 3
     maxSize: 4
