@@ -34,6 +34,9 @@ kubectl apply -f argoCD\deployment.yaml
 
 kubectl create secret generic airflow-redis-secret --from-literal=password='dados123456' -n airflow
 kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
+kubectl apply -f airflow\chart\config-map-secrets\airflow-secret.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 
 
 base64 -> REZRTk5VQjdTNG1mQlRaTw==
@@ -49,7 +52,6 @@ AAAEAz+rVvXz3EbtxUqaKbQ2iqszKbk5cbc/ZZRW40ZDOyEeOzASxKi1BahHn/Wugwc1NC
 5IlYPoY6dXK/RkiMaO/cAAAAFWFuZHJlaWNoaXJvQGdtYWlsLmNvbQ==
 -----END OPENSSH PRIVATE KEY-----
 
-kubectl apply -f airflow\chart\config-map-secrets\airflow-secret.yaml
 ssh-keyscan github.com
 
 kubectl logs airflow-scheduler-7d7f564869-j95zz -c git-sync-init -n airflow
@@ -77,8 +79,6 @@ export USER_ARN="arn:aws:iam::809060229965:user/cast-crossrole-cbd5b4bd-e18b-499
 
 curl -fsSL 'https://api.cast.ai/v1/scripts/eks/onboarding.sh' | bash
 
--
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 -
 
 redis:
