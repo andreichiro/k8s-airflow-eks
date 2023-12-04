@@ -641,7 +641,7 @@ workers:
 
   resources:
     limits:
-      cpu: "6000m"
+      cpu: "5000m"
       memory: "8Gi"
     requests:
       cpu: "4000m"
@@ -858,7 +858,7 @@ scheduler:
 
   resources:
     limits:
-      cpu: "6000m"
+      cpu: "5000m"
       memory: "8Gi"
     requests:
       cpu: "4000m"
@@ -1431,11 +1431,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "3000m"
-      memory: "4Gi"
-    limits:
       cpu: "2000m"
       memory: "3Gi"
+    limits:
+      cpu: "1500m"
+      memory: "2Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -2505,7 +2505,7 @@ dags:
 
     resources: 
       limits:
-        cpu: "1500m"
+        cpu: "1000m"
         memory: "3Gi"
       requests:
         cpu: "1000m"

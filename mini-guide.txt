@@ -36,8 +36,8 @@ kubectl create secret generic airflow-redis-secret --from-literal=password='dado
 kubectl create secret generic broker-secret --from-literal=connection='redis://:dados123456@airflow-redis.airflow.svc.cluster.local:6379/0' -n airflow
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 
 
-base64 -> Y1JuYlNBUVFPaENod2xrTg==
-HBhPfmPKTNi3DXJ8
+base64 -> REZRTk5VQjdTNG1mQlRaTw==
+DFQNNUB7S4mfBTZO
 
 kubectl get svc -n argocd
 -
