@@ -642,10 +642,10 @@ workers:
   resources:
     limits:
       cpu: "5000m"
-      memory: "8Gi"
+      memory: "10Gi"
     requests:
       cpu: "4000m"
-      memory: "6Gi"
+      memory: "8Gi"
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -859,10 +859,10 @@ scheduler:
   resources:
     limits:
       cpu: "5000m"
-      memory: "8Gi"
+      memory: "10Gi"
     requests:
       cpu: "4000m"
-      memory: "6Gi"
+      memory: "8Gi"
 
   #  limits:
   #   cpu: 100m
@@ -1113,10 +1113,10 @@ migrateDatabaseJob:
   resources:
     limits:
       cpu: "1000m"
-      memory: "1Gi"
+      memory: "2Gi"
     requests:
       cpu: "500m"
-      memory: "500Mi"
+      memory: "1Gi"
 
   # Launch additional containers into database migration job
   extraContainers: []
@@ -1240,11 +1240,11 @@ webserver:
 
   resources: 
      limits:
-       cpu: "2000m"
-       memory: "5Gi"
+       cpu: "2500m"
+       memory: "8Gi"
      requests:
       cpu: "2000m"
-      memory: "4Gi"
+      memory: "6Gi"
 
   # Create initial user.
   defaultUser:
@@ -1432,10 +1432,10 @@ triggerer:
   #   memory: 128Mi
     requests:
       cpu: "3500m"
-      memory: "5Gi"
+      memory: "8Gi"
     limits:
       cpu: "2500m"
-      memory: "4Gi"
+      memory: "6Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -2119,11 +2119,11 @@ redis:
 
   resources: 
     limits:
+      cpu: "2500m"
+      memory: "6Gi"
+    requests:
       cpu: "2000m"
       memory: "4Gi"
-    requests:
-      cpu: "1000m"
-      memory: "2Gi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
@@ -2235,11 +2235,11 @@ cleanup:
 
   resources: 
     limits:
-      cpu: "500m"
-      memory: "500Mi"
+      cpu: "1000m"
+      memory: "2Gi"
     requests:
       cpu: "500m"
-      memory: "500Mi"
+      memory: "1Gi"
 
   # Create ServiceAccount
   serviceAccount:
