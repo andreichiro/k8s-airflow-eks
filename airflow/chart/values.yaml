@@ -641,11 +641,11 @@ workers:
 
   resources:
     limits:
-      cpu: "10000m"
-      memory: "14Gi"
-    requests:
       cpu: "8000m"
-      memory: "12Gi"
+      memory: "10Gi"
+    requests:
+      cpu: "6000m"
+      memory: "8Gi"
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -1240,10 +1240,10 @@ webserver:
 
   resources: 
      limits:
-       cpu: "2500m"
+       cpu: "3000m"
        memory: "8Gi"
      requests:
-      cpu: "2000m"
+      cpu: "2500m"
       memory: "6Gi"
 
   # Create initial user.
@@ -1434,7 +1434,7 @@ triggerer:
       cpu: "3500m"
       memory: "8Gi"
     limits:
-      cpu: "2500m"
+      cpu: "3000m"
       memory: "6Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
