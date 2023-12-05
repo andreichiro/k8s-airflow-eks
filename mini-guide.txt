@@ -137,3 +137,47 @@ kubectl -n kube-system edit deployment.apps/cluster-autoscaler
 kubectl -n kube-system set image deployment.apps/cluster-autoscaler cluster-autoscaler=us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.28.1
 
 ---
+-
+
+{
+  "Comment": "State machine to process SQS messages and decide processing path",
+  "StartAt": "ProcessMessage",
+  "States": {
+    "ProcessMessage": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:003422509138:function:TriggerStepFunctions",
+      "Next": "ChooseProcessingPath"
+    },
+    "ChooseProcessingPath": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.path",
+          "StringEquals": "Athena",
+          "Next": "CreateAthenaTable"
+        },
+        {
+          "Variable": "$.path",
+          "StringEquals": "Spark",
+          "Next": "CreateSparkTable"
+        }
+      ],
+      "Default": "Fallback"
+    },
+    "CreateAthenaTable": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:003422509138:function:AthenaCreateTable",
+      "End": true
+    },
+    "CreateSparkTable": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:003422509138:function:SparkCreateTable",
+      "End": true
+    },
+    "Fallback": {
+      "Type": "Fail",
+      "Error": "NoValidOption",
+      "Cause": "Neither Athena nor Spark was chosen"
+    }
+  }
+}
