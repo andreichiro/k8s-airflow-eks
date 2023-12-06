@@ -7,9 +7,12 @@ cluster name:
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 -
-aws ecr get-login-password --region region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
-docker tag imageid 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4
-docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.4    
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 003422509138.dkr.ecr.us-east-1.amazonaws.com
+
+docker build -t airflow-custom:v1.5 .
+
+docker tag 5dbebce9bc6e 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.5
+docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.5
 -
 Tags 
 
