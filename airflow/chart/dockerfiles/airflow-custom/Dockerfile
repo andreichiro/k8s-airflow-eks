@@ -19,4 +19,5 @@ RUN pip install --upgrade pip \
     pandas \
     polars \
     pyiceberg[s3fs,hive,glue,duckdb,pyarrow] \
-    snowflake-connector-python 
+    snowflake-connector-python \
+    duckdb
