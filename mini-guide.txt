@@ -1,12 +1,12 @@
-c6g.4xlarge	
 --
+c6g.4xlarge	
 efs id:
 fs-074b0526db14cdee8
 
 cluster name:
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
-aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 -
+aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 003422509138.dkr.ecr.us-east-1.amazonaws.com
 
 docker build -t airflow-custom:v1.5 .
@@ -15,8 +15,8 @@ docker tag 5319b86401cb 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-cus
 docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.5
 -
 Tags 
-
 aws:cloudformation:stack-name	eksctl-h2-lakehouse-on-k8s-eks-nodegroup-lakehouse-on-k8s-demand
+
 alpha.eksctl.io/cluster-name	h2-lakehouse-on-k8s-eks
 alpha.eksctl.io/nodegroup-name	lakehouse-on-k8s-demand
 karpenter.sh/discovery	h2-lakehouse-on-k8s-eks
