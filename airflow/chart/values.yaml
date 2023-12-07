@@ -1158,23 +1158,23 @@ webserver:
   allowPodLogReading: true
 
   livenessProbe:
-    initialDelaySeconds: 240
-    timeoutSeconds: 240
+    initialDelaySeconds: 180
+    timeoutSeconds: 180
     failureThreshold: 3
-    periodSeconds: 60 
+    periodSeconds: 90 
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 240
-    timeoutSeconds: 240
+    initialDelaySeconds: 180
+    timeoutSeconds: 180
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 90
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 240
+    timeoutSeconds: 180
     failureThreshold: 3
-    periodSeconds: 60
+    periodSeconds: 90
     scheme: HTTP
   # Number of webservers
   replicas: 1
