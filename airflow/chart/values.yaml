@@ -1159,22 +1159,22 @@ webserver:
 
   livenessProbe:
     initialDelaySeconds: 180
-    timeoutSeconds: 180
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 90 
+    periodSeconds: 120 
     scheme: HTTP
 
   readinessProbe:
     initialDelaySeconds: 180
-    timeoutSeconds: 180
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 90
+    periodSeconds: 120
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 180
+    timeoutSeconds: 120
     failureThreshold: 3
-    periodSeconds: 90
+    periodSeconds: 120
     scheme: HTTP
   # Number of webservers
   replicas: 1
@@ -1240,10 +1240,10 @@ webserver:
 
   resources: 
      limits:
-       cpu: "2000m"
+       cpu: "3000m"
        memory: "7Gi"
      requests:
-      cpu: "2000m"
+      cpu: "3000m"
       memory: "5Gi"
 
   # Create initial user.
