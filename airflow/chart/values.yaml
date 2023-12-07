@@ -1177,7 +1177,7 @@ webserver:
     periodSeconds: 90
     scheme: HTTP
   # Number of webservers
-  replicas: 2
+  replicas: 1
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
