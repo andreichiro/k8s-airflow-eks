@@ -1176,15 +1176,15 @@ webserver:
 
   readinessProbe:
     initialDelaySeconds: 180
-    timeoutSeconds: 60
+    timeoutSeconds: 180
     failureThreshold: 3
-    periodSeconds: 120
+    periodSeconds: 60
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 60
+    timeoutSeconds: 180
     failureThreshold: 3
-    periodSeconds: 120
+    periodSeconds: 60
     scheme: HTTP
   # Number of webservers
   replicas: 2
