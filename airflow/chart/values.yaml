@@ -490,7 +490,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 4
+  replicas: 8
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -646,12 +646,13 @@ workers:
     requests:
       cpu: "5000m"
       memory: "12Gi"
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+
+#    limits:
+#      cpu: "6000m"
+#      memory: "18Gi"
+#    requests:
+#      cpu: "5000m"
+#      memory: "12Gi"
 
   # Grace period for tasks to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 600
@@ -858,18 +859,18 @@ scheduler:
 
   resources:
     limits:
-      cpu: "3000m"
-      memory: "8Gi"
+      cpu: "4000m"
+      memory: "12Gi"
     requests:
-      cpu: "2500m"
-      memory: "6Gi"
+      cpu: "3500m"
+      memory: "8Gi"
 
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+#    limits:
+#      cpu: "3000m"
+#      memory: "8Gi"
+#    requests:
+#      cpu: "2500m"
+#      memory: "6Gi"
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
@@ -1112,11 +1113,20 @@ migrateDatabaseJob:
 
   resources:
     limits:
+      cpu: "2000m"
+      memory: "4Gi"
+    requests:
       cpu: "1000m"
       memory: "2Gi"
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
+
+#    limits:
+#      cpu: "1000m"
+#      memory: "2Gi"
+#    requests:
+#      cpu: "500m"
+#      memory: "1Gi"
+
+
 
   # Launch additional containers into database migration job
   extraContainers: []
@@ -1159,20 +1169,20 @@ webserver:
 
   livenessProbe:
     initialDelaySeconds: 180
-    timeoutSeconds: 120
+    timeoutSeconds: 60
     failureThreshold: 3
     periodSeconds: 120 
     scheme: HTTP
 
   readinessProbe:
     initialDelaySeconds: 180
-    timeoutSeconds: 120
+    timeoutSeconds: 60
     failureThreshold: 3
     periodSeconds: 120
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 120
+    timeoutSeconds: 60
     failureThreshold: 3
     periodSeconds: 120
     scheme: HTTP
@@ -1240,11 +1250,18 @@ webserver:
 
   resources: 
      limits:
-       cpu: "3000m"
-       memory: "7Gi"
+       cpu: "6000m"
+       memory: "10Gi"
      requests:
-      cpu: "3000m"
-      memory: "5Gi"
+      cpu: "5000m"
+      memory: "8Gi"
+
+#     limits:
+#       cpu: "3000m"
+#       memory: "7Gi"
+#     requests:
+#      cpu: "3000m"
+#      memory: "5Gi"#
 
   # Create initial user.
   defaultUser:
@@ -1431,11 +1448,18 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "2000m"
-      memory: "5Gi"
+      cpu: "3000m"
+      memory: "7Gi"
     limits:
-      cpu: "2000m"
-      memory: "4Gi"
+      cpu: "2500m"
+      memory: "6Gi"
+
+#    requests:
+#      cpu: "2000m"
+#      memory: "5Gi"
+#    limits:
+#      cpu: "2000m"
+#      memory: "4Gi"
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 60
@@ -2119,11 +2143,18 @@ redis:
 
   resources: 
     limits:
+      cpu: "2500m"
+      memory: "8Gi"
+    requests:
       cpu: "2000m"
       memory: "6Gi"
-    requests:
-      cpu: "1500m"
-      memory: "4Gi"
+
+#    limits:
+#      cpu: "2000m"
+#      memory: "6Gi"
+#    requests:
+#      cpu: "1500m"
+#      memory: "4Gi"
 
   # If set use as redis secret. Make sure to also set data.brokerUrlSecretName value.
   passwordSecretName: airflow-redis-secret
@@ -2235,11 +2266,19 @@ cleanup:
 
   resources: 
     limits:
+      cpu: "1500m"
+      memory: "3Gi"
+    requests:
       cpu: "1000m"
       memory: "2Gi"
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
+
+
+ #   limits:
+ #     cpu: "1000m"
+#      memory: "2Gi"
+#    requests:
+#      cpu: "500m"
+#      memory: "1Gi"
 
   # Create ServiceAccount
   serviceAccount:
@@ -2505,11 +2544,18 @@ dags:
 
     resources: 
       limits:
-        cpu: "1000m"
-        memory: "3Gi"
+        cpu: "1500m"
+        memory: "5Gi"
       requests:
         cpu: "1000m"
-        memory: "2Gi"
+        memory: "3Gi"
+
+#      limits:
+#        cpu: "1000m"
+#        memory: "3Gi"
+#      requests:
+#        cpu: "1000m"
+#        memory: "2Gi"
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
