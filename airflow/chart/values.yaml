@@ -1171,18 +1171,18 @@ webserver:
     initialDelaySeconds: 180
     timeoutSeconds: 60
     failureThreshold: 3
-    periodSeconds: 120 
+    periodSeconds: 60 
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
     failureThreshold: 3
     periodSeconds: 60
     scheme: HTTP
 
   startupProbe:
-    timeoutSeconds: 120
+    timeoutSeconds: 60
     failureThreshold: 3
     periodSeconds: 60
     scheme: HTTP
