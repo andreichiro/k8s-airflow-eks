@@ -642,10 +642,10 @@ workers:
   resources:
     limits:
       cpu: "9000m"
-      memory: "24Gi"
+      memory: "22Gi"
     requests:
       cpu: "9000m"
-      memory: "24Gi"
+      memory: "22Gi"
 
 #    limits:
 #      cpu: "6000m"
@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "10000m"
-      memory: "18Gi"
+      cpu: "8000m"
+      memory: "14Gi"
     requests:
-      cpu: "10000m"
-      memory: "18Gi"
+      cpu: "8000m"
+      memory: "14Gi"
 
 #    limits:
 #      cpu: "3000m"
@@ -1250,11 +1250,11 @@ webserver:
 
   resources: 
      limits:
-       cpu: "6000m"
-       memory: "8Gi"
+       cpu: "4000m"
+       memory: "6Gi"
      requests:
-      cpu: "6000m"
-      memory: "8Gi"
+      cpu: "4000m"
+      memory: "6Gi"
 
 #     limits:
 #       cpu: "3000m"
@@ -1448,11 +1448,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "50000m"
-      memory: "10Gi"
+      cpu: "3500m"
+      memory: "6Gi"
     limits:
-      cpu: "50000m"
-      memory: "10Gi"
+      cpu: "3500m"
+      memory: "6Gi"
 
 #    requests:
 #      cpu: "2000m"
@@ -2144,10 +2144,10 @@ redis:
   resources: 
     limits:
       cpu: "2500m"
-      memory: "6Gi"
+      memory: "5Gi"
     requests:
       cpu: "2500m"
-      memory: "6Gi"
+      memory: "5Gi"
 
 #    limits:
 #      cpu: "2000m"

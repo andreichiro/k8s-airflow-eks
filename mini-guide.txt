@@ -10,26 +10,37 @@ Resources
   resources:
     limits:
       cpu: "9000m"
-      memory: "24Gi"
+      memory: "22Gi"
     requests:
       cpu: "9000m"
-      memory: "24Gi"
+      memory: "22Gi"
 
-2 Scheduler:
- resources:
-    cpu: "10000m"
-      memory: "18Gi"
+3 Scheduler:
+  resources:
+    limits:
+      cpu: "8000m"
+      memory: "14Gi"
     requests:
-      cpu: "10000m"
-      memory: "18Gi"
+      cpu: "8000m"
+      memory: "14Gi"
+
+1 migrate database
+  resources:
+    limits:
+      cpu: "2000m"
+      memory: "3Gi"
+    requests:
+      cpu: "2000m"
+      memory: "3Gi"
 
 2 triggerer
     requests:
-      cpu: "5000m"
-      memory: "10Gi"
+      cpu: "3500m"
+      memory: "6Gi"
     limits:
-      cpu: "5000m"
-      memory: "10Gi"
+      cpu: "3500m"
+      memory: "6Gi"
+
 
 1 redis
   resources: 
@@ -46,27 +57,28 @@ Resources
       cpu: "1500m"
       memory: "3Gi"
     requests:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "1500m"
+      memory: "3Gi"
 
 1 git sync
 
     resources: 
       limits:
         cpu: "1500m"
-        memory: "5Gi"
+        memory: "4Gi"
       requests:
-        cpu: "1000m"
-        memory: "3Gi"
+        cpu: "1500m"
+        memory: "4Gi"
 
 2 webservers
   resources: 
      limits:
-       cpu: "6000m"
-       memory: "10Gi"
+       cpu: "4000m"
+       memory: "6Gi"
      requests:
-      cpu: "5000m"
-      memory: "8Gi"
+      cpu: "4000m"
+      memory: "6Gi"
+
 
 --
 
