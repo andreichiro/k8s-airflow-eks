@@ -787,8 +787,8 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 240
-    timeoutSeconds: 180
+    initialDelaySeconds: 180
+    timeoutSeconds: 120
     failureThreshold: 3
     periodSeconds: 60
     command: ~
@@ -798,7 +798,7 @@ scheduler:
   startupProbe:
     failureThreshold: 3
     periodSeconds: 60
-    timeoutSeconds: 240
+    timeoutSeconds: 120
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
