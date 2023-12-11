@@ -642,7 +642,7 @@ workers:
   resources:
     limits:
       cpu: "10000m"
-      memory: "20Gi"
+      memory: "18Gi"
     requests:
       cpu: "8000m"
       memory: "16Gi"
@@ -802,7 +802,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 2
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
