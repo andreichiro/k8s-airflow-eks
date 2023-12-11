@@ -2,6 +2,73 @@
 c6g.4xlarge	
 efs id:
 fs-074b0526db14cdee8
+--
+
+Resources
+
+4 workers:
+  resources:
+    limits:
+      cpu: "9000m"
+      memory: "24Gi"
+    requests:
+      cpu: "9000m"
+      memory: "24Gi"
+
+2 Scheduler:
+ resources:
+    cpu: "10000m"
+      memory: "18Gi"
+    requests:
+      cpu: "10000m"
+      memory: "18Gi"
+
+2 triggerer
+    requests:
+      cpu: "5000m"
+      memory: "10Gi"
+    limits:
+      cpu: "5000m"
+      memory: "10Gi"
+
+1 redis
+  resources: 
+    limits:
+      cpu: "2500m"
+      memory: "8Gi"
+    requests:
+      cpu: "2000m"
+      memory: "6Gi"
+
+1 clean up
+  resources: 
+    limits:
+      cpu: "1500m"
+      memory: "3Gi"
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+
+1 git sync
+
+    resources: 
+      limits:
+        cpu: "1500m"
+        memory: "5Gi"
+      requests:
+        cpu: "1000m"
+        memory: "3Gi"
+
+2 webservers
+  resources: 
+     limits:
+       cpu: "6000m"
+       memory: "10Gi"
+     requests:
+      cpu: "5000m"
+      memory: "8Gi"
+
+--
 
 cluster name:
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks

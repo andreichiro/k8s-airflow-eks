@@ -641,11 +641,11 @@ workers:
 
   resources:
     limits:
-      cpu: "10000m"
-      memory: "18Gi"
+      cpu: "9000m"
+      memory: "24Gi"
     requests:
-      cpu: "8000m"
-      memory: "16Gi"
+      cpu: "9000m"
+      memory: "24Gi"
 
 #    limits:
 #      cpu: "6000m"
@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "7000m"
-      memory: "16Gi"
+      cpu: "10000m"
+      memory: "18Gi"
     requests:
-      cpu: "6000m"
-      memory: "14Gi"
+      cpu: "10000m"
+      memory: "18Gi"
 
 #    limits:
 #      cpu: "3000m"
@@ -1114,10 +1114,10 @@ migrateDatabaseJob:
   resources:
     limits:
       cpu: "2000m"
-      memory: "4Gi"
+      memory: "3Gi"
     requests:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "2000m"
+      memory: "3Gi"
 
 #    limits:
 #      cpu: "1000m"
@@ -1251,9 +1251,9 @@ webserver:
   resources: 
      limits:
        cpu: "6000m"
-       memory: "10Gi"
+       memory: "8Gi"
      requests:
-      cpu: "5000m"
+      cpu: "6000m"
       memory: "8Gi"
 
 #     limits:
@@ -1448,11 +1448,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "4000m"
-      memory: "8Gi"
+      cpu: "50000m"
+      memory: "10Gi"
     limits:
-      cpu: "3000m"
-      memory: "7Gi"
+      cpu: "50000m"
+      memory: "10Gi"
 
 #    requests:
 #      cpu: "2000m"
@@ -2144,9 +2144,9 @@ redis:
   resources: 
     limits:
       cpu: "2500m"
-      memory: "8Gi"
+      memory: "6Gi"
     requests:
-      cpu: "2000m"
+      cpu: "2500m"
       memory: "6Gi"
 
 #    limits:
@@ -2269,8 +2269,8 @@ cleanup:
       cpu: "1500m"
       memory: "3Gi"
     requests:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "1500m"
+      memory: "3Gi"
 
 
  #   limits:
@@ -2545,10 +2545,10 @@ dags:
     resources: 
       limits:
         cpu: "1500m"
-        memory: "5Gi"
+        memory: "4Gi"
       requests:
-        cpu: "1000m"
-        memory: "3Gi"
+        cpu: "1500m"
+        memory: "4Gi"
 
 #      limits:
 #        cpu: "1000m"
