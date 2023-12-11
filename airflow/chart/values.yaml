@@ -802,7 +802,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -1448,11 +1448,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
+      cpu: "4000m"
+      memory: "8Gi"
+    limits:
       cpu: "3000m"
       memory: "7Gi"
-    limits:
-      cpu: "2500m"
-      memory: "6Gi"
 
 #    requests:
 #      cpu: "2000m"
