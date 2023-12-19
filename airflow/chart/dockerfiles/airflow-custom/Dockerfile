@@ -5,9 +5,9 @@ USER root
 
 RUN apt-get update && apt-get install -y procps
 RUN sudo apt-get update
+RUN apt-get install -y libmariadb-dev
 
 USER airflow
-
 #Install the additional Python packages
 RUN pip install --upgrade pip \
     apache-airflow[amazon] \    
