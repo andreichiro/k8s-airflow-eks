@@ -88,10 +88,10 @@ aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 aws eks --region us-east-1 update-kubeconfig --name h2-lakehouse-on-k8s-eks
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 003422509138.dkr.ecr.us-east-1.amazonaws.com
 
-docker build -t airflow-custom:v1.7 .
+docker build -t airflow-custom:v1.8 .
 
-docker tag 7dbe032575b4 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.7
-docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.7
+docker tag 8f177e27f9ac 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.8
+docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.8
 -
 Tags 
 aws:cloudformation:stack-name	eksctl-h2-lakehouse-on-k8s-eks-nodegroup-lakehouse-on-k8s-demand
