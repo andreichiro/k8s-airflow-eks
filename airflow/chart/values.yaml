@@ -80,7 +80,7 @@ airflowVersion: "2.8.0"
 images:
   airflow:
     repository: 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom
-    tag: v1.6
+    tag: v1.7
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
