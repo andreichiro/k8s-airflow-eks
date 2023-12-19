@@ -641,11 +641,11 @@ workers:
 
   resources:
     limits:
-      cpu: "9000m"
-      memory: "22Gi"
+      cpu: "8000m"
+      memory: "20Gi"
     requests:
-      cpu: "9000m"
-      memory: "22Gi"
+      cpu: "7500m"
+      memory: "18Gi"
 
 #    limits:
 #      cpu: "6000m"
