@@ -1,13 +1,13 @@
 #Use the official Apache Airflow image as the base
-FROM apache/airflow:2.8.0
+FROM apache/airflow:2.7.3
 
 USER root
 
 RUN apt-get update && apt-get install -y procps
 RUN sudo apt-get update
-RUN apt install mariadb-client libmariadb3 -y
 
 USER airflow
+
 #Install the additional Python packages
 RUN pip install --upgrade pip \
     apache-airflow[amazon] \    
@@ -23,5 +23,4 @@ RUN pip install --upgrade pip \
     duckdb \
     apache-airflow[snowflake] \    
     gspread \
-    apache-airflow[google] \
-    pymysql
+    apache-airflow[google]
