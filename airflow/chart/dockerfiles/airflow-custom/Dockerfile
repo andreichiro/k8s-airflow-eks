@@ -23,4 +23,5 @@ RUN pip install --upgrade pip \
     duckdb \
     apache-airflow[snowflake] \    
     gspread \
-    apache-airflow[google] 
+    apache-airflow[google] \
+    pymysql
