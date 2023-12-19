@@ -5,9 +5,9 @@ USER root
 
 RUN apt-get update && apt-get install -y procps
 RUN sudo apt-get update
+RUN apt install mariadb-client -y
 
 USER airflow
-
 #Install the additional Python packages
 RUN pip install --upgrade pip \
     apache-airflow[amazon] \    
@@ -23,5 +23,4 @@ RUN pip install --upgrade pip \
     duckdb \
     apache-airflow[snowflake] \    
     gspread \
-    apache-airflow[google] \
-    gspread
+    apache-airflow[google] 
