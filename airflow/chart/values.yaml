@@ -490,7 +490,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 4
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -641,11 +641,11 @@ workers:
 
   resources:
     limits:
-      cpu: "8000m"
-      memory: "20Gi"
+      cpu: "10000m"
+      memory: "24Gi"
     requests:
-      cpu: "7500m"
-      memory: "18Gi"
+      cpu: "8000m"
+      memory: "22Gi"
 
 #    limits:
 #      cpu: "6000m"
@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "8000m"
-      memory: "14Gi"
+      cpu: "7500m"
+      memory: "12Gi"
     requests:
-      cpu: "8000m"
-      memory: "14Gi"
+      cpu: "7000m"
+      memory: "10Gi"
 
 #    limits:
 #      cpu: "3000m"
@@ -1251,10 +1251,10 @@ webserver:
   resources: 
      limits:
        cpu: "4000m"
-       memory: "6Gi"
+       memory: "4Gi"
      requests:
-      cpu: "4000m"
-      memory: "6Gi"
+      cpu: "3500m"
+      memory: "4Gi"
 
 #     limits:
 #       cpu: "3000m"
@@ -1449,10 +1449,10 @@ triggerer:
   #   memory: 128Mi
     requests:
       cpu: "3500m"
-      memory: "6Gi"
+      memory: "5Gi"
     limits:
       cpu: "3500m"
-      memory: "6Gi"
+      memory: "4Gi"
 
 #    requests:
 #      cpu: "2000m"
@@ -2144,10 +2144,10 @@ redis:
   resources: 
     limits:
       cpu: "2500m"
-      memory: "5Gi"
+      memory: "4Gi"
     requests:
-      cpu: "2500m"
-      memory: "5Gi"
+      cpu: "2000m"
+      memory: "4Gi"
 
 #    limits:
 #      cpu: "2000m"
@@ -2548,7 +2548,7 @@ dags:
         memory: "4Gi"
       requests:
         cpu: "1500m"
-        memory: "4Gi"
+        memory: "3Gi"
 
 #      limits:
 #        cpu: "1000m"
