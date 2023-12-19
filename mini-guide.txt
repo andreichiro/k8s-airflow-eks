@@ -90,7 +90,7 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 
 docker build -t airflow-custom:v1.7 .
 
-docker tag ee3fb0c546ba 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.7
+docker tag cf76de1a82b3 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.7
 docker push 003422509138.dkr.ecr.us-east-1.amazonaws.com/airflow-custom:v1.7
 -
 Tags 
