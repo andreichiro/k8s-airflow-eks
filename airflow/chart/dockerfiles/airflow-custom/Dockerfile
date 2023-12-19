@@ -5,7 +5,7 @@ USER root
 
 RUN apt-get update && apt-get install -y procps
 RUN sudo apt-get update
-RUN apt install mariadb-client -y
+RUN apt install mariadb-client libmariadb3 -y
 
 USER airflow
 #Install the additional Python packages
