@@ -1,5 +1,5 @@
 #Use the official Apache Airflow image as the base
-FROM apache/airflow:2.7.3
+FROM apache/airflow:2.8.0
 
 USER root
 
@@ -20,4 +20,8 @@ RUN pip install --upgrade pip \
     polars \
     pyiceberg[s3fs,hive,glue,duckdb,pyarrow] \
     snowflake-connector-python \
-    duckdb
+    duckdb \
+    apache-airflow[snowflake] \    
+    gspread \
+    apache-airflow[google] \
+    gspread
