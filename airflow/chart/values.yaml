@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "8000m"
-      memory: "8Gi"
-    requests:
       cpu: "6000m"
       memory: "6Gi"
+    requests:
+      cpu: "5000m"
+      memory: "5Gi"
 
 #    limits:
 #      cpu: "3000m"
@@ -1250,11 +1250,11 @@ webserver:
 
   resources: 
      limits:
-       cpu: "4000m"
-       memory: "4Gi"
+       cpu: "2500m"
+       memory: "3Gi"
      requests:
-      cpu: "3500m"
-      memory: "4Gi"
+      cpu: "2000m"
+      memory: "2Gi"
 
 #     limits:
 #       cpu: "3000m"
