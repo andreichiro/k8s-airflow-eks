@@ -802,7 +802,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -855,15 +855,15 @@ scheduler:
     config:
       # minAvailable and maxUnavailable are mutually exclusive
       #maxUnavailable: 1
-      minAvailable: 3
+      minAvailable: 2
 
   resources:
     limits:
-      cpu: "5000m"
-      memory: "12Gi"
+      cpu: "10000m"
+      memory: "20Gi"
     requests:
-      cpu: "4000m"
-      memory: "8Gi"
+      cpu: "8000m"
+      memory: "18Gi"
 
 #    limits:
 #      cpu: "3000m"
@@ -1113,11 +1113,11 @@ migrateDatabaseJob:
 
   resources:
     limits:
-      cpu: "2000m"
+      cpu: "1500m"
       memory: "3Gi"
     requests:
-      cpu: "2000m"
-      memory: "3Gi"
+      cpu: "1000m"
+      memory: "2Gi"
 
 #    limits:
 #      cpu: "1000m"
@@ -2143,11 +2143,11 @@ redis:
 
   resources: 
     limits:
-      cpu: "2500m"
-      memory: "4Gi"
-    requests:
       cpu: "2000m"
-      memory: "4Gi"
+      memory: "3Gi"
+    requests:
+      cpu: "1500m"
+      memory: "2Gi"
 
 #    limits:
 #      cpu: "2000m"
@@ -2545,10 +2545,10 @@ dags:
     resources: 
       limits:
         cpu: "1500m"
-        memory: "4Gi"
-      requests:
-        cpu: "1500m"
         memory: "3Gi"
+      requests:
+        cpu: "1000m"
+        memory: "2Gi"
 
 #      limits:
 #        cpu: "1000m"
