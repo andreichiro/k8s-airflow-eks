@@ -6,23 +6,23 @@ fs-074b0526db14cdee8
 
 Resources
 
-4 workers:
-  resources:
+3 workers:
+   resources:
     limits:
-      cpu: "9000m"
-      memory: "22Gi"
+      cpu: "20000m"
+      memory: "60Gi"
     requests:
-      cpu: "9000m"
-      memory: "22Gi"
+      cpu: "15000m"
+      memory: "48Gi"
 
 3 Scheduler:
   resources:
     limits:
-      cpu: "8000m"
-      memory: "14Gi"
+      cpu: "7000m"
+      memory: "12Gi"
     requests:
-      cpu: "8000m"
-      memory: "14Gi"
+      cpu: "5000m"
+      memory: "8Gi"
 
 1 migrate database
   resources:
@@ -33,23 +33,32 @@ Resources
       cpu: "2000m"
       memory: "3Gi"
 
+2 webservers
+  resources: 
+     limits:
+       cpu: "4000m"
+       memory: "4Gi"
+     requests:
+      cpu: "3500m"
+      memory: "4Gi"
+
 2 triggerer
     requests:
       cpu: "3500m"
-      memory: "6Gi"
+      memory: "5Gi"
     limits:
       cpu: "3500m"
-      memory: "6Gi"
+      memory: "4Gi"
 
 
 1 redis
   resources: 
     limits:
       cpu: "2500m"
-      memory: "8Gi"
+      memory: "4Gi"
     requests:
       cpu: "2000m"
-      memory: "6Gi"
+      memory: "4Gi"
 
 1 clean up
   resources: 
@@ -61,24 +70,13 @@ Resources
       memory: "3Gi"
 
 1 git sync
-
     resources: 
       limits:
         cpu: "1500m"
         memory: "4Gi"
       requests:
         cpu: "1500m"
-        memory: "4Gi"
-
-2 webservers
-  resources: 
-     limits:
-       cpu: "4000m"
-       memory: "6Gi"
-     requests:
-      cpu: "4000m"
-      memory: "6Gi"
-
+        memory: "3Gi"
 
 --
 

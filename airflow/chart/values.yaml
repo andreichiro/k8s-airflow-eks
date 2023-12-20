@@ -641,11 +641,11 @@ workers:
 
   resources:
     limits:
-      cpu: "12000m"
-      memory: "26Gi"
+      cpu: "20000m"
+      memory: "60Gi"
     requests:
-      cpu: "10000m"
-      memory: "22Gi"
+      cpu: "15000m"
+      memory: "48Gi"
 
 #    limits:
 #      cpu: "6000m"
@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "7500m"
+      cpu: "7000m"
       memory: "12Gi"
     requests:
-      cpu: "7000m"
-      memory: "10Gi"
+      cpu: "5000m"
+      memory: "8Gi"
 
 #    limits:
 #      cpu: "3000m"
