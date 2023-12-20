@@ -802,7 +802,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 2
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -855,7 +855,7 @@ scheduler:
     config:
       # minAvailable and maxUnavailable are mutually exclusive
       #maxUnavailable: 1
-      minAvailable: 2
+      minAvailable: 3
 
   resources:
     limits:
