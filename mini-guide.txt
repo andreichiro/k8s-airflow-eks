@@ -3,26 +3,25 @@ c6g.4xlarge
 efs id:
 fs-074b0526db14cdee8
 --
-
 Resources
 
-3 workers:
-   resources:
+4 workers:
+    resources:
     limits:
-      cpu: "20000m"
-      memory: "60Gi"
+      cpu: "9000m"
+      memory: "24Gi"
     requests:
-      cpu: "15000m"
-      memory: "48Gi"
+      cpu: "8000m"
+      memory: "18Gi"
 
 3 Scheduler:
-  resources:
+   resources:
     limits:
-      cpu: "7000m"
-      memory: "12Gi"
-    requests:
-      cpu: "5000m"
+      cpu: "8000m"
       memory: "8Gi"
+    requests:
+      cpu: "7000m"
+      memory: "7Gi"
 
 1 migrate database
   resources:

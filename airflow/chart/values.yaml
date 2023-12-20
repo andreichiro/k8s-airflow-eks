@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "8000m"
-      memory: "8Gi"
+      cpu: "5000m"
+      memory: "12Gi"
     requests:
-      cpu: "7000m"
-      memory: "7Gi"
+      cpu: "4000m"
+      memory: "8Gi"
 
 #    limits:
 #      cpu: "3000m"
@@ -1212,7 +1212,7 @@ webserver:
 
   # Webserver pod disruption budget
   podDisruptionBudget:
-    enabled: false
+    enabled: true
 
     # PDB configuration
     config:
@@ -1982,7 +1982,7 @@ pgbouncer:
 
   # PgBouncer pod disruption budget
   podDisruptionBudget:
-    enabled: false
+    enabled: true
 
     # PDB configuration
     config:
