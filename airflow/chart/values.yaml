@@ -859,11 +859,11 @@ scheduler:
 
   resources:
     limits:
-      cpu: "7500m"
-      memory: "10Gi"
+      cpu: "8000m"
+      memory: "8Gi"
     requests:
-      cpu: "5000m"
-      memory: "5Gi"
+      cpu: "6000m"
+      memory: "6Gi"
 
 #    limits:
 #      cpu: "3000m"
