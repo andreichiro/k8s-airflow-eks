@@ -641,10 +641,10 @@ workers:
 
   resources:
     limits:
-      cpu: "10000m"
-      memory: "22Gi"
-    requests:
       cpu: "9000m"
+      memory: "20Gi"
+    requests:
+      cpu: "8000m"
       memory: "18Gi"
 
 #    limits:
@@ -859,11 +859,12 @@ scheduler:
 
   resources:
     limits:
-      cpu: "10000m"
-      memory: "22Gi"
-    requests:
       cpu: "9000m"
+      memory: "20Gi"
+    requests:
+      cpu: "8000m"
       memory: "18Gi"
+
 #    limits:
 #      cpu: "3000m"
 #      memory: "8Gi"
