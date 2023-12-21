@@ -1375,7 +1375,7 @@ webserver:
 triggerer:
   enabled: true
   # Number of airflow triggerers in the deployment
-  replicas: 2
+  replicas: 3
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2544,11 +2544,11 @@ dags:
 
     resources: 
       limits:
-        cpu: "1500m"
-        memory: "3Gi"
+        cpu: "4000m"
+        memory: "4Gi"
       requests:
-        cpu: "1000m"
-        memory: "2Gi"
+        cpu: "3000m"
+        memory: "3Gi"
 
 #      limits:
 #        cpu: "1000m"
