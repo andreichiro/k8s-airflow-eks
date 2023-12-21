@@ -642,7 +642,7 @@ workers:
   resources:
     limits:
       cpu: "9000m"
-      memory: "20Gi"
+      memory: "22Gi"
     requests:
       cpu: "8000m"
       memory: "18Gi"
@@ -787,8 +787,8 @@ scheduler:
   # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
   # scheduler and let Kubernetes restart it
   livenessProbe:
-    initialDelaySeconds: 180
-    timeoutSeconds: 120
+    initialDelaySeconds: 120
+    timeoutSeconds: 60
     failureThreshold: 3
     periodSeconds: 60
     command: ~
@@ -802,7 +802,7 @@ scheduler:
     command: ~
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 3
+  replicas: 4
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -855,15 +855,15 @@ scheduler:
     config:
       # minAvailable and maxUnavailable are mutually exclusive
       #maxUnavailable: 1
-      minAvailable: 3
+      minAvailable: 4
 
   resources:
     limits:
-      cpu: "9000m"
-      memory: "20Gi"
+      cpu: "6000m"
+      memory: "14Gi"
     requests:
-      cpu: "8000m"
-      memory: "18Gi"
+      cpu: "5000m"
+      memory: "10Gi"
 
 #    limits:
 #      cpu: "3000m"

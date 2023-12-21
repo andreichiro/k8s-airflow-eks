@@ -1,27 +1,43 @@
+kubectl exec -it airflow-scheduler-85774f9864-764lz -n airflow -- /bin/bash
+
+du -h --max-depth=1 /path/to/suspected/directory
+
+
+kubectl exec -it airflow-postgresql-0 -n airflow -- /bin/bash
+
+psql -U postgres postgres
+
+VACUUM (VERBOSE, ANALYZE);
+
+kubectl describe pvc name -n airflow
 --
 c6g.4xlarge	
 efs id:
 fs-074b0526db14cdee8
 --
-4 workers
+4 workers:
   resources:
     limits:
       cpu: "9000m"
-      memory: "24Gi"
+      memory: "22Gi"
     requests:
       cpu: "8000m"
       memory: "18Gi"
 
-2 schedulers
+
+4 scheduler:
+      minAvailable: 4
+
   resources:
     limits:
-      cpu: "10000m"
-      memory: "20Gi"
+      cpu: "6000m"
+      memory: "14Gi"
     requests:
-      cpu: "8000m"
-      memory: "18Gi"
+      cpu: "5000m"
+      memory: "10Gi"
 
-migrate database job
+migrate database job:
+
   resources:
     limits:
       cpu: "1500m"
@@ -39,19 +55,21 @@ migrate database job
       cpu: "2000m"
       memory: "2Gi"
 
-2 triggers
+2 triggerers:
+
   resources: 
   #  limits:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
-      cpu: "3500m"
-      memory: "5Gi"
-    limits:
-      cpu: "3500m"
+      cpu: "3000m"
       memory: "4Gi"
+    limits:
+      cpu: "2500m"
+      memory: "3Gi"
 
-redis
+redis:
+
   resources: 
     limits:
       cpu: "2000m"
@@ -60,7 +78,17 @@ redis
       cpu: "1500m"
       memory: "2Gi"
 
+cleanup 
+resources: 
+    limits:
+      cpu: "1500m"
+      memory: "3Gi"
+    requests:
+      cpu: "1500m"
+      memory: "3Gi"
+
 gitsync
+
     resources: 
       limits:
         cpu: "1500m"
