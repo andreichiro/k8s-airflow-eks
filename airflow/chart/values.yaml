@@ -1448,11 +1448,11 @@ triggerer:
   #   cpu: 100m
   #   memory: 128Mi
     requests:
+      cpu: "5000m"
+      memory: "6Gi"
+    limits:
       cpu: "4000m"
       memory: "5Gi"
-    limits:
-      cpu: "3000m"
-      memory: "4Gi"
 
 #    requests:
 #      cpu: "2000m"
